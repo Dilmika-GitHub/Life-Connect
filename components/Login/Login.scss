@@ -1,0 +1,27 @@
+.container {
+    flex: 1;
+    background-color: #fff;
+  }
+  
+  .wavesTop {
+    position: absolute;
+    top: -350;
+    left: 0;
+    right: 0;
+  }
+  
+  .wavesTopSub {
+    position: absolute;
+    top: -300;
+    left: 0;
+    right: 0;
+  }
+  
+  .wavesBottom {
+    position: absolute;
+    bottom: -350;
+    left: 0;
+    right: 0;
+    transform: rotateX(180deg) rotateZ(180deg);
+  }
+  
