@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import {Waves,Waves2} from './Waves';
-
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import {Waves,Waves2} from '../../components/Waves';
+import { Link } from 'expo-router';
 
 const LoginScreen = () => {
   const [username, setUsername] = useState('');
@@ -14,7 +14,10 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Waves2 style={styles.wavesTopSub} />
+      <Waves style={styles.wavesTop} />
       
+      <Waves style={styles.wavesBottom}></Waves>
       <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
@@ -29,11 +32,11 @@ const LoginScreen = () => {
         value={password}
         secureTextEntry
       />
+      <Link style={styles.loginText} href={'../Screens/Home'} asChild>
       <Button title="Login" onPress={handleLogin} />
-      <Waves2 style={styles.wavesTopSub} />
-      <Waves style={styles.wavesTop} />
-
-      <Waves style={styles.wavesBottom}></Waves>
+      </Link>
+      
+      
     </View>
   );
 };
