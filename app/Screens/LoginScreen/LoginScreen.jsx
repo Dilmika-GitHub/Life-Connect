@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import {Waves,Waves2} from '../../components/Waves';
+import {Waves,Waves2} from '../../../components/Waves';
 import { Link } from 'expo-router';
 
 const LoginScreen = () => {
@@ -32,7 +32,7 @@ const LoginScreen = () => {
         value={password}
         secureTextEntry
       />
-      <Link style={styles.loginText} href={'../Screens/Home'} asChild>
+      <Link style={styles.loginText} href={'../Screens/HomePage/Home'} asChild>
       <Button title="Login" onPress={handleLogin} />
       </Link>
       
