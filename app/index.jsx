@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import LoginScreen from './Screens/LoginScreen';
+import LoginScreen from './Screens/LoginScreen/LoginScreen';
+
 
 
 export default function App() {
