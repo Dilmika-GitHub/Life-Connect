@@ -12,9 +12,9 @@ import { Link } from "expo-router";
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export default function FPkpi({
-  percentage = 65,
-  color = "blue",
-  animatedCircleColor = "grey",
+  percentage = 68,
+  color = "grey",
+  animatedCircleColor = "#ffdb16",
   strokeWidth = 15,
   smallRadius = 50,
   textColor = "black",
@@ -40,13 +40,14 @@ export default function FPkpi({
         justifyContent: "space-between", // Align items evenly on the main axis
         alignItems: "center", // Align items in the center vertically
         height: 100,
-        backgroundColor: "white",
+        //backgroundColor: "white",
         padding: 0,
         paddingHorizontal: 10,
         marginTop: 10,
         borderRadius: 10,
         borderColor: "lightgrey",
-        borderWidth: 1,
+        
+        
       }}
     >
       <View style={{ alignItems: "flex-start" }}>
@@ -70,11 +71,11 @@ export default function FPkpi({
               cx="50%"
               cy="50%"
               r={smallRadius}
-              stroke={color}
+              stroke={animatedCircleColor}
               strokeWidth={strokeWidth}
               strokeDasharray={circleCircumference}
               strokeDashoffset={strokeDashoffset}
-              strokeOpacity={0.5}
+              strokeOpacity={1.0}
               strokeLinecap="round"
               fill="transparent"
             />
@@ -98,12 +99,12 @@ export default function FPkpi({
       </View>
       <View style={{ flex: 1 }}>
         <View style={{ flex: 1, justifyContent: "flex-end" }}>
-          <Text style={{ textAlign: "center", fontWeight: "bold" }}>
+          <Text style={{ textAlign: "left", fontWeight: "bold", marginLeft: 10}}>
             FP KPI
           </Text>
         </View>
         <View style={{ flex: 1, justifyContent: "flex-start" }}>
-          <Text style={{ textAlign: "center" }}>Fp KPI is a Kpi.</Text>
+          <Text style={{ textAlign: "left", marginLeft: 10 }}>Fp KPI is a Kpi.</Text>
         </View>
       </View>
       <TouchableOpacity>
@@ -112,7 +113,7 @@ export default function FPkpi({
           href={"../../Screens/DashboardScreen/KPIComponents/FPkpi"}
           asChild
         >
-          <AntDesign name="right" size={24} color="black" />
+          <AntDesign name="right" size={24} color="grey" />
         </Link>
       </TouchableOpacity>
     </View>
