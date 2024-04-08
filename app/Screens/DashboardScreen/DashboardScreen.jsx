@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Animated, ScrollView } from "react-native";
 import * as React from "react";
 import Svg, { G, Circle } from "react-native-svg";
-
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import FPkpi from "./KPIs/FPkpi";
 import NOPkpi from "./KPIs/NOPkpi";
 import FYPkpi from "./KPIs/FYPkpi";
@@ -12,8 +12,8 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 export default function DashboardScreen(
   {
     percentage = 65,
-    color = "blue",
-    animatedCircleColor = "grey",
+    color = "grey",
+    animatedCircleColor = "#05beda",
     strokeWidth = 35,
     radius = 120,
     textColor = "black",
@@ -26,10 +26,9 @@ export default function DashboardScreen(
   const halfCircle = radius + strokeWidth;
   const viewBoxValue = `0 0 ${halfCircle * 2} ${halfCircle * 2}`;
   const circleCircumference = 2 * Math.PI * radius;
-
   const maxPerc = (100 * percentage) / max;
   const strokeDashoffset =
-    circleCircumference - (circleCircumference * maxPerc) / 100;
+  circleCircumference - (circleCircumference * maxPerc) / 100;
   const totalvalueText = `${currencyType} ${totalvalue}`;
   React.useEffect(() => {});
   return (
@@ -40,13 +39,17 @@ export default function DashboardScreen(
             color: textColor || color,
             fontSize: 20,
             textTransform: "uppercase",
+            
           }}
         >
           Sales Performance
         </Text>
       </View>
-      {/* Bottom Donut Chart */}
-      <View style={{ alignItems: "center" }}>
+      <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start', paddingLeft: 330 }}>
+      <MaterialCommunityIcons name="target" size={40} color="black" />
+    </View>
+      
+      <View style={{ alignItems: "center",marginTop: -15 }}>
         <Svg width={radius * 2} height={radius * 2} viewBox={viewBoxValue}>
           <G rotation="-90" origin={`${halfCircle}, ${halfCircle}`}>
             <Circle
@@ -55,7 +58,7 @@ export default function DashboardScreen(
               r={radius}
               stroke={color}
               strokeWidth={strokeWidth}
-              strokeOpacity={1.0}
+              strokeOpacity={0.5}
               fill="transparent"
             />
             <AnimatedCircle
@@ -93,6 +96,7 @@ export default function DashboardScreen(
         <FYPkpi />
         <GWPkpi />
         <MCFPkpi />
+        
       </View>
     </ScrollView>
   )
