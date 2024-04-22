@@ -49,7 +49,8 @@ const LoginScreen = () => {
         value={password}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+      
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin} href={'../Screens/HomePage/Home'} asChild>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
       <Text style={styles.welcomeText}>WELCOME</Text>

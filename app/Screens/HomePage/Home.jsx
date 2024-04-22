@@ -13,13 +13,13 @@ const Drawer = createDrawerNavigator();
 export default function Home() {
   return (
     <NavigationContainer independent={true}>
-      <Drawer.Navigator>
+      <Drawer.Navigator initialRouteName='Dashboard'>
           <Drawer.Screen name="Profile" component={Profile} />
           <Drawer.Screen name="Dashboard" component={DashboardScreen} />
-          <Drawer.Screen name="Competitions" component={Competitions} />
+          <Drawer.Screen name="MDRT" component={Competitions} />
           <Drawer.Screen name="PolicyDetails" component={PolicyDetails} />
-          <Drawer.Screen name="OnlinePolicy" component={OnlinePolicy} />
-          <Drawer.Screen name="Settings" component={SettingsScreen} />
+          <Drawer.Screen name="Renew" component={OnlinePolicy} />
+          <Drawer.Screen name="Logout" component={SettingsScreen} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
