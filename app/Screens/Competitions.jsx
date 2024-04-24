@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { SelectList } from 'react-native-dropdown-select-list';
+import BarChartComponent from './BarChart';
 
 const Competitions = () => {
   const winnersData = [
@@ -25,16 +26,16 @@ const Competitions = () => {
   const thirdPlace = limitedWinnersData[2];
 
   const renderItem = ({ item }) => (
-    <View style={[styles.itemContainer, { width: itemWidth }]}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
-        <Text style={[styles.itemName, { color: '#333' }]}>Name: {item.name}</Text>
-        {parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 ? (
-          <Text style={styles.achievedText}>Achieved</Text>
-        ) : null}
-      </View>
-      <Text style={[styles.itemTarget, { color: '#666' }]}>Achieved Target: {item.achievedTarget}</Text>
+  <View style={[styles.itemContainer, { width: itemWidth }, parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 && styles.achievedItem]}>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
+      <Text style={[styles.itemName, { color: '#333' }]}>Name: {item.name}</Text>
+      {parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 ? (
+        <Text style={[styles.achievedText, styles.achievedTextGreen]}>Achieved</Text>
+      ) : null}
     </View>
-  );
+    <Text style={[styles.itemTarget, { color: '#666' }]}>Achieved Target: {item.achievedTarget}</Text>
+  </View>
+);
 
   const screenWidth = Dimensions.get('window').width;
   const itemWidth = screenWidth * 0.9; 
@@ -45,6 +46,51 @@ const Competitions = () => {
     { key: '1', value: 'Island Ranking' },
     { key: '2', value: 'Country Ranking' },
   ];
+  
+  const Bardata = {
+    labels: [
+      `${firstPlace.name}`,
+      `${secondPlace.name}`,
+      `${thirdPlace.name}`
+    ],
+    datasets: [
+      {
+        data: [30, 40, 20]
+      }
+    ]
+  };
+
+  const graphStyle = StyleSheet.create({
+    container: {
+      marginVertical: 8,
+      borderRadius: 16,
+    },
+    barStyle: {
+      marginVertical: 8,
+      borderRadius: 16,
+    },
+  });
+
+  const chartConfig = {
+    backgroundGradientFrom: '#ffffff',
+    backgroundGradientTo: '#ffffff',
+    decimalPlaces: 0, 
+    color: (opacity = 1) => `rgba(247, 70, 57, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    barPercentage: 1.5, 
+    yAxisMinimumValue: 0, 
+    groupWidth: 0,
+    verticalLabelRotation: 0,
+    formatYLabel: (label) => {
+      if (label) {
+        const parts = label.split('\n');
+        return parts[0]; // Display only the name
+      }
+      return '';
+    },
+    
+  };
+  
   
   return (
     <View style={styles.container}>
@@ -65,12 +111,11 @@ const Competitions = () => {
         </TouchableOpacity>
       </SelectList>
     </View>
-      {/* <Text style={styles.heading}>MDRT Competition Winners</Text> */}
-      <View style={styles.chartContainer}>
-        <BarChart place="First" winner={firstPlace} screenWidth={screenWidth} />
-        <BarChart place="Second" winner={secondPlace} screenWidth={screenWidth} />
-        <BarChart place="Third" winner={thirdPlace} screenWidth={screenWidth} />
-      </View>
+    <BarChartComponent
+      data={Bardata}
+      graphStyle={graphStyle}
+      chartConfig={chartConfig}
+    />
       <FlatList
         data={limitedWinnersData} // Render only the first 5 items
         renderItem={renderItem}
@@ -81,23 +126,15 @@ const Competitions = () => {
   )
 }
 
-const BarChart = ({ place, winner, screenWidth }) => {
-  const barHeight = (parseInt(winner.achievedTarget.replace(/,/g, '')) / 220000000) * screenWidth * 0.9;
-
-  return (
-    <View style={styles.barContainer}>
-      <Text style={styles.placeText}>{place}</Text>
-      <View style={[styles.bar, { height: barHeight }]} />
-      <Text style={styles.targetText}>{winner.achievedTarget}</Text>
-    </View>
-  );
-};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
     backgroundColor: '#f5f5f5', 
+  },
+  achievedItem: {
+    backgroundColor: '#DCD7D6', // or any other color you prefer
   },
   heading: {
     fontSize: 20,
