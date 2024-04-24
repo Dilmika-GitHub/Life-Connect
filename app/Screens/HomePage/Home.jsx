@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import { Ionicons } from '@expo/vector-icons';
-import { Image, View, Text, TouchableOpacity } from 'react-native';
+import { Ionicons, SimpleLineIcons } from '@expo/vector-icons';
+import { Image, View, Text, TouchableOpacity, Modal } from 'react-native';
 import DashboardScreen from '../DashboardScreen/DashboardScreen';
 import SettingsScreen from '../SettingsScreen';
 import Competitions from '../Competitions';
@@ -13,6 +13,21 @@ import OnlinePolicy from '../OnlinePolicy';
 const Drawer = createDrawerNavigator();
 
 const CustomDrawerContent = ({ navigation }) => {
+  const [logoutConfirmationVisible, setLogoutConfirmationVisible] = useState(false);
+
+  const handleLogout = () => {
+    setLogoutConfirmationVisible(true);
+  };
+
+  const handleConfirmLogout = () => {
+    navigation.navigate('../LoginScreen/LoginScreen');
+    setLogoutConfirmationVisible(false);
+  };
+
+  const handleCancelLogout = () => {
+    setLogoutConfirmationVisible(false);
+  };
+
   return (
     <DrawerContentScrollView>
       <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10, marginLeft: 10 }}>
@@ -29,7 +44,6 @@ const CustomDrawerContent = ({ navigation }) => {
         label="Home"
         onPress={() => navigation.navigate('Home')}
         icon={({ focused, color, size }) => <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />}
-        style={{marginTop:20}}
       />
       <DrawerItem
         label="MDRT"
@@ -46,12 +60,37 @@ const CustomDrawerContent = ({ navigation }) => {
         onPress={() => navigation.navigate('Renew')}
         icon={({ focused, color, size }) => <Ionicons name={focused ? 'refresh' : 'refresh-outline'} size={size} color={color} />}
       />
-      <DrawerItem
-        label="Logout"
-        onPress={() => navigation.navigate('Logout')}
-        icon={({ focused, color, size }) => <Ionicons name={focused ? 'log-out' : 'log-out-outline'} size={size} color={color} />}
-        style={{marginTop:380}}
-      />
+      <View style={{ flex: 1, justifyContent: 'flex-end', marginTop: 10 }}>
+        <DrawerItem
+          label="Logout"
+          onPress={handleLogout}
+          icon={({ focused, color, size }) => <Ionicons name={focused ? 'log-out' : 'log-out-outline'} size={size} color={color} />}
+          style={{marginTop:440}}
+        />
+      </View>
+
+      <Modal
+        visible={logoutConfirmationVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setLogoutConfirmationVisible(false)}
+      >
+        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{ backgroundColor: '#fff', padding: 20, borderRadius: 10, elevation: 5, alignItems: 'center' }}>
+            <SimpleLineIcons name="logout" size={40} color="black" style={{ marginBottom: 10 }} />
+            <Text style={{ fontSize: 18, marginBottom: 5 }}>Do you really want to </Text>
+            <Text style={{ fontSize: 18, marginBottom: 10 }}>exit the app? </Text>
+            <View style={{ flexDirection: 'row' }}>
+              <TouchableOpacity onPress={handleConfirmLogout} style={{ backgroundColor: 'blue', padding: 10, borderRadius: 5, marginRight: 10 }}>
+                <Text style={{ color: 'white' }}>Yes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleCancelLogout} style={{ backgroundColor: 'red', padding: 10, borderRadius: 5 }}>
+                <Text style={{ color: 'white' }}>No</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </DrawerContentScrollView>
   );
 };
