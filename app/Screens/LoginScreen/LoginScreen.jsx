@@ -50,8 +50,10 @@ const LoginScreen = () => {
         secureTextEntry
       />
       
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin} href={'../Screens/HomePage/Home'} asChild>
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+      <Link style={styles.loginText} href={'../Screens/HomePage/Home'} asChild>
         <Text style={styles.loginButtonText}>Login</Text>
+        </Link>
       </TouchableOpacity>
       <Text style={styles.welcomeText}>WELCOME</Text>
     </View>
