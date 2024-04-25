@@ -166,7 +166,7 @@ export default function FPkpi({
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Set your target</Text>
+            <Text style={styles.modalText}>Set your target for GWP</Text>
             <TextInput
               style={styles.input}
               onChangeText={(text) => setInputValue(text)}

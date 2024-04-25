@@ -20,7 +20,7 @@ const CustomDrawerContent = ({ navigation }) => {
   };
 
   const handleConfirmLogout = () => {
-    navigation.navigate('../LoginScreen/LoginScreen');
+    // navigation.navigate('../LoginScreen/LoginScreen');
     setLogoutConfirmationVisible(false);
   };
 
