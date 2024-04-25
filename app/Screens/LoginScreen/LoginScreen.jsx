@@ -49,6 +49,7 @@ const LoginScreen = () => {
         value={password}
         secureTextEntry
       />
+      
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
       <Link style={styles.loginText} href={'../Screens/HomePage/Home'} asChild>
         <Text style={styles.loginButtonText}>Login</Text>
