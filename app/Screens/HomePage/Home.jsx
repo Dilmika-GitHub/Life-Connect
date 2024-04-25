@@ -44,6 +44,7 @@ const CustomDrawerContent = ({ navigation }) => {
         label="Home"
         onPress={() => navigation.navigate('Home')}
         icon={({ focused, color, size }) => <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />}
+        style={{marginTop:20}}
       />
       <DrawerItem
         label="MDRT"
@@ -65,7 +66,7 @@ const CustomDrawerContent = ({ navigation }) => {
           label="Logout"
           onPress={handleLogout}
           icon={({ focused, color, size }) => <Ionicons name={focused ? 'log-out' : 'log-out-outline'} size={size} color={color} />}
-          style={{marginTop:440}}
+          style={{marginTop:420}}
         />
       </View>
 
