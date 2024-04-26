@@ -12,6 +12,7 @@ import OnlinePolicy from '../OnlinePolicy';
 
 const Drawer = createDrawerNavigator();
 
+
 const CustomDrawerContent = ({ navigation }) => {
   const [logoutConfirmationVisible, setLogoutConfirmationVisible] = useState(false);
 
@@ -102,6 +103,12 @@ export default function Home() {
       <Drawer.Navigator
         initialRouteName='Home'
         drawerContent={props => <CustomDrawerContent {...props} />}
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: '#FEA58F',
+          },
+          headerTintColor: '#fff', 
+        }}
       >
         <Drawer.Screen name="Home" component={DashboardScreen} />
         <Drawer.Screen name="MDRT" component={Competitions} />
