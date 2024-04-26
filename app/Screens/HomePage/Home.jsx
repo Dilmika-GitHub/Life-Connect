@@ -31,7 +31,7 @@ const CustomDrawerContent = ({ navigation }) => {
 
   return (
     <DrawerContentScrollView>
-      <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10, marginLeft: 10 }}>
+      <TouchableOpacity onPress={() => navigation.navigate('My Profile')} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10, marginLeft: 10 }}>
         <Image
           source={require('../../../components/user.jpg')}
           style={{ width: 40, height: 40, borderRadius: 20, marginRight: 10 }}
@@ -112,7 +112,7 @@ export default function Home() {
       >
         <Drawer.Screen name="Home" component={DashboardScreen} />
         <Drawer.Screen name="MDRT" component={Competitions} />
-        <Drawer.Screen name="Profile" component={Profile} />
+        <Drawer.Screen name="My Profile" component={Profile} />
         <Drawer.Screen name="PolicyDetails" component={PolicyDetails} />
         <Drawer.Screen name="Renew" component={OnlinePolicy} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
