@@ -32,7 +32,7 @@ export default function DashboardScreen(
   const totalvalueText = `${currencyType} ${totalvalue}`;
   React.useEffect(() => {});
   return (
-    <ScrollView style={{ flex: 1, padding: 5 }}>
+    <ScrollView style={{ flex: 1, padding: 5, backgroundColor:'white' }}>
       <View style={{ alignItems: "center" }}>
         <Text
           style={{
