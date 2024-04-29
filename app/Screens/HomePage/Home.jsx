@@ -112,7 +112,7 @@ export default function Home() {
       >
         <Drawer.Screen name="Home" component={DashboardScreen} />
         <Drawer.Screen name="MDRT" component={Competitions} />
-        <Drawer.Screen name="Profile" component={Profile} />
+        <Drawer.Screen name="My Profile" component={Profile} />
         <Drawer.Screen name="PolicyDetails" component={PolicyDetails} />
         <Drawer.Screen name="Renew" component={OnlinePolicy} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />

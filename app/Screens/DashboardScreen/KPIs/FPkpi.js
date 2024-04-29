@@ -173,7 +173,7 @@ export default function FPkpi({
               value={inputValue}
             />
             <View style={{ flexDirection: "row" }}>
-              <Button onPress={handleSubmit} title="Submit" />
+              <Button onPress={handleSubmit} backgroundColor="#0473DA"title="Set Target" />
               <Button onPress={handleCancel} title="Cancel" />
             </View>
           </View>
