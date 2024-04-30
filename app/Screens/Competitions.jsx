@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Bar1, Bar2 } from "../../components/Chart";
-
+//
 const Competitions = () => {
   const winnersData = [
     { name: 'Winner 2', achievedTarget: '8,00,000' },
@@ -25,6 +25,11 @@ const Competitions = () => {
   const firstPlace = limitedWinnersData[0];
   const secondPlace = limitedWinnersData[1];
   const thirdPlace = limitedWinnersData[2];
+
+  const user = { name: 'Winner 2', achievedTarget: '8,00,000' };
+  const userPlace = limitedWinnersData.findIndex(item => item.name === user.name) + 1;
+  const userItem = { ...user, place: userPlace };
+  limitedWinnersData.push(userItem);
 
   const renderProfilePic = (winner) => {
     if (winner.profilePic) {
@@ -52,6 +57,20 @@ const Competitions = () => {
     </View>
   );
   
+
+  const renderUser = () => (
+    <View style={[styles.itemContainer, styles.userContainer, { width: itemWidth }]}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Icon name="user-circle" size={26} color="#FF5733" style={{ marginRight: 10 }} />
+        <Text style={[styles.itemName, styles.userName, { color: '#333' }]}>Name: {userItem.name}</Text>
+      </View>
+      <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: '#666' }]}>Achieved Target: {userItem.achievedTarget}</Text>
+      <View style={{ alignItems: 'center' }}>
+        <Text style={[styles.userPlace, { fontWeight: 'bold', fontSize: 19 }]}>Your Place {userItem.place}</Text>
+      </View>
+    </View>
+  );
+
 
   const screenWidth = Dimensions.get('window').width;
   const itemWidth = screenWidth * 0.9; 
@@ -122,9 +141,9 @@ const Competitions = () => {
         visible={showPicker}
         style={styles.dropdown}
       >
-        <TouchableOpacity onPress={() => setShowPicker(!showPicker)} style={styles.dropdown}>
-          <Text style={styles.selectedValue}>{selectedValue}</Text>
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => setShowPicker(!showPicker)} style={styles.dropdown}>
+        <Text style={styles.selectedValue}>{selectedValue}</Text>
+      </TouchableOpacity>
       </SelectList>
     </View>
     <View style={[styles.barContainer, { marginTop: 60 }, ]}>
@@ -153,10 +172,10 @@ const Competitions = () => {
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.flatListContainer}
       />
+      {renderUser()}
     </View>
   )
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -290,6 +309,21 @@ const styles = StyleSheet.create({
     width: 26,
     height: 26,
     marginRight: 10,
+  },
+  userContainer: {
+    backgroundColor: '#bbbfc9', 
+    borderColor: '#a8adba', 
+    borderWidth: 2,
+  },
+  userName: {
+    fontWeight: 'bold',
+    color: '#333', 
+  },
+  userAchievedTarget: {
+    fontStyle: 'italic', 
+  },
+  userPlace: {
+    color: 'black', 
   },
 });
 
