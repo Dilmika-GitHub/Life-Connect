@@ -9,6 +9,7 @@ import Competitions from '../Competitions';
 import Profile from '../UserProfile/Profile';
 import PolicyDetails from '../PolicyDetails';
 import OnlinePolicy from '../OnlinePolicy';
+import MDRTProfile from '../UserProfile/MDRTProfile/MDRTProfile';
 
 const Drawer = createDrawerNavigator();
 
@@ -111,8 +112,9 @@ export default function Home() {
         }}
       >
         <Drawer.Screen name="Home" component={DashboardScreen} />
-        <Drawer.Screen name="MDRT" component={Competitions} />
+        <Drawer.Screen name="MDRT Ranking" component={Competitions} />
         <Drawer.Screen name="My Profile" component={Profile} />
+        <Drawer.Screen name="MDRT" component={Competitions}/>
         <Drawer.Screen name="PolicyDetails" component={PolicyDetails} />
         <Drawer.Screen name="Renew" component={OnlinePolicy} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
