@@ -1,27 +1,41 @@
-import { View, Text, StyleSheet,Image } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet, Image } from 'react-native';
+import React from 'react';
 
 const Profile = () => {
   return (
     <View style={styles.container}>
-      {/* Top section */}
+      {/* Top section border */}
       <View style={[styles.section, styles.topSection]}></View>
 
-      {/* Bottom section */}
+      {/* Bottom section border */}
       <View style={[styles.section, styles.bottomSection]}>
-
-        {/* Grey color square */}
-      <View style={styles.greySquare}>
-      <Text style={styles.greyText}>Your Gray Box Text Here</Text>
+        {/* Grey color square text */}
+        <View style={styles.greySquare}>
+          <View style={styles.row}>
+            <Text style={styles.titleText}>Agent Code:</Text>
+            <Text style={styles.normalText}>123456</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.titleText}>NIC No:</Text>
+            <Text style={styles.normalText}>987654321V</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.titleText}>E-mail:</Text>
+            <Text style={styles.normalText}>michalsmitch12@gmail.com</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.titleText}>Mobile No:</Text>
+            <Text style={styles.normalText}>077 123 4567</Text>
+          </View>
         </View> 
       </View>
 
-      {/* Round Image at the border */}
+      {/* Profile Image */}
       <View style={styles.imageContainer}>
         <Image 
-          source={require('../../../components/user.jpg')} // Example image URL
+          source={require('../../../components/user.jpg')} 
           style={styles.roundImage}
-          resizeMode="cover" // This helps maintain aspect ratio
+          resizeMode="cover" 
         />
         <Text style={styles.imageText}>Michel Smith</Text>
       </View>
@@ -33,45 +47,61 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    
   },
   section: {
-    width: '100%' // Use the full width of the screen
+    width: '100%',
   },
   topSection: {
-    flex: 1, // 1/5 of the screen
+    flex: 1, 
     backgroundColor: '#FEA58F'
   },
   bottomSection: {
-    flex: 5, // 4/5 of the screen
+    flex: 5, 
     backgroundColor: 'white'
   },
   imageContainer: {
     position: 'absolute',
     left: '50%',
-    top: '16%', // Since the top section is 20% of the screen
-    transform: [{ translateX: -100 }, { translateY: -100 }] // Centers the image both horizontally and vertically
+    top: '16%', 
+    transform: [{ translateX: -100 }, { translateY: -100 }]
   },
   roundImage: {
-    width: 200, // Set the size of the image
-    height: 200, // Set the size of the image
-    borderRadius: 100 // Makes the image round
+    width: 200, 
+    height: 200, 
+    borderRadius: 100
   },
   imageText: {
-    marginTop: 10, // Adjust the spacing between the image and text
+    marginTop: 10, 
     textAlign: 'center',
     fontSize: 16,
     fontWeight: 'bold',
     color: 'black'
   },
   greySquare: {
-    width: 250,
-    height: 400,
+    width: 320,
+    height: 140,
     backgroundColor: 'lightgrey',
-    marginTop: 150, // Adjust the spacing between the image and the grey square
+    marginTop: 150, 
     alignSelf: 'center',
-    borderRadius: 10
+    borderRadius: 10,
+    padding: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  titleText: {
+    fontSize: 16,
+    color: 'black',
+    minWidth: 100, // Ensure alignment
+  },
+  normalText: {
+    fontSize: 16,
+    color: 'grey'
   },
 });
 
-export default Profile
+
+
+export default Profile;
