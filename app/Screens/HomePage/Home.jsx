@@ -1,28 +1,40 @@
-import React, { useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import { Ionicons, SimpleLineIcons } from '@expo/vector-icons';
-import { Image, View, Text, TouchableOpacity, Modal } from 'react-native';
-import DashboardScreen from '../DashboardScreen/DashboardScreen';
-import SettingsScreen from '../SettingsScreen';
-import Competitions from '../Competitions';
-import Profile from '../UserProfile/Profile';
-import PolicyDetails from '../PolicyDetails';
-import OnlinePolicy from '../OnlinePolicy';
+import React, { useState } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItem,
+} from "@react-navigation/drawer";
+import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
+import {
+  Image,
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  Button,
+} from "react-native";
+import DashboardScreen from "../DashboardScreen/DashboardScreen";
+import SettingsScreen from "../SettingsScreen";
+import Competitions from "../Competitions";
+import Profile from "../UserProfile/Profile";
+import PolicyDetails from "../PolicyDetails";
+import OnlinePolicy from "../OnlinePolicy";
+import MDRTProfile from "../UserProfile/MDRTProfile/MDRTProfile";
 
 const Drawer = createDrawerNavigator();
 
-
 const CustomDrawerContent = ({ navigation }) => {
-  const [logoutConfirmationVisible, setLogoutConfirmationVisible] = useState(false);
+  const [logoutConfirmationVisible, setLogoutConfirmationVisible] =
+    useState(false);
 
   const handleLogout = () => {
     setLogoutConfirmationVisible(true);
   };
 
   const handleConfirmLogout = () => {
-    // navigation.navigate('../LoginScreen/LoginScreen');
     setLogoutConfirmationVisible(false);
+    // Optionally, navigate to the login screen here if needed
   };
 
   const handleCancelLogout = () => {
@@ -31,63 +43,130 @@ const CustomDrawerContent = ({ navigation }) => {
 
   return (
     <DrawerContentScrollView>
-      <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10, marginLeft: 10 }}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("My Profile")}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          marginVertical: 10,
+          marginLeft: 10,
+        }}
+      >
         <Image
-          source={require('../../../components/user.jpg')}
+          source={require("../../../components/user.jpg")}
           style={{ width: 40, height: 40, borderRadius: 20, marginRight: 10 }}
         />
-        <View style={{ flexDirection: 'column' }}>
+        <View style={{ flexDirection: "column" }}>
           <Text style={{ fontSize: 16 }}>Michael Smith</Text>
           <Text style={{ fontSize: 12 }}>michalsmitch12@gmail.com</Text>
         </View>
       </TouchableOpacity>
       <DrawerItem
         label="Home"
-        onPress={() => navigation.navigate('Home')}
-        icon={({ focused, color, size }) => <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />}
-        style={{marginTop:20}}
+        onPress={() => navigation.navigate("Home")}
+        icon={({ focused, color, size }) => (
+          <Ionicons
+            name={focused ? "home" : "home-outline"}
+            size={size}
+            color={color}
+          />
+        )}
       />
       <DrawerItem
         label="MDRT"
-        onPress={() => navigation.navigate('MDRT')}
-        icon={({ focused, color, size }) => <Ionicons name={focused ? 'trophy' : 'trophy-outline'} size={size} color={color} />}
+        onPress={() => navigation.navigate("MDRT")}
+        icon={({ focused, color, size }) => (
+          <Ionicons
+            name={focused ? "trophy" : "trophy-outline"}
+            size={size}
+            color={color}
+          />
+        )}
       />
       <DrawerItem
         label="Policy Details"
-        onPress={() => navigation.navigate('PolicyDetails')}
-        icon={({ focused, color, size }) => <Ionicons name={focused ? 'document-text' : 'document-text-outline'} size={size} color={color} />}
+        onPress={() => navigation.navigate("PolicyDetails")}
+        icon={({ focused, color, size }) => (
+          <Ionicons
+            name={focused ? "document-text" : "document-text-outline"}
+            size={size}
+            color={color}
+          />
+        )}
       />
       <DrawerItem
         label="Renew"
-        onPress={() => navigation.navigate('Renew')}
-        icon={({ focused, color, size }) => <Ionicons name={focused ? 'refresh' : 'refresh-outline'} size={size} color={color} />}
+        onPress={() => navigation.navigate("Renew")}
+        icon={({ focused, color, size }) => (
+          <Ionicons
+            name={focused ? "refresh" : "refresh-outline"}
+            size={size}
+            color={color}
+          />
+        )}
       />
-      <View style={{ flex: 1, justifyContent: 'flex-end', marginTop: 10 }}>
+      <View style={{ flex: 1, justifyContent: "flex-end" }}>
         <DrawerItem
           label="Logout"
           onPress={handleLogout}
-          icon={({ focused, color, size }) => <Ionicons name={focused ? 'log-out' : 'log-out-outline'} size={size} color={color} />}
-          style={{marginTop:420}}
+          icon={({ focused, color, size }) => (
+            <Ionicons
+              name={focused ? "log-out" : "log-out-outline"}
+              size={size}
+              color={color}
+            />
+          )}
         />
       </View>
-
       <Modal
         visible={logoutConfirmationVisible}
         transparent
         animationType="fade"
         onRequestClose={() => setLogoutConfirmationVisible(false)}
       >
-        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}>
-          <View style={{ backgroundColor: '#fff', padding: 20, borderRadius: 10, elevation: 5, alignItems: 'center' }}>
-            <SimpleLineIcons name="logout" size={40} color="black" style={{ marginBottom: 10 }} />
-            <Text style={{ fontSize: 18, marginBottom: 5 }}>Do you really want to </Text>
-            <Text style={{ fontSize: 18, marginBottom: 10 }}>exit the app? </Text>
-            <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity onPress={handleConfirmLogout} style={{ backgroundColor: 'blue', padding: 10, borderRadius: 5, marginRight: 10 }}>
-                <Text style={{ color: 'white' }}>Yes</Text>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#fff",
+              padding: 20,
+              borderRadius: 10,
+              elevation: 5,
+              alignItems: "center",
+            }}
+          >
+            <SimpleLineIcons
+              name="logout"
+              size={40}
+              color="black"
+              style={{ marginBottom: 10 }}
+            />
+            <Text style={{ fontSize: 18, marginBottom: 5 }}>
+              Do you really want to exit the app?
+            </Text>
+            <View style={{ flexDirection: "row" }}>
+              <TouchableOpacity
+                onPress={handleConfirmLogout}
+                style={{
+                  backgroundColor: "blue",
+                  padding: 10,
+                  borderRadius: 5,
+                  marginRight: 10,
+                }}
+              >
+                <Text style={{ color: "white" }}>Yes</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={handleCancelLogout} style={{ backgroundColor: 'red', padding: 10, borderRadius: 5 }}>
-                <Text style={{ color: 'white' }}>No</Text>
+              <TouchableOpacity
+                onPress={handleCancelLogout}
+                style={{ backgroundColor: "red", padding: 10, borderRadius: 5 }}
+              >
+                <Text style={{ color: "white" }}>No</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -101,18 +180,34 @@ export default function Home() {
   return (
     <NavigationContainer independent={true}>
       <Drawer.Navigator
-        initialRouteName='Home'
-        drawerContent={props => <CustomDrawerContent {...props} />}
+        initialRouteName="Home"
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#FEA58F',
+            backgroundColor: "#FEA58F",
           },
-          headerTintColor: '#fff', 
+          headerTintColor: "#fff",
         }}
       >
         <Drawer.Screen name="Home" component={DashboardScreen} />
-        <Drawer.Screen name="MDRT" component={Competitions} />
+        <Drawer.Screen name="MDRT Ranking" component={Competitions} />
         <Drawer.Screen name="My Profile" component={Profile} />
+        <Drawer.Screen
+          name="MDRT"
+          component={MDRTProfile}
+          options={({ navigation }) => ({
+            headerRight: () => (
+              <TouchableOpacity
+                onPress={() => navigation.navigate("MDRT Ranking")}
+              >
+                <Image
+                  source={require("../../../components/pngtree.jpg")}
+                  style={{ width: 30, height: 30 }}
+                />
+              </TouchableOpacity>
+            ),
+          })}
+        />
         <Drawer.Screen name="PolicyDetails" component={PolicyDetails} />
         <Drawer.Screen name="Renew" component={OnlinePolicy} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
