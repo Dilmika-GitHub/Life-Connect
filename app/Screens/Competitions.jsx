@@ -172,7 +172,9 @@ const Competitions = () => {
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.flatListContainer}
       />
-      {renderUser()}
+      <View style={{ alignItems: 'center' }}>
+        {renderUser()}
+      </View>
     </View>
   )
 }
