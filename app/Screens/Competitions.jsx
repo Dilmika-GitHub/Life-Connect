@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Bar1, Bar2 } from "../../components/Chart";
-//
+
 const Competitions = () => {
   const winnersData = [
     { name: 'Winner 2', achievedTarget: '8,00,000' },
@@ -79,7 +79,9 @@ const Competitions = () => {
 
   const data = [
     { key: '1', value: 'Island Ranking' },
-    { key: '2', value: 'Country Ranking' },
+    { key: '2', value: 'Regional Ranking' },
+    { key: '3', value: 'Branch Ranking' },
+    { key: '4', value: 'Team Ranking' },
   ];
   
   const Bardata = {
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   dropdownContainer: {
-    width: '40%', 
+    width: '42%', 
     alignSelf: 'left', 
   },
   selectedValue: {
