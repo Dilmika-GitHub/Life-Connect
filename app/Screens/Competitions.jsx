@@ -7,15 +7,15 @@ import { Bar1, Bar2 } from "../../components/Chart";
 
 const Competitions = () => {
   const winnersData = [
-    { name: 'Winner 2', achievedTarget: '800,000' },
-    { name: 'Winner 3', achievedTarget: '7,00,000' },
-    { name: 'Winner 4', achievedTarget: '6,00,000' },
-    { name: 'Winner 5', achievedTarget: '5,00,000' },
-    { name: 'Winner 1', achievedTarget: '10,00,000' },
-    { name: 'Winner 6', achievedTarget: '220,00,000' },
-    { name: 'Winner 1', achievedTarget: '12,00,000' },
-    { name: 'Winner 1', achievedTarget: '157,00,000' },
-    { name: 'Winner 7', achievedTarget: '800,000' },
+    { name: 'Clifford', achievedTarget: '5,652,125.00'},
+    { name: 'Tara', achievedTarget: '4,252,241.00'},
+    { name: 'Pascal', achievedTarget: '3,562,324.00'},
+    { name: 'Pascal', achievedTarget: '3,412,324.00'},
+    { name: 'Michel', achievedTarget: '1,000,000.00'},
+    { name: 'Devin', achievedTarget: '200,000.00'},
+    { name: 'Edward', achievedTarget: '1,200,000.00'},
+    { name: 'Shen', achievedTarget: '100,000.00'},
+    { name: 'Wilson', achievedTarget: '800,000.00'},
   ];
 
   winnersData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, ''))- parseInt(a.achievedTarget.replace(/,/g, '')));
@@ -26,7 +26,7 @@ const Competitions = () => {
   const secondPlace = limitedWinnersData[1];
   const thirdPlace = limitedWinnersData[2];
 
-  const user = { name: 'Winner 2', achievedTarget: '8,00,000' };
+  const user = { name: 'Michel', achievedTarget: '1,000,000' };
   const userPlace = limitedWinnersData.findIndex(item => item.name === user.name) + 1;
   const userItem = { ...user, place: userPlace };
   limitedWinnersData.push(userItem);
@@ -53,7 +53,7 @@ const Competitions = () => {
       case 'Branch Ranking':
         // Replace with your hard-coded branch ranking data
         setSelectedData([
-          { name: 'Branch Winner 3', achievedTarget: '1000,000' },
+          { name: 'Branch Winner 3', achievedTarget: '1,000,000' },
           { name: 'Branch Winner 1', achievedTarget: '5,000,000' },
           { name: 'Branch Winner 2', achievedTarget: '800,000' },
           { name: 'Branch Winner 3', achievedTarget: '300,000' },
@@ -77,10 +77,10 @@ const Competitions = () => {
 
   const renderProfilePic = (winner) => {
     if (winner.profilePic) {
-      // Return actual profile picture if available
+      // Return the profile picture fetched from the URL
       return <Image source={{ uri: winner.profilePic }} style={styles.profilePic} />;
     } else {
-      // Return default profile picture icon
+      // Return the default profile picture icon
       return <Icon name="user-circle" size={26} color="#FF5733" style={{ marginRight: 10 }} />;
     }
   };
@@ -90,16 +90,21 @@ const Competitions = () => {
     <View style={[styles.itemContainer, { width: itemWidth }, parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 && styles.achievedItem]}>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Icon name="user-circle" size={26} color="#FF5733" style={{ marginRight: 10 }} />
-          <Text style={[styles.itemName, { color: '#333' }]}>Name: {item.name}</Text>
+        <Image 
+          source={require('../../components/user.jpg')} 
+          style={[styles.roundImageforList, { width: 58, height: 58, marginRight:10 }]} 
+          resizeMode="cover" 
+        />
+          <Text style={[styles.itemName, { color: '#333' }]}>{item.name}</Text>
         </View>
-        {parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 ? (
-          <Text style={[styles.achievedText, styles.achievedTextGreen, {fontSize: 16}]}>Achieved</Text>
-        ) : null}
+        <Text style={[styles.itemTarget, { color: 'black', fontWeight: 'bold', marginTop: -15 }]}>{item.achievedTarget}</Text>
       </View>
-      <Text style={[styles.itemTarget, { color: '#666' }]}>Achieved Target: {item.achievedTarget}</Text>
+      {parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 ? (
+          <Text style={[styles.achievedText, styles.achievedTextGreen, {fontSize: 14}]}>Achieved</Text>
+        ) : null}
     </View>
   );
+  
   
 
   const renderUser = () => (
@@ -197,7 +202,7 @@ const Competitions = () => {
           ]}
           save="value"
           setSelected={handleSelectionChange}
-          visible={true} // Or however you manage visibility
+          visible={true} 
           style={styles.dropdown}
         >
           <TouchableOpacity onPress={() => setShowPicker(!showPicker)} style={styles.dropdown}>
@@ -207,7 +212,7 @@ const Competitions = () => {
       </View>
     <View style={[styles.barContainer, { marginTop: 60 }, ]}>
     <Bar1
-          profilePic={renderProfilePic(firstPlace)}
+          renderProfilePic={renderProfilePic(firstPlace)}
           name={firstPlace.name}
           achievedTarget={firstPlace.achievedTarget}
         />
@@ -285,7 +290,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    padding: 5,
+    padding: 10,
+    marginRight: 15,
   },
   barContainer: {
     flexDirection: 'column',
@@ -398,6 +404,11 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     borderWidth: 3, 
     borderColor: '#7facf5'
+  },
+  roundImageforList: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
   },
 });
 
