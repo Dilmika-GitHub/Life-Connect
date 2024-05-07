@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -105,13 +105,23 @@ const Competitions = () => {
   const renderUser = () => (
     <View style={[styles.itemContainer, styles.userContainer, { width: itemWidth }]}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Icon name="user-circle" size={26} color="#FF5733" style={{ marginRight: 10 }} />
-        <Text style={[styles.itemName, styles.userName, { color: '#333' }]}>Name: {userItem.name}</Text>
+      <View style={[styles.imageContainer, { left: '30%', marginTop: 93 }]}> 
+        <Image 
+          source={require('../../components/user.jpg')} 
+          style={[styles.roundImage, { width: 58, height: 58 }]} 
+          resizeMode="cover" 
+        />
       </View>
-      <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: '#666' }]}>Achieved Target: {userItem.achievedTarget}</Text>
-      <View style={{ alignItems: 'center' }}>
-        <Text style={[styles.userPlace, { fontWeight: 'bold', fontSize: 19 }]}>Your Place {userItem.place}</Text>
       </View>
+      <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: 'black' }]}>Sales amount</Text>
+      <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: 'black' }]}>
+      {userItem.achievedTarget}
+      </Text>
+      <View style={{ alignItems: 'center', marginTop: -38 }}>
+  <Text style={[styles.userPlace, { fontSize: 16 }]}>Your Place</Text>
+  <Text style={[styles.userPlace, { fontSize: 16, marginTop: 5 }]}>{userItem.place}</Text>
+</View>
+
     </View>
   );
 
@@ -265,7 +275,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   itemTarget: {
-    fontSize: 14,
+    fontSize: 16,
     textAlign: 'right',
   },
   achievedText: {
@@ -371,10 +381,23 @@ const styles = StyleSheet.create({
     color: '#333', 
   },
   userAchievedTarget: {
-    fontStyle: 'italic', 
+    color: 'black',
   },
   userPlace: {
     color: 'black', 
+  },
+  imageContainer: {
+    position: 'absolute',
+    left: '50%',
+    top: '16%', 
+    transform: [{ translateX: -100 }, { translateY: -100 }]
+  },
+  roundImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    borderWidth: 3, 
+    borderColor: '#7facf5'
   },
 });
 
