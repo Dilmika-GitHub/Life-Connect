@@ -7,15 +7,15 @@ import { Bar1, Bar2 } from "../../components/Chart";
 
 const Competitions = () => {
   const winnersData = [
-    { name: 'Clifford', achievedTarget: '5,652,125.00'},
-    { name: 'Tara', achievedTarget: '4,252,241.00'},
-    { name: 'Pascal', achievedTarget: '3,562,324.00'},
-    { name: 'Pascal', achievedTarget: '3,412,324.00'},
-    { name: 'Michel', achievedTarget: '1,000,000.00'},
-    { name: 'Devin', achievedTarget: '200,000.00'},
-    { name: 'Edward', achievedTarget: '1,200,000.00'},
-    { name: 'Shen', achievedTarget: '100,000.00'},
-    { name: 'Wilson', achievedTarget: '800,000.00'},
+    { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7'},
+    { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8'},
+    { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5'},
+    { name: 'Pascal', achievedTarget: '3,412,324.00', NOP: '5'},
+    { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3'},
+    { name: 'Devin', achievedTarget: '200,000.00', NOP: '2'},
+    { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2'},
+    { name: 'Shen', achievedTarget: '100,000.00', NOP: '1'},
+    { name: 'Wilson', achievedTarget: '800,000.00', NOP: '1'},
   ];
 
   winnersData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, ''))- parseInt(a.achievedTarget.replace(/,/g, '')));
@@ -87,21 +87,28 @@ const Competitions = () => {
 
 
   const renderItem = ({ item }) => (
-    <View style={[styles.itemContainer, { width: itemWidth }, parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 && styles.achievedItem]}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Image 
-          source={require('../../components/user.jpg')} 
-          style={[styles.roundImageforList, { width: 58, height: 58, marginRight:10 }]} 
-          resizeMode="cover" 
-        />
-          <Text style={[styles.itemName, { color: '#333' }]}>{item.name}</Text>
+    <View>
+      <View style={[styles.itemContainer, { width: itemWidth }, parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 && styles.achievedItem]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Image 
+              source={require('../../components/user.jpg')} 
+              style={[styles.roundImageforList, { width: 58, height: 58, marginRight:10 }]} 
+              resizeMode="cover" 
+            />
+            <View>
+              <Text style={[styles.itemName, { color: '#333' }]}>{item.name}</Text>
+              <Text style={[styles.itemNOP, { color: '#5e5b5b' }]}>NOP: {item.NOP}</Text>
+            </View>
+          </View>
+          <Text style={[styles.itemTarget, { color: 'black', fontWeight: 'bold', marginTop: -15 }]}>{item.achievedTarget}</Text>
         </View>
-        <Text style={[styles.itemTarget, { color: 'black', fontWeight: 'bold', marginTop: -15 }]}>{item.achievedTarget}</Text>
-      </View>
-      {parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 ? (
+        {parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 ? (
           <Text style={[styles.achievedText, styles.achievedTextGreen, {fontSize: 14}]}>Achieved</Text>
         ) : null}
+      </View>
+      {/* Horizontal line */}
+      <View style={styles.horizontalLine} />
     </View>
   );
   
@@ -109,7 +116,7 @@ const Competitions = () => {
 
   const renderUser = () => (
     <View style={[styles.itemContainer, styles.userContainer, { width: itemWidth }]}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ alignItems: 'center' }}>
       <View style={[styles.imageContainer, { left: '30%', marginTop: 93 }]}> 
         <Image 
           source={require('../../components/user.jpg')} 
@@ -132,7 +139,7 @@ const Competitions = () => {
 
 
   const screenWidth = Dimensions.get('window').width;
-  const itemWidth = screenWidth * 0.9; 
+  const itemWidth = screenWidth * 1; 
   const [selectedValue, setSelectedValue] = useState('Island Ranking');
   const [showPicker, setShowPicker] = useState(false);
   const [selectedData, setSelectedData] = useState(limitedWinnersData); 
@@ -212,7 +219,7 @@ const Competitions = () => {
       </View>
     <View style={[styles.barContainer, { marginTop: 60 }, ]}>
     <Bar1
-          renderProfilePic={renderProfilePic(firstPlace)}
+          profilePic={renderProfilePic(firstPlace)}
           name={firstPlace.name}
           achievedTarget={firstPlace.achievedTarget}
         />
@@ -259,21 +266,23 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   flatListContainer: {
+    flexGrow: 1, // Added flexGrow to make sure it occupies the entire available space
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 10,
   },
   itemContainer: {
     padding: 15,
     backgroundColor: '#fff', 
     borderRadius: 10,
-    borderWidth: 1,
+    borderWidth: 0,
     borderColor: '#ddd', 
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 7 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    marginVertical: 5,
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 7 },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
+    // elevation: 5,
+    // marginVertical: 5,
   },
   itemName: {
     fontSize: 16,
@@ -409,6 +418,11 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
+  },
+  horizontalLine: {
+    borderBottomColor: '#877c7b',
+    borderBottomWidth: 1,
+    marginVertical: 0,
   },
 });
 
