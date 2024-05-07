@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -7,15 +7,15 @@ import { Bar1, Bar2 } from "../../components/Chart";
 
 const Competitions = () => {
   const winnersData = [
-    { name: 'Winner 2', achievedTarget: '8,00,000' },
-    { name: 'Winner 3', achievedTarget: '7,00,000' },
-    { name: 'Winner 4', achievedTarget: '6,00,000' },
-    { name: 'Winner 5', achievedTarget: '5,00,000' },
-    { name: 'Winner 1', achievedTarget: '10,00,000' },
-    { name: 'Winner 6', achievedTarget: '220,00,000' },
-    { name: 'Winner 1', achievedTarget: '12,00,000' },
-    { name: 'Winner 1', achievedTarget: '157,00,000' },
-    { name: 'Winner 2', achievedTarget: '8,00,000' },
+    { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7'},
+    { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8'},
+    { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5'},
+    { name: 'Pascal', achievedTarget: '3,412,324.00', NOP: '5'},
+    { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3'},
+    { name: 'Devin', achievedTarget: '200,000.00', NOP: '2'},
+    { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2'},
+    { name: 'Shen', achievedTarget: '100,000.00', NOP: '1'},
+    { name: 'Wilson', achievedTarget: '800,000.00', NOP: '1'},
   ];
 
   winnersData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, ''))- parseInt(a.achievedTarget.replace(/,/g, '')));
@@ -26,56 +26,123 @@ const Competitions = () => {
   const secondPlace = limitedWinnersData[1];
   const thirdPlace = limitedWinnersData[2];
 
-  const user = { name: 'Winner 2', achievedTarget: '8,00,000' };
+  const user = { name: 'Michel', achievedTarget: '1,000,000' };
   const userPlace = limitedWinnersData.findIndex(item => item.name === user.name) + 1;
   const userItem = { ...user, place: userPlace };
   limitedWinnersData.push(userItem);
 
+
+  const handleSelectionChange = (val) => {
+    setSelectedValue(val);
+    // Update the selected data based on the selected option
+    switch (val) {
+      case 'Island Ranking':
+        setSelectedData(limitedWinnersData);
+        break;
+      case 'Regional Ranking':
+        // Replace with your hard-coded regional ranking data
+        setSelectedData([
+          { name: 'Regional Winner 1', achievedTarget: '1,000,000' },
+          { name: 'Regional Winner 6', achievedTarget: '5,000,000' },
+          { name: 'Regional Winner 3', achievedTarget: '700,000' },
+          { name: 'Regional Winner 2', achievedTarget: '800,000' },
+          { name: 'Regional Winner 4', achievedTarget: '700,000' },
+          { name: 'Regional Winner 5', achievedTarget: '700,000' },
+        ]);
+        break;
+      case 'Branch Ranking':
+        // Replace with your hard-coded branch ranking data
+        setSelectedData([
+          { name: 'Branch Winner 3', achievedTarget: '1,000,000' },
+          { name: 'Branch Winner 1', achievedTarget: '5,000,000' },
+          { name: 'Branch Winner 2', achievedTarget: '800,000' },
+          { name: 'Branch Winner 3', achievedTarget: '300,000' },
+        ]);
+        break;
+      case 'Team Ranking':
+        // Replace with your hard-coded team ranking data
+        setSelectedData([
+          { name: 'Team Winner 2', achievedTarget: '1,500,000' },
+          { name: 'Team Winner 1', achievedTarget: '200,000' },
+          { name: 'Team Winner 3', achievedTarget: '100,000' },
+          { name: 'Team Winner 2', achievedTarget: '800,000' },
+        ]);
+        break;
+      default:
+        setSelectedData(limitedWinnersData);
+        break;
+    }
+  };
+
+
   const renderProfilePic = (winner) => {
     if (winner.profilePic) {
-      // Return actual profile picture if available
+      // Return the profile picture fetched from the URL
       return <Image source={{ uri: winner.profilePic }} style={styles.profilePic} />;
     } else {
-      // Return default profile picture icon
+      // Return the default profile picture icon
       return <Icon name="user-circle" size={26} color="#FF5733" style={{ marginRight: 10 }} />;
     }
   };
 
 
   const renderItem = ({ item }) => (
-    <View style={[styles.itemContainer, { width: itemWidth }, parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 && styles.achievedItem]}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Icon name="user-circle" size={26} color="#FF5733" style={{ marginRight: 10 }} />
-          <Text style={[styles.itemName, { color: '#333' }]}>Name: {item.name}</Text>
+    <View>
+      <View style={[styles.itemContainer, { width: itemWidth }, parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 && styles.achievedItem]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Image 
+              source={require('../../components/user.jpg')} 
+              style={[styles.roundImageforList, { width: 58, height: 58, marginRight:10 }]} 
+              resizeMode="cover" 
+            />
+            <View>
+              <Text style={[styles.itemName, { color: '#333' }]}>{item.name}</Text>
+              <Text style={[styles.itemNOP, { color: '#5e5b5b' }]}>NOP: {item.NOP}</Text>
+            </View>
+          </View>
+          <Text style={[styles.itemTarget, { color: 'black', fontWeight: 'bold', marginTop: -15 }]}>{item.achievedTarget}</Text>
         </View>
         {parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 ? (
-          <Text style={[styles.achievedText, styles.achievedTextGreen, {fontSize: 16}]}>Achieved</Text>
+          <Text style={[styles.achievedText, styles.achievedTextGreen, {fontSize: 14}]}>Achieved</Text>
         ) : null}
       </View>
-      <Text style={[styles.itemTarget, { color: '#666' }]}>Achieved Target: {item.achievedTarget}</Text>
+      {/* Horizontal line */}
+      <View style={styles.horizontalLine} />
     </View>
   );
+  
   
 
   const renderUser = () => (
     <View style={[styles.itemContainer, styles.userContainer, { width: itemWidth }]}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Icon name="user-circle" size={26} color="#FF5733" style={{ marginRight: 10 }} />
-        <Text style={[styles.itemName, styles.userName, { color: '#333' }]}>Name: {userItem.name}</Text>
-      </View>
-      <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: '#666' }]}>Achieved Target: {userItem.achievedTarget}</Text>
       <View style={{ alignItems: 'center' }}>
-        <Text style={[styles.userPlace, { fontWeight: 'bold', fontSize: 19 }]}>Your Place {userItem.place}</Text>
+      <View style={[styles.imageContainer, { left: '30%', marginTop: 93 }]}> 
+        <Image 
+          source={require('../../components/user.jpg')} 
+          style={[styles.roundImage, { width: 58, height: 58 }]} 
+          resizeMode="cover" 
+        />
       </View>
+      </View>
+      <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: 'black' }]}>Sales amount</Text>
+      <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: 'black' }]}>
+      {userItem.achievedTarget}
+      </Text>
+      <View style={{ alignItems: 'center', marginTop: -38 }}>
+  <Text style={[styles.userPlace, { fontSize: 16 }]}>Your Place</Text>
+  <Text style={[styles.userPlace, { fontSize: 16, marginTop: 5 }]}>{userItem.place}</Text>
+</View>
+
     </View>
   );
 
 
   const screenWidth = Dimensions.get('window').width;
-  const itemWidth = screenWidth * 0.9; 
+  const itemWidth = screenWidth * 1; 
   const [selectedValue, setSelectedValue] = useState('Island Ranking');
   const [showPicker, setShowPicker] = useState(false);
+  const [selectedData, setSelectedData] = useState(limitedWinnersData); 
 
   const data = [
     { key: '1', value: 'Island Ranking' },
@@ -133,21 +200,23 @@ const Competitions = () => {
     <View style={styles.container}>
       <Text style={styles.heading}>MDRT Competition Winners</Text>
       <View style={styles.dropdownContainer}>
-      <SelectList
-        data={data}
-        save="value"
-        setSelected={(val) => {
-          setSelectedValue(val);
-          setShowPicker(false);
-        }}
-        visible={showPicker}
-        style={styles.dropdown}
-      >
-      <TouchableOpacity onPress={() => setShowPicker(!showPicker)} style={styles.dropdown}>
-        <Text style={styles.selectedValue}>{selectedValue}</Text>
-      </TouchableOpacity>
-      </SelectList>
-    </View>
+        <SelectList
+          data={[
+            { key: '1', value: 'Island Ranking' },
+            { key: '2', value: 'Regional Ranking' },
+            { key: '3', value: 'Branch Ranking' },
+            { key: '4', value: 'Team Ranking' },
+          ]}
+          save="value"
+          setSelected={handleSelectionChange}
+          visible={true} 
+          style={styles.dropdown}
+        >
+          <TouchableOpacity onPress={() => setShowPicker(!showPicker)} style={styles.dropdown}>
+            <Text style={styles.selectedValue}>{selectedValue}</Text>
+          </TouchableOpacity>
+        </SelectList>
+      </View>
     <View style={[styles.barContainer, { marginTop: 60 }, ]}>
     <Bar1
           profilePic={renderProfilePic(firstPlace)}
@@ -169,7 +238,7 @@ const Competitions = () => {
     </View>
   </View>
       <FlatList
-        data={limitedWinnersData} 
+        data={selectedData}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.flatListContainer}
@@ -197,28 +266,30 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   flatListContainer: {
+    flexGrow: 1, // Added flexGrow to make sure it occupies the entire available space
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 10,
   },
   itemContainer: {
     padding: 15,
     backgroundColor: '#fff', 
     borderRadius: 10,
-    borderWidth: 1,
+    borderWidth: 0,
     borderColor: '#ddd', 
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 7 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    marginVertical: 5,
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 7 },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
+    // elevation: 5,
+    // marginVertical: 5,
   },
   itemName: {
     fontSize: 16,
     fontWeight: 'bold',
   },
   itemTarget: {
-    fontSize: 14,
+    fontSize: 16,
     textAlign: 'right',
   },
   achievedText: {
@@ -228,7 +299,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    padding: 5,
+    padding: 10,
+    marginRight: 15,
   },
   barContainer: {
     flexDirection: 'column',
@@ -324,10 +396,33 @@ const styles = StyleSheet.create({
     color: '#333', 
   },
   userAchievedTarget: {
-    fontStyle: 'italic', 
+    color: 'black',
   },
   userPlace: {
     color: 'black', 
+  },
+  imageContainer: {
+    position: 'absolute',
+    left: '50%',
+    top: '16%', 
+    transform: [{ translateX: -100 }, { translateY: -100 }]
+  },
+  roundImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    borderWidth: 3, 
+    borderColor: '#7facf5'
+  },
+  roundImageforList: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+  },
+  horizontalLine: {
+    borderBottomColor: '#877c7b',
+    borderBottomWidth: 1,
+    marginVertical: 0,
   },
 });
 
