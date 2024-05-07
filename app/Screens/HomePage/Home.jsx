@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   Modal,
   Button,
+  SafeAreaView,
 } from "react-native";
 import DashboardScreen from "../DashboardScreen/DashboardScreen";
 import SettingsScreen from "../SettingsScreen";
@@ -43,81 +44,90 @@ const CustomDrawerContent = ({ navigation }) => {
 
   return (
     <DrawerContentScrollView>
-      <TouchableOpacity
-        onPress={() => navigation.navigate("My Profile")}
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          marginVertical: 10,
-          marginLeft: 10,
-        }}
-      >
-        <Image
-          source={require("../../../components/user.jpg")}
-          style={{ width: 40, height: 40, borderRadius: 20, marginRight: 10 }}
-        />
-        <View style={{ flexDirection: "column" }}>
-          <Text style={{ fontSize: 16 }}>Michael Smith</Text>
-          <Text style={{ fontSize: 12 }}>michalsmitch12@gmail.com</Text>
-        </View>
-      </TouchableOpacity>
-      <DrawerItem
-        label="Home"
-        onPress={() => navigation.navigate("Home")}
-        icon={({ focused, color, size }) => (
-          <Ionicons
-            name={focused ? "home" : "home-outline"}
-            size={size}
-            color={color}
+      {/* Wrap drawer content in SafeAreaView to handle notch */}
+      <SafeAreaView style={{ flex: 1 }}>
+        {/* User Profile Section */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate("My Profile")}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginVertical: 10,
+            marginLeft: 10,
+          }}
+        >
+          <Image
+            source={require("../../../components/user.jpg")}
+            style={{ width: 40, height: 40, borderRadius: 20, marginRight: 10 }}
           />
-        )}
-      />
-      <DrawerItem
-        label="MDRT"
-        onPress={() => navigation.navigate("MDRT")}
-        icon={({ focused, color, size }) => (
-          <Ionicons
-            name={focused ? "trophy" : "trophy-outline"}
-            size={size}
-            color={color}
-          />
-        )}
-      />
-      <DrawerItem
-        label="Policy Details"
-        onPress={() => navigation.navigate("PolicyDetails")}
-        icon={({ focused, color, size }) => (
-          <Ionicons
-            name={focused ? "document-text" : "document-text-outline"}
-            size={size}
-            color={color}
-          />
-        )}
-      />
-      <DrawerItem
-        label="Renew"
-        onPress={() => navigation.navigate("Renew")}
-        icon={({ focused, color, size }) => (
-          <Ionicons
-            name={focused ? "refresh" : "refresh-outline"}
-            size={size}
-            color={color}
-          />
-        )}
-      />
-      <View style={{ flex: 1, justifyContent: "flex-end" }}>
+          <View style={{ flexDirection: "column" }}>
+            <Text style={{ fontSize: 16 }}>Michael Smith</Text>
+            <Text style={{ fontSize: 12 }}>michalsmitch12@gmail.com</Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* Drawer Navigation Items */}
         <DrawerItem
-          label="Logout"
-          onPress={handleLogout}
+          label="Home"
+          onPress={() => navigation.navigate("Home")}
           icon={({ focused, color, size }) => (
             <Ionicons
-              name={focused ? "log-out" : "log-out-outline"}
+              name={focused ? "home" : "home-outline"}
               size={size}
               color={color}
             />
           )}
         />
-      </View>
+        <DrawerItem
+          label="MDRT"
+          onPress={() => navigation.navigate("MDRT")}
+          icon={({ focused, color, size }) => (
+            <Ionicons
+              name={focused ? "trophy" : "trophy-outline"}
+              size={size}
+              color={color}
+            />
+          )}
+        />
+        <DrawerItem
+          label="Policy Details"
+          onPress={() => navigation.navigate("PolicyDetails")}
+          icon={({ focused, color, size }) => (
+            <Ionicons
+              name={focused ? "document-text" : "document-text-outline"}
+              size={size}
+              color={color}
+            />
+          )}
+        />
+        <DrawerItem
+          label="Renew"
+          onPress={() => navigation.navigate("Renew")}
+          icon={({ focused, color, size }) => (
+            <Ionicons
+              name={focused ? "refresh" : "refresh-outline"}
+              size={size}
+              color={color}
+            />
+          )}
+        />
+        {/* Logout Drawer Item */}
+        <View style={{ flex: 1, justifyContent: "flex-end" }}>
+          <DrawerItem
+            label="Logout"
+            onPress={handleLogout}
+            icon={({ focused, color, size }) => (
+              <Ionicons
+                name={focused ? "log-out" : "log-out-outline"}
+                size={size}
+                color={color}
+              />
+            )}
+          />
+        </View>
+      </SafeAreaView>
+
+      {/* Logout Confirmation Modal */}
       <Modal
         visible={logoutConfirmationVisible}
         transparent
