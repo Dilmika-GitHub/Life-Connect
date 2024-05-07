@@ -7,7 +7,7 @@ import { Bar1, Bar2 } from "../../components/Chart";
 
 const Competitions = () => {
   const winnersData = [
-    { name: 'Winner 2', achievedTarget: '8,00,000' },
+    { name: 'Winner 2', achievedTarget: '800,000' },
     { name: 'Winner 3', achievedTarget: '7,00,000' },
     { name: 'Winner 4', achievedTarget: '6,00,000' },
     { name: 'Winner 5', achievedTarget: '5,00,000' },
@@ -15,7 +15,7 @@ const Competitions = () => {
     { name: 'Winner 6', achievedTarget: '220,00,000' },
     { name: 'Winner 1', achievedTarget: '12,00,000' },
     { name: 'Winner 1', achievedTarget: '157,00,000' },
-    { name: 'Winner 2', achievedTarget: '8,00,000' },
+    { name: 'Winner 7', achievedTarget: '800,000' },
   ];
 
   winnersData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, ''))- parseInt(a.achievedTarget.replace(/,/g, '')));
@@ -30,6 +30,50 @@ const Competitions = () => {
   const userPlace = limitedWinnersData.findIndex(item => item.name === user.name) + 1;
   const userItem = { ...user, place: userPlace };
   limitedWinnersData.push(userItem);
+
+
+  const handleSelectionChange = (val) => {
+    setSelectedValue(val);
+    // Update the selected data based on the selected option
+    switch (val) {
+      case 'Island Ranking':
+        setSelectedData(limitedWinnersData);
+        break;
+      case 'Regional Ranking':
+        // Replace with your hard-coded regional ranking data
+        setSelectedData([
+          { name: 'Regional Winner 1', achievedTarget: '1,000,000' },
+          { name: 'Regional Winner 6', achievedTarget: '5,000,000' },
+          { name: 'Regional Winner 3', achievedTarget: '700,000' },
+          { name: 'Regional Winner 2', achievedTarget: '800,000' },
+          { name: 'Regional Winner 4', achievedTarget: '700,000' },
+          { name: 'Regional Winner 5', achievedTarget: '700,000' },
+        ]);
+        break;
+      case 'Branch Ranking':
+        // Replace with your hard-coded branch ranking data
+        setSelectedData([
+          { name: 'Branch Winner 3', achievedTarget: '1000,000' },
+          { name: 'Branch Winner 1', achievedTarget: '5,000,000' },
+          { name: 'Branch Winner 2', achievedTarget: '800,000' },
+          { name: 'Branch Winner 3', achievedTarget: '300,000' },
+        ]);
+        break;
+      case 'Team Ranking':
+        // Replace with your hard-coded team ranking data
+        setSelectedData([
+          { name: 'Team Winner 2', achievedTarget: '1,500,000' },
+          { name: 'Team Winner 1', achievedTarget: '200,000' },
+          { name: 'Team Winner 3', achievedTarget: '100,000' },
+          { name: 'Team Winner 2', achievedTarget: '800,000' },
+        ]);
+        break;
+      default:
+        setSelectedData(limitedWinnersData);
+        break;
+    }
+  };
+
 
   const renderProfilePic = (winner) => {
     if (winner.profilePic) {
@@ -76,6 +120,7 @@ const Competitions = () => {
   const itemWidth = screenWidth * 0.9; 
   const [selectedValue, setSelectedValue] = useState('Island Ranking');
   const [showPicker, setShowPicker] = useState(false);
+  const [selectedData, setSelectedData] = useState(limitedWinnersData); 
 
   const data = [
     { key: '1', value: 'Island Ranking' },
@@ -133,21 +178,23 @@ const Competitions = () => {
     <View style={styles.container}>
       <Text style={styles.heading}>MDRT Competition Winners</Text>
       <View style={styles.dropdownContainer}>
-      <SelectList
-        data={data}
-        save="value"
-        setSelected={(val) => {
-          setSelectedValue(val);
-          setShowPicker(false);
-        }}
-        visible={showPicker}
-        style={styles.dropdown}
-      >
-      <TouchableOpacity onPress={() => setShowPicker(!showPicker)} style={styles.dropdown}>
-        <Text style={styles.selectedValue}>{selectedValue}</Text>
-      </TouchableOpacity>
-      </SelectList>
-    </View>
+        <SelectList
+          data={[
+            { key: '1', value: 'Island Ranking' },
+            { key: '2', value: 'Regional Ranking' },
+            { key: '3', value: 'Branch Ranking' },
+            { key: '4', value: 'Team Ranking' },
+          ]}
+          save="value"
+          setSelected={handleSelectionChange}
+          visible={true} // Or however you manage visibility
+          style={styles.dropdown}
+        >
+          <TouchableOpacity onPress={() => setShowPicker(!showPicker)} style={styles.dropdown}>
+            <Text style={styles.selectedValue}>{selectedValue}</Text>
+          </TouchableOpacity>
+        </SelectList>
+      </View>
     <View style={[styles.barContainer, { marginTop: 60 }, ]}>
     <Bar1
           profilePic={renderProfilePic(firstPlace)}
@@ -169,7 +216,7 @@ const Competitions = () => {
     </View>
   </View>
       <FlatList
-        data={limitedWinnersData} 
+        data={selectedData}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.flatListContainer}
