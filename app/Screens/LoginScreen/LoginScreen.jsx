@@ -6,6 +6,7 @@ import {
   Button,
   StyleSheet,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { Waves, Waves2, Waves3 } from "../../../components/Waves";
 import { Link } from "expo-router";
@@ -59,6 +60,7 @@ const LoginScreen = () => {
     </View>
   );
 };
+const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
 const styles = StyleSheet.create({
   container: {
@@ -130,6 +132,25 @@ const styles = StyleSheet.create({
     elevation: 2, // For Android shadow
     zIndex: 1, // Ensure the button text appears above the background
   },
+
+  // loginButton: {
+  //   width: width * 0.4, // Set width based on screen width
+  //   height: height * 0.07, // Set height based on screen height
+  //   backgroundColor: "white",
+  //   borderRadius: 20,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   marginTop: height * 0.03, // Set margin top based on screen height
+  //   shadowColor: "rgba(0, 0, 0, 0.25)",
+  //   shadowOffset: {
+  //     width: 0,
+  //     height: 2,
+  //   },
+  //   shadowOpacity: 1,
+  //   shadowRadius: 2,
+  //   elevation: 2,
+  // },
+
   loginButtonText: {
     width: 55,
     height: 33,
