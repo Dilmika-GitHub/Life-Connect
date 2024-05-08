@@ -1,263 +1,139 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { SearchBar } from 'react-native-elements';
 
 const Lapsed = () => {
-  const winnersData = [
-    { name: 'Winner 2', achievedTarget: '8,00,000' },
-    { name: 'Winner 3', achievedTarget: '7,00,000' },
-    { name: 'Winner 4', achievedTarget: '6,00,000' },
-    { name: 'Winner 5', achievedTarget: '5,00,000' },
-    { name: 'Winner 1', achievedTarget: '10,00,000' },
-    { name: 'Winner 6', achievedTarget: '220,00,000' },
-    { name: 'Winner 1', achievedTarget: '12,00,000' },
-    { name: 'Winner 1', achievedTarget: '157,00,000' },
-    { name: 'Winner 2', achievedTarget: '8,00,000' },
-  ];
-
-  winnersData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, ''))- parseInt(a.achievedTarget.replace(/,/g, '')));
-
-  const limitedWinnersData = winnersData.slice(0, 500);
-
-
-  const renderItem = ({ item }) => (
-    <View style={[styles.itemContainer, { width: itemWidth }, parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 && styles.achievedItem]}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Icon name="user-circle" size={26} color="#FF5733" style={{ marginRight: 10 }} />
-          <Text style={[styles.itemName, { color: '#333' }]}>Name: {item.name}</Text>
+  return (
+    <View style={styles.searchbar}>
+      <SearchBar
+        placeholder="Search Policy"
+        containerStyle={styles.searchBarContainer}
+        inputContainerStyle={styles.inputContainer}
+        inputStyle={styles.input}
+        searchIcon={{ size: 24 }}
+      />
+      <View style={styles.container}>
+      <View style={[styles.section1, styles.coloredSection]}>
+        <Text style={styles.sectionHeading}>Policy Overview</Text>
+        <View style={styles.table}>
+          <View style={styles.tableRow}>
+            <Text style={styles.tableCell}>View comprehensive information about your insurance policies, including details about inforced polices and those that have been lapsed.</Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={styles.sectionHeading2}>Inforced Policies</Text>
+            <Text style={styles.tableCell2}>38</Text>
+          </View>
         </View>
-        {parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 ? (
-          <Text style={[styles.achievedText, styles.achievedTextGreen, {fontSize: 16}]}>Achieved</Text>
-        ) : null}
       </View>
-      <Text style={[styles.itemTarget, { color: '#666' }]}>Achieved Target: {item.achievedTarget}</Text>
+      <View style={[styles.section2, styles.coloredSection2]}>
+        <View style={styles.tableRow2}>
+          <Text style={styles.sectionHeading3}>Lapsed Policies</Text>
+          <Text style={styles.tableCell3}>14</Text>
+        </View>
+      </View>
+    </View>
     </View>
   );
-  
-
-  const screenWidth = Dimensions.get('window').width;
-  const itemWidth = screenWidth * 0.9; 
-  const [selectedValue, setSelectedValue] = useState('Island Ranking');
-  const [showPicker, setShowPicker] = useState(false);
-
-
-  const graphStyle = StyleSheet.create({
-    container: {
-      marginVertical: 8,
-      borderRadius: 16,
-    },
-    barStyle: {
-      marginVertical: 8,
-      borderRadius: 16,
-    },
-  });
-
-  const chartConfig = {
-    backgroundGradientFrom: '#ffffff',
-    backgroundGradientTo: '#ffffff',
-    decimalPlaces: 0, 
-    color: (opacity = 1) => `rgba(247, 70, 57, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    barPercentage: 1.5, 
-    yAxisMinimumValue: 0, 
-    groupWidth: 0,
-    verticalLabelRotation: 0,
-    formatYLabel: (label) => {
-      if (label) {
-        const parts = label.split('\n');
-        return parts[0]; 
-      }
-      return '';
-    },
-    
-  };
-  
-  
-  return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>MDRT Competition Winners</Text>
-      <View style={styles.dropdownContainer}>
-      <SelectList
-        data={data}
-        save="value"
-        setSelected={(val) => {
-          setSelectedValue(val);
-          setShowPicker(false);
-        }}
-        visible={showPicker}
-        style={styles.dropdown}
-      >
-        <TouchableOpacity onPress={() => setShowPicker(!showPicker)} style={styles.dropdown}>
-          <Text style={styles.selectedValue}>{selectedValue}</Text>
-        </TouchableOpacity>
-      </SelectList>
-    </View>
-    <View style={[styles.barContainer, { marginTop: 60 }, ]}>
-    <Bar1
-          profilePic={renderProfilePic(firstPlace)}
-          name={firstPlace.name}
-          achievedTarget={firstPlace.achievedTarget}
-        />
-    <View style={{ marginTop: -150, alignItems: 'center' }}>
-    <Bar2
-            profilePic={renderProfilePic(secondPlace)}
-            name={secondPlace.name}
-            achievedTarget={secondPlace.achievedTarget}
-          />
-      <Text style={styles.nameText}>{firstPlace.name}</Text>
-      <Text style={styles.valueText}>{firstPlace.achievedTarget}</Text>
-      <Text style={styles.secWinnerNameText}>{secondPlace.name}</Text>
-      <Text style={styles.secWinnerValueText}>{secondPlace.achievedTarget}</Text>
-      <Text style={styles.thirdWinnerNameText}>{thirdPlace.name}</Text>
-      <Text style={styles.WinnerValueText}>{thirdPlace.achievedTarget}</Text>
-    </View>
-  </View>
-      <FlatList
-        data={limitedWinnersData} 
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={styles.flatListContainer}
-      />
-    </View>
-  )
-}
-
+};
 
 const styles = StyleSheet.create({
-  container: {
+  searchbar: {
     flex: 1,
-    padding: 10,
-    backgroundColor: '#f5f5f5', 
+    backgroundColor: '#fff',
   },
-  achievedItem: {
-    backgroundColor: '#DCD7D6', 
+  searchBarContainer: {
+    backgroundColor: '#fff',
+    borderBottomColor: 'transparent',
+    borderTopColor: 'transparent',
   },
-  heading: {
+  inputContainer: {
+    backgroundColor: '#ECECEC',
+    borderRadius: 10,
+    height: 40,
+  },
+  input: {
+    fontSize: 16,
+  },
+  container: {
+    flexGrow: 1,
+    justifyContent: 'absolute',
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    backgroundColor:'white'
+  },
+  section1: {
+    marginBottom: 20,
+    borderRadius: 12,
+    overflow: 'hidden',
+    padding: 20,
+  },
+  section2: {
+    marginBottom: 20,
+    borderRadius: 12,
+    overflow: 'hidden',
+    padding: 20,
+  },
+  coloredSection: {
+    backgroundColor: '#EBEBEB',
+  },
+  coloredSection2: {
+    backgroundColor: '#EBEBEB',
+  },
+  sectionHeading: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#333',
   },
-  flatListContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+  sectionHeading2: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: 'black',
+    paddingTop: 10,
   },
-  itemContainer: {
-    padding: 15,
-    backgroundColor: '#fff', 
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#ddd', 
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 7 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    marginVertical: 5,
+  sectionHeading3: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: 'black',
   },
-  itemName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  itemTarget: {
-    fontSize: 14,
-    textAlign: 'right',
-  },
-  achievedText: {
-    fontSize: 14,
-    color: 'green',
-    fontWeight: 'bold',
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    padding: 5,
-  },
-  barContainer: {
+  table: {
+    width: '100%',
     flexDirection: 'column',
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  bar: {
-    height: 20, 
-    backgroundColor: 'blue', 
-    borderRadius: 5, 
-  },
-  placeText: {
-    marginBottom: 5,
-  },
-  targetText: {
-    marginTop: 5,
-  },
-  dropdown: {
-    borderWidth: 1,
-    borderColor: '#ddd',
     borderRadius: 5,
-    padding: 1,
+    overflow: 'hidden',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: '#EBEBEB',
+  },
+  tableRow2: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: '#FF7758',
+  },
+  tableCell: {
+    flex: 1,
+    padding: 10,
+  },
+  tableCell2: {
+    flex: 1,
+    color: 'black',
+    fontSize: 20,
+    fontWeight: '600',
     marginBottom: 10,
+    paddingHorizontal: 10,
+    paddingTop: 10,
   },
-  dropdownContainer: {
-    width: '40%', 
-    alignSelf: 'left', 
-  },
-  selectedValue: {
-    fontSize: 16,
-    color: '#333',
-  },
-  picker: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  nameText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: -100, 
-    textAlign: 'center', 
-  },
-  valueText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#75500b',
-    marginTop: 10, 
-    textAlign: 'center', 
-    marginBottom: 50,
-  },
-  secWinnerNameText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: -65, 
-    marginLeft: -230,
-  },
-  secWinnerValueText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#75500b',
-    marginTop: 0, 
-    marginBottom: 20, 
-    marginLeft: -230,
-  },
-  thirdWinnerNameText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: -65, 
-    marginLeft: 230, 
-  },
-  WinnerValueText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#75500b',
-    marginTop: 0, 
-    marginLeft: 230, 
-    marginBottom: 20, 
-  },
-  profilePic: {
-    width: 26,
-    height: 26,
-    marginRight: 10,
+  tableCell3: {
+    flex: 1,
+    color: 'black',
+    fontSize: 24,
+    fontWeight: '600',
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    textAlign: 'right',
   },
 });
 
-
-
-export default Lapsed
+export default Lapsed;

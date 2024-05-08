@@ -1,10 +1,13 @@
 import React from 'react';
-import { View, ScrollView, Text, StyleSheet } from 'react-native';
+import { View, ScrollView, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-const PolicyDetails = () => {
+const PolicyDetails = ({ navigation }) => {
+  const navigateToLapsedScreen = () => {
+    navigation.navigate('Lapsed');
+  };
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={[styles.section, styles.coloredSection]}>
+      <View style={[styles.section1, styles.coloredSection]}>
         <Text style={styles.sectionHeading}>Policy Overview</Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
@@ -16,12 +19,14 @@ const PolicyDetails = () => {
           </View>
         </View>
       </View>
-      <View style={[styles.section, styles.coloredSection2]}>
+      <TouchableOpacity onPress={navigateToLapsedScreen}>
+      <View style={[styles.section2, styles.coloredSection2]}>
         <View style={styles.tableRow2}>
           <Text style={styles.sectionHeading3}>Lapsed Policies</Text>
           <Text style={styles.tableCell3}>14</Text>
         </View>
       </View>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -34,9 +39,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor:'white'
   },
-  section: {
+  section1: {
     marginBottom: 20,
-    borderRadius: 5,
+    borderRadius: 12,
+    overflow: 'hidden',
+    padding: 20,
+  },
+  section2: {
+    marginBottom: 20,
+    borderRadius: 12,
     overflow: 'hidden',
     padding: 20,
   },
@@ -56,11 +67,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 10,
     color: 'black',
+    paddingTop: 10,
   },
   sectionHeading3: {
     fontSize: 20,
     fontWeight: '600',
-    marginBottom: 10,
     color: 'white',
   },
   table: {
@@ -90,14 +101,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 10,
     paddingHorizontal: 10,
+    paddingTop: 10,
   },
   tableCell3: {
     flex: 1,
     color: 'white',
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '600',
-    marginBottom: 10,
     paddingHorizontal: 10,
+    flexDirection: 'row',
+    textAlign: 'right',
   },
 });
 
