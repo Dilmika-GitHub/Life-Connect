@@ -13,7 +13,6 @@ const PolicyDetails = ({ navigation }) => {
           <View style={styles.tableRow}>
             <Text style={styles.tableCell}>View comprehensive information about your insurance policies, including details about inforced polices and those that have been lapsed.</Text>
           </View>
-          <br></br>
           <View style={styles.tableRow}>
             <Text style={styles.sectionHeading2}>Inforced Policies</Text>
             <Text style={styles.tableCell2}>38</Text>
@@ -68,6 +67,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 10,
     color: 'black',
+    paddingTop: 10,
   },
   sectionHeading3: {
     fontSize: 20,
@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 10,
     paddingHorizontal: 10,
+    paddingTop: 10,
   },
   tableCell3: {
     flex: 1,
