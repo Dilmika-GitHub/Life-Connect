@@ -57,8 +57,8 @@ const CustomDrawerContent = ({ navigation }) => {
         icon={({ focused, color, size }) => <Ionicons name={focused ? 'document-text' : 'document-text-outline'} size={size} color={color} />}
       />
       <DrawerItem
-        label="Renew"
-        onPress={() => navigation.navigate('Renew')}
+        label="Maturity"
+        onPress={() => navigation.navigate('Maturity')}
         icon={({ focused, color, size }) => <Ionicons name={focused ? 'refresh' : 'refresh-outline'} size={size} color={color} />}
       />
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
@@ -66,6 +66,7 @@ const CustomDrawerContent = ({ navigation }) => {
           label="Logout"
           onPress={handleLogout}
           icon={({ focused, color, size }) => <Ionicons name={focused ? 'log-out' : 'log-out-outline'} size={size} color={color} />}
+          style={{marginTop:440}}
         />
       </View>
       <Modal
@@ -124,7 +125,7 @@ export default function Home() {
           })}
         />
         <Drawer.Screen name="PolicyDetails" component={PolicyDetails} />
-        <Drawer.Screen name="Renew" component={OnlinePolicy} />
+        <Drawer.Screen name="Maturity" component={OnlinePolicy} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
       </Drawer.Navigator>
     </NavigationContainer>
