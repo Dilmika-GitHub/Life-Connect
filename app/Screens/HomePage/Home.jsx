@@ -9,6 +9,7 @@ import Competitions from '../Competitions';
 import Profile from '../UserProfile/Profile';
 import PolicyDetails from '../PolicyDetails';
 import OnlinePolicy from '../OnlinePolicy';
+import Lapsed from '../Lapsed';
 
 const Drawer = createDrawerNavigator();
 
@@ -113,6 +114,7 @@ export default function Home() {
         <Drawer.Screen name="Home" component={DashboardScreen} />
         <Drawer.Screen name="MDRT" component={Competitions} />
         <Drawer.Screen name="Profile" component={Profile} />
+        <Drawer.Screen name="Lapsed" component={Lapsed} />
         <Drawer.Screen name="PolicyDetails" component={PolicyDetails} />
         <Drawer.Screen name="Renew" component={OnlinePolicy} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
