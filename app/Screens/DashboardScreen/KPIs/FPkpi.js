@@ -173,8 +173,23 @@ export default function FPkpi({
               value={inputValue}
             />
             <View style={{ flexDirection: "row" }}>
-              <Button onPress={handleSubmit} title="Submit" />
-              <Button onPress={handleCancel} title="Cancel" />
+              <TouchableOpacity
+                onPress={handleSubmit}
+                style={{
+                  backgroundColor: "blue",
+                  padding: 10,
+                  borderRadius: 5,
+                  marginRight: 10,
+                }}
+              >
+                <Text style={{ color: "white" }}>Set Target</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleCancel}
+                style={{ backgroundColor: "red", padding: 10, borderRadius: 5 }}
+              >
+                <Text style={{ color: "white" }}>Cancel</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
