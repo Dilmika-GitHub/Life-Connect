@@ -1,12 +1,18 @@
 import React from 'react';
-import { View, ScrollView, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { SearchBar } from 'react-native-elements';
 
-const PolicyDetails = ({ navigation }) => {
-  const navigateToLapsedScreen = () => {
-    navigation.navigate('Lapsed');
-  };
+const Lapsed = () => {
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.searchbar}>
+      <SearchBar
+        placeholder="Search Policy"
+        containerStyle={styles.searchBarContainer}
+        inputContainerStyle={styles.inputContainer}
+        inputStyle={styles.input}
+        searchIcon={{ size: 24 }}
+      />
+      <View style={styles.container}>
       <View style={[styles.section1, styles.coloredSection]}>
         <Text style={styles.sectionHeading}>Policy Overview</Text>
         <View style={styles.table}>
@@ -19,19 +25,35 @@ const PolicyDetails = ({ navigation }) => {
           </View>
         </View>
       </View>
-      <TouchableOpacity onPress={navigateToLapsedScreen}>
       <View style={[styles.section2, styles.coloredSection2]}>
         <View style={styles.tableRow2}>
           <Text style={styles.sectionHeading3}>Lapsed Policies</Text>
           <Text style={styles.tableCell3}>14</Text>
         </View>
       </View>
-      </TouchableOpacity>
-    </ScrollView>
+    </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  searchbar: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  searchBarContainer: {
+    backgroundColor: '#fff',
+    borderBottomColor: 'transparent',
+    borderTopColor: 'transparent',
+  },
+  inputContainer: {
+    backgroundColor: '#ECECEC',
+    borderRadius: 10,
+    height: 40,
+  },
+  input: {
+    fontSize: 16,
+  },
   container: {
     flexGrow: 1,
     justifyContent: 'absolute',
@@ -55,7 +77,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#EBEBEB',
   },
   coloredSection2: {
-    backgroundColor: '#FF7758',
+    backgroundColor: '#EBEBEB',
   },
   sectionHeading: {
     fontSize: 20,
@@ -72,7 +94,7 @@ const styles = StyleSheet.create({
   sectionHeading3: {
     fontSize: 20,
     fontWeight: '600',
-    color: 'white',
+    color: 'black',
   },
   table: {
     width: '100%',
@@ -105,7 +127,7 @@ const styles = StyleSheet.create({
   },
   tableCell3: {
     flex: 1,
-    color: 'white',
+    color: 'black',
     fontSize: 24,
     fontWeight: '600',
     paddingHorizontal: 10,
@@ -114,5 +136,4 @@ const styles = StyleSheet.create({
   },
 });
 
-
-export default PolicyDetails
+export default Lapsed;
