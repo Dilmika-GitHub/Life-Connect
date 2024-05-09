@@ -21,6 +21,7 @@ import Competitions from "../Competitions";
 import Profile from "../UserProfile/Profile";
 import PolicyDetails from "../PolicyDetails";
 import OnlinePolicy from "../OnlinePolicy";
+import Lapsed from "../Lapsed"
 import MDRTProfile from "../UserProfile/MDRTProfile/MDRTProfile";
 
 const Drawer = createDrawerNavigator();
@@ -220,6 +221,7 @@ export default function Home() {
         />
         <Drawer.Screen name="PolicyDetails" component={PolicyDetails} />
         <Drawer.Screen name="Renew" component={OnlinePolicy} />
+        <Drawer.Screen name="Lapsed" component={Lapsed} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
       </Drawer.Navigator>
     </NavigationContainer>
