@@ -3,18 +3,18 @@ import { StyleSheet, View, Text, FlatList, TouchableOpacity, Alert } from 'react
 import Modal from 'react-native-modal';
 
 const data = [
-    {title:'YASTIYA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', contact: '076 123 4567', email: 'dilshan@gmail.com', maturetext: '2024/05/05'},
-    { key: 'GP15585XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', contact: '076 123 4589', email: 'sudarshan@gmail.com', maturetext: '2024/05/04'},
-    { key: 'GP10225XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00', contact: '076 345 4567', email: 'silva@gmail.com', maturetext: '2024/05/03'},
-    { key: 'GP15586XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00' , contact: '076 768 4897', email: 'tharanga@gmail.com', maturetext: '2024/04/05'},
-    { key: 'GP10226XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00' , contact: '076 123 4653', email: 'kulasekara@gmail.com', maturetext: '2024/04/20'},
-    { key: 'GP15587XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00' , contact: '076 836 0388', email: 'gunathilake@gmail.com', maturetext: '2024/03/08'},
-    { key: 'GP10227XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00' , contact: '076 171 5346', email: 'dilshan@gmail.com', maturetext: '2024/03/25'},
-    { key: 'GP15588XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00' , contact: '078 325 6972', email: 'sudarshan@gmail.com', maturetext: '2024/02/05'},
-    { key: 'GP10228XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00' , contact: '071 123 4567', email: 'silva@gmail.com', maturetext: '2024/02/15'},
-    { key: 'GP15589XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00' , contact: '077 177 5767', email: 'dTharanga@gmail.com', maturetext: '2024/01/09'},
-    { key: 'GP10229XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00' , contact: '076 567 4567', email: 'kulasekara@gmail.com', maturetext: '2024/01/20'},
-    { key: 'GP15590XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00' , contact: '075 768 4235', email: 'gunathilake@gmail.com', maturetext: '2024/01/01'},
+    { title:'YASTIYA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', contact: '076 123 4567', email: 'dilshan@gmail.com', maturetext: '2024/05/05'},
+    { title:'YASTIYA', key: 'GP15585XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', contact: '076 123 4589', email: 'sudarshan@gmail.com', maturetext: '2024/05/04'},
+    { title:'YASTIYA', key: 'GP10225XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00', contact: '076 345 4567', email: 'silva@gmail.com', maturetext: '2024/05/03'},
+    { title:'YASTIYA', key: 'GP15586XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00' , contact: '076 768 4897', email: 'tharanga@gmail.com', maturetext: '2024/04/05'},
+    { title:'YASTIYA', key: 'GP10226XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00' , contact: '076 123 4653', email: 'kulasekara@gmail.com', maturetext: '2024/04/20'},
+    { title:'YASTIYA', key: 'GP15587XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00' , contact: '076 836 0388', email: 'gunathilake@gmail.com', maturetext: '2024/03/08'},
+    { title:'YASTIYA', key: 'GP10227XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00' , contact: '076 171 5346', email: 'dilshan@gmail.com', maturetext: '2024/03/25'},
+    { title:'YASTIYA', key: 'GP15588XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00' , contact: '078 325 6972', email: 'sudarshan@gmail.com', maturetext: '2024/02/05'},
+    { title:'YASTIYA', key: 'GP10228XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00' , contact: '071 123 4567', email: 'silva@gmail.com', maturetext: '2024/02/15'},
+    { title:'YASTIYA', key: 'GP15589XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00' , contact: '077 177 5767', email: 'dTharanga@gmail.com', maturetext: '2024/01/09'},
+    { title:'YASTIYA', key: 'GP10229XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00' , contact: '076 567 4567', email: 'kulasekara@gmail.com', maturetext: '2024/01/20'},
+    { title:'YASTIYA', key: 'GP15590XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00' , contact: '075 768 4235', email: 'gunathilake@gmail.com', maturetext: '2024/01/01'},
   ];
 
   const Item = ({ title, name, amount, contact, email, maturetext, keyText, index, onPress }) => (
@@ -127,6 +127,7 @@ const data = [
       position: 'absolute',
       right: 20,
       top: 15,
+      color:'black',
     },
     modalHeader: {
       color: 'black',
