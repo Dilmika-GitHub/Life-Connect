@@ -117,7 +117,7 @@ export default function FPkpi({
                 <View
                   style={{
                     position: "absolute", // Position absolutely for overlap
-                    justifyContent: "center",
+                    justifyContent: "center",//comment
                     alignItems: "center",
                     left: 20, // Align to the left side
                     top: 0, // Align to the top
