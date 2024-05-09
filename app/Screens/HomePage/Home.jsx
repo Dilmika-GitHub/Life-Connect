@@ -8,8 +8,8 @@ import SettingsScreen from '../SettingsScreen';
 import Competitions from '../Competitions';
 import Profile from '../UserProfile/Profile';
 import PolicyDetails from '../PolicyDetails';
-import OnlinePolicy from '../OnlinePolicy';
 import MDRTProfile from '../UserProfile/MDRTProfile/MDRTProfile';
+import Maturity from '../Maturity';
 
 const Drawer = createDrawerNavigator();
 
@@ -125,7 +125,7 @@ export default function Home() {
           })}
         />
         <Drawer.Screen name="PolicyDetails" component={PolicyDetails} />
-        <Drawer.Screen name="Maturity" component={OnlinePolicy} />
+        <Drawer.Screen name="Maturity" component={Maturity} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
       </Drawer.Navigator>
     </NavigationContainer>
