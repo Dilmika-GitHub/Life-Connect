@@ -143,6 +143,7 @@ const Competitions = () => {
   const [selectedValue, setSelectedValue] = useState('Island Ranking');
   const [showPicker, setShowPicker] = useState(false);
   const [selectedData, setSelectedData] = useState(limitedWinnersData); 
+  const filteredSelectedData = selectedData.slice(3);
 
   const data = [
     { key: '1', value: 'Island Ranking' },
@@ -211,6 +212,7 @@ const Competitions = () => {
           setSelected={handleSelectionChange}
           visible={true} 
           style={styles.dropdown}
+          search={false}
         >
           <TouchableOpacity onPress={() => setShowPicker(!showPicker)} style={styles.dropdown}>
             <Text style={styles.selectedValue}>{selectedValue}</Text>
@@ -238,7 +240,7 @@ const Competitions = () => {
     </View>
   </View>
       <FlatList
-        data={selectedData}
+        data={filteredSelectedData}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.flatListContainer}
@@ -346,7 +348,7 @@ const styles = StyleSheet.create({
     textAlign: 'center', 
   },
   valueText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#75500b',
     marginTop: 10, 
@@ -360,7 +362,7 @@ const styles = StyleSheet.create({
     marginLeft: -230,
   },
   secWinnerValueText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#75500b',
     marginTop: 0, 
@@ -374,7 +376,7 @@ const styles = StyleSheet.create({
     marginLeft: 230, 
   },
   WinnerValueText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#75500b',
     marginTop: 0, 
