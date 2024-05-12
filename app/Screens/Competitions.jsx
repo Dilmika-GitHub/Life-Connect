@@ -72,6 +72,26 @@ const Competitions = () => {
           { name: 'Wilson', achievedTarget: '800,000.00', NOP: '1'},
         ]);
         break;
+      case 'TOT Ranking':
+          // Replace with your hard-coded team ranking data
+        setSelectedData([
+          { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7'},
+          { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8'},
+          { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5'},
+          { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3'},
+          { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2'},
+        ]);
+          break; 
+        case 'COT Ranking':
+            // Replace with your hard-coded team ranking data
+          setSelectedData([
+            { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7'},
+            { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8'},
+            { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5'},
+            { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3'},
+            { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2'},
+          ]);
+            break;  
       default:
         setSelectedData(limitedWinnersData);
         break;
@@ -154,6 +174,8 @@ const Competitions = () => {
     { key: '2', value: 'Regional Ranking' },
     { key: '3', value: 'Branch Ranking' },
     { key: '4', value: 'Team Ranking' },
+    { key: '5', value: 'COT Ranking' },
+    { key: '6', value: 'TOT Ranking' },
   ];
   
   const Bardata = {
@@ -211,6 +233,8 @@ const Competitions = () => {
             { key: '2', value: 'Regional Ranking' },
             { key: '3', value: 'Branch Ranking' },
             { key: '4', value: 'Team Ranking' },
+            { key: '5', value: 'COT Ranking' },
+            { key: '6', value: 'TOT Ranking' },
           ]}
           save="value"
           setSelected={handleSelectionChange}
