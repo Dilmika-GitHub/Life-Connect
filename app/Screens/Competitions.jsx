@@ -124,6 +124,11 @@ const Competitions = () => {
     }
   };
 
+  const formatNumber = (number) => {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+  
+
 
   const renderItem = ({ item }) => (
     <View>
@@ -144,7 +149,11 @@ const Competitions = () => {
         </View>
         {parseInt(item.achievedTarget.replace(/,/g, '')) >= 6000000  ? (
           <Text style={[styles.achievedText, styles.achievedTextGreen, {fontSize: 14}]}>Achieved</Text>
-        ) : null}
+        ) : (
+          <Text style={[styles.itemTarget, { color: 'black', marginTop: -20, fontSize:14, }]}>
+            Need: {formatNumber(6000000 - parseInt(item.achievedTarget.replace(/,/g, '')))}
+          </Text>
+        )}
       </View>
       {/* Horizontal line */}
       <View style={styles.horizontalLine} />
