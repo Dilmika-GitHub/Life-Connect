@@ -7,18 +7,18 @@ import { Bar1, Bar2 } from "../../components/Chart";
 
 const Competitions = () => {
   const winnersData = [
-    { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7'},
-    { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8'},
-    { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5'},
-    { name: 'Pascal', achievedTarget: '3,412,324.00', NOP: '5'},
-    { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3'},
-    { name: 'Devin', achievedTarget: '200,000.00', NOP: '2'},
-    { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2'},
-    { name: 'Shen', achievedTarget: '100,000.00', NOP: '1'},
-    { name: 'Wilson', achievedTarget: '800,000.00', NOP: '1'},
-    { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2'},
-    { name: 'Dias', achievedTarget: '25,000.00', NOP: '2'},
-    { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2'},
+    { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
+    { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
+    { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
+    { name: 'Pascal', achievedTarget: '3,412,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/img1.jpg') },
+    { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3', profilePic: require('../../components/user.jpg') },
+    { name: 'Devin', achievedTarget: '200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
+    { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+    { name: 'Shen', achievedTarget: '100,000.00', NOP: '1', profilePic: require('../../assets/MDRTImages/img4.jpg') },
+    { name: 'Wilson', achievedTarget: '800,000.00', NOP: '1', profilePic: require('../../assets/MDRTImages/win3.jpg') },
+    { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img5.jpg') },
+    { name: 'Dias', achievedTarget: '25,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+    { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
   ];
 
   winnersData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, ''))- parseInt(a.achievedTarget.replace(/,/g, '')));
@@ -50,61 +50,61 @@ const Competitions = () => {
       case 'Regional Ranking':
         // Replace with your hard-coded regional ranking data
         setSelectedData([
-          { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7'},
-          { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8'},
-          { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5'},
-          { name: 'Pascal', achievedTarget: '3,412,324.00', NOP: '5'},
-          { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3'},
-          { name: 'Devin', achievedTarget: '200,000.00', NOP: '2'},
-          { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2'},
-          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2'},
-          { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2'},
+          { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
+          { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
+          { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
+          { name: 'Pascal', achievedTarget: '3,412,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/img1.jpg') },
+          { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3', profilePic: require('../../components/user.jpg') },
+          { name: 'Devin', achievedTarget: '200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
+          { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img5.jpg') },
+          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+          { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
         ]);
         break;
       case 'Branch Ranking':
         // Replace with your hard-coded branch ranking data
         setSelectedData([
-          { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7'},
-          { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8'},
-          { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5'},
-          { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2'},
-          { name: 'Pascal', achievedTarget: '3,412,324.00', NOP: '5'},
-          { name: 'Devin', achievedTarget: '200,000.00', NOP: '2'},
-          { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2'},
-          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2'},
-          { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2'},
+          { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
+          { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
+          { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
+          { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+          { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3', profilePic: require('../../components/user.jpg') },
+          { name: 'Devin', achievedTarget: '200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
+          { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img5.jpg') },
+          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+          { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
         ]);
         break;
       case 'Team Ranking':
         // Replace with your hard-coded team ranking data
         setSelectedData([
-          { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7'},
-          { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8'},
-          { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5'},
-          { name: 'Devin', achievedTarget: '200,000.00', NOP: '2'},
-          { name: 'Wilson', achievedTarget: '800,000.00', NOP: '1'},
-          { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2'},
-          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2'},
+          { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
+          { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
+          { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
+          { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3', profilePic: require('../../components/user.jpg') },
+          { name: 'Devin', achievedTarget: '200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
+          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+          { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
         ]);
         break;
       case 'TOT Ranking':
           // Replace with your hard-coded team ranking data
         setSelectedData([
-          { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7'},
-          { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8'},
-          { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5'},
-          { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3'},
-          { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2'},
+          { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
+          { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
+          { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
+          { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+          { name: 'Pascal', achievedTarget: '3,412,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/img1.jpg') },
         ]);
           break; 
         case 'COT Ranking':
             // Replace with your hard-coded team ranking data
           setSelectedData([
-            { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7'},
-            { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8'},
-            { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5'},
-            { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3'},
-            { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2'},
+            { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
+            { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
+            { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
+            { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+            { name: 'Pascal', achievedTarget: '3,412,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/img1.jpg') },
           ]);
             break;  
       default:
@@ -131,7 +131,7 @@ const Competitions = () => {
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image 
-              source={require('../../components/user.jpg')} 
+              source={item.profilePic} 
               style={[styles.roundImageforList, { width: 58, height: 58, marginRight:10 }]} 
               resizeMode="cover" 
             />
