@@ -65,10 +65,11 @@ const Competitions = () => {
       case 'Team Ranking':
         // Replace with your hard-coded team ranking data
         setSelectedData([
-          { name: 'Team Winner 2', achievedTarget: '1,500,000' },
-          { name: 'Team Winner 1', achievedTarget: '200,000' },
-          { name: 'Team Winner 3', achievedTarget: '100,000' },
-          { name: 'Team Winner 2', achievedTarget: '800,000' },
+          { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7'},
+          { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8'},
+          { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5'},
+          { name: 'Devin', achievedTarget: '200,000.00', NOP: '2'},
+          { name: 'Wilson', achievedTarget: '800,000.00', NOP: '1'},
         ]);
         break;
       default:
