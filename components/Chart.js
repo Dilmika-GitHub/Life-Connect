@@ -71,6 +71,36 @@ export const Bar1 = ({ style, profilePic }) => {
         xmlns="http://www.w3.org/2000/svg"
         style={style}
       >
+      <G transform="scale(2.5)">
+          {profilePic ? (
+            
+            <Image 
+              source={require('./user.jpg')} 
+              style={{ 
+                width: 80, 
+                height: 80, 
+                borderRadius: 50, 
+                marginLeft: 20, 
+                marginTop: -42 
+              }} 
+            />
+          ) : null}
+        </G>
+        <G transform="scale(2.5)">
+          {profilePic ? (
+            
+            <Image 
+              source={require('./user.jpg')} 
+              style={{ 
+                width: 80, 
+                height: 80, 
+                borderRadius: 50, 
+                marginLeft: 240, 
+                marginTop: -80 
+              }} 
+            />
+          ) : null}
+        </G>
         <Path
           fill="#FEC7B9"
           d="M330 0H12C5.37258 0 0 5.37258 0 12V90C0 96.6274 5.37258 102 12 102H330C336.627 102 342 96.6274 342 90V12C342 5.37258 336.627 0 330 0Z"
@@ -88,9 +118,21 @@ export const Bar1 = ({ style, profilePic }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <G transform="scale(2.5)">
-        {/* {profilePic} */}
-      </G>
+      <G transform="scale(2.5)">
+          {profilePic ? (
+            
+            <Image 
+              source={require('./user.jpg')} 
+              style={{ 
+                width: 80, 
+                height: 80, 
+                borderRadius: 50, 
+                marginLeft: 20, 
+                marginTop: -35 
+              }} 
+            />
+          ) : null}
+        </G>
       <Path
         fill="#FFB6A4"
         d="M0 30C0 13.4315 13.4315 0 30 0H92C108.569 0 122 13.4315 122 30V150H0V30Z"
