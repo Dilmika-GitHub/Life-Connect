@@ -126,13 +126,13 @@ export const Bar1 = ({ style, profilePic }) => {
           {profilePic ? (
             
             <Image 
-              source={require('./user.jpg')} 
+              source={require('./../assets/winner1.jpg')} 
               style={{ 
                 width: 80, 
                 height: 80, 
                 borderRadius: 50, 
                 marginLeft: 20, 
-                marginTop: -35 ,
+                marginTop: -45 ,
                 borderWidth: 4, 
                 borderColor: '#ffde26'
               }} 
