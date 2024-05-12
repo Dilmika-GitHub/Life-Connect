@@ -80,8 +80,10 @@ export const Bar1 = ({ style, profilePic }) => {
                 width: 80, 
                 height: 80, 
                 borderRadius: 50, 
-                marginLeft: 20, 
-                marginTop: -42 
+                marginLeft: 15, 
+                marginTop: -55,
+                borderWidth: 4, 
+                borderColor: '#a3a39d' 
               }} 
             />
           ) : null}
@@ -95,8 +97,10 @@ export const Bar1 = ({ style, profilePic }) => {
                 width: 80, 
                 height: 80, 
                 borderRadius: 50, 
-                marginLeft: 240, 
-                marginTop: -80 
+                marginLeft: 245, 
+                marginTop: -85,
+                borderWidth: 4, 
+                borderColor: '#ba6320' 
               }} 
             />
           ) : null}
@@ -128,7 +132,9 @@ export const Bar1 = ({ style, profilePic }) => {
                 height: 80, 
                 borderRadius: 50, 
                 marginLeft: 20, 
-                marginTop: -35 
+                marginTop: -35 ,
+                borderWidth: 4, 
+                borderColor: '#ffde26'
               }} 
             />
           ) : null}
