@@ -42,12 +42,13 @@ const Competitions = () => {
       case 'Regional Ranking':
         // Replace with your hard-coded regional ranking data
         setSelectedData([
-          { name: 'Regional Winner 1', achievedTarget: '1,000,000' },
-          { name: 'Regional Winner 6', achievedTarget: '5,000,000' },
-          { name: 'Regional Winner 3', achievedTarget: '700,000' },
-          { name: 'Regional Winner 2', achievedTarget: '800,000' },
-          { name: 'Regional Winner 4', achievedTarget: '700,000' },
-          { name: 'Regional Winner 5', achievedTarget: '700,000' },
+          { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7'},
+          { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8'},
+          { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5'},
+          { name: 'Pascal', achievedTarget: '3,412,324.00', NOP: '5'},
+          { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3'},
+          { name: 'Devin', achievedTarget: '200,000.00', NOP: '2'},
+          { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2'},
         ]);
         break;
       case 'Branch Ranking':
