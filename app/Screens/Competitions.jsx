@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { SelectList } from 'react-native-dropdown-select-list';
@@ -16,6 +16,9 @@ const Competitions = () => {
     { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2'},
     { name: 'Shen', achievedTarget: '100,000.00', NOP: '1'},
     { name: 'Wilson', achievedTarget: '800,000.00', NOP: '1'},
+    { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2'},
+    { name: 'Dias', achievedTarget: '25,000.00', NOP: '2'},
+    { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2'},
   ];
 
   winnersData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, ''))- parseInt(a.achievedTarget.replace(/,/g, '')));
@@ -30,14 +33,19 @@ const Competitions = () => {
   const userPlace = limitedWinnersData.findIndex(item => item.name === user.name) + 1;
   const userItem = { ...user, place: userPlace };
   limitedWinnersData.push(userItem);
+  const [selectedValue, setSelectedValue] = useState('Island Ranking');
 
+  useEffect(() => {
+    // Initialize the selected data based on the default selected value
+    handleSelectionChange(selectedValue);
+  }, []);
 
   const handleSelectionChange = (val) => {
     setSelectedValue(val);
     // Update the selected data based on the selected option
     switch (val) {
       case 'Island Ranking':
-        setSelectedData(limitedWinnersData);
+        setSelectedData(winnersData);
         break;
       case 'Regional Ranking':
         // Replace with your hard-coded regional ranking data
@@ -48,7 +56,9 @@ const Competitions = () => {
           { name: 'Pascal', achievedTarget: '3,412,324.00', NOP: '5'},
           { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3'},
           { name: 'Devin', achievedTarget: '200,000.00', NOP: '2'},
-          { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2'},
+          { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2'},
+          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2'},
+          { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2'},
         ]);
         break;
       case 'Branch Ranking':
@@ -60,6 +70,9 @@ const Competitions = () => {
           { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2'},
           { name: 'Pascal', achievedTarget: '3,412,324.00', NOP: '5'},
           { name: 'Devin', achievedTarget: '200,000.00', NOP: '2'},
+          { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2'},
+          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2'},
+          { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2'},
         ]);
         break;
       case 'Team Ranking':
@@ -70,6 +83,8 @@ const Competitions = () => {
           { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5'},
           { name: 'Devin', achievedTarget: '200,000.00', NOP: '2'},
           { name: 'Wilson', achievedTarget: '800,000.00', NOP: '1'},
+          { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2'},
+          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2'},
         ]);
         break;
       case 'TOT Ranking':
@@ -164,7 +179,6 @@ const Competitions = () => {
 
   const screenWidth = Dimensions.get('window').width;
   const itemWidth = screenWidth * 1; 
-  const [selectedValue, setSelectedValue] = useState('Island Ranking');
   const [showPicker, setShowPicker] = useState(false);
   const [selectedData, setSelectedData] = useState(limitedWinnersData); 
   const filteredSelectedData = selectedData.slice(3);
@@ -225,7 +239,6 @@ const Competitions = () => {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>MDRT Competition Winners</Text>
       <View style={styles.dropdownContainer}>
         <SelectList
           data={[

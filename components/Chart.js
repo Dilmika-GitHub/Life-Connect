@@ -75,7 +75,7 @@ export const Bar1 = ({ style, profilePic }) => {
           {profilePic ? (
             
             <Image 
-              source={require('./user.jpg')} 
+              source={require('./../assets/win2.jpg')} 
               style={{ 
                 width: 80, 
                 height: 80, 
@@ -92,7 +92,7 @@ export const Bar1 = ({ style, profilePic }) => {
           {profilePic ? (
             
             <Image 
-              source={require('./user.jpg')} 
+              source={require('./../assets/win3.jpg')} 
               style={{ 
                 width: 80, 
                 height: 80, 
