@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   barContainer: {
     flexDirection: 'column',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: 15,
   },
   bar: {
     height: 20, 
@@ -333,7 +333,8 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     width: '42%', 
-    alignSelf: 'left', 
+    alignSelf: 'left',
+    marginBottom: 20, 
   },
   selectedValue: {
     fontSize: 16,
