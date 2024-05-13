@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Alert, Linking, Platform } from 'react-native';
 import Modal from 'react-native-modal';
 
 const data = [
@@ -39,6 +39,15 @@ const data = [
     };
   
     const hideModal = () => setModalVisible(false);
+
+    const handleContactPress = (contact) => {
+      let phoneNumber = Platform.OS === 'ios' ? 'telprompt:${contact}' : 'tel:${contact}';
+      Linking.openURL('tel:${ phoneNumber}');
+    };
+
+    const handleEmailPress = (email) => {
+      Linking.openURL('mailto:${email}');
+    };
   
     return (
       <View style={styles.container}>
@@ -75,14 +84,19 @@ const data = [
       <Text style={styles.modalLabel}>Sum Assured</Text>
       <Text style={styles.modalValue}>{modalContent.amount}</Text>
     </View>
+    <TouchableOpacity onPress={() => handleContactPress(modalContent.contact)}>
     <View style={styles.modalTextContainer}>
       <Text style={styles.modalLabel}>Contact No.</Text>
-      <Text style={styles.modalValue}>{modalContent.contact}</Text>
+      <Text style={styles.modalTextLink}>{modalContent.contact}</Text>
     </View>
+    </TouchableOpacity>
+
+    <TouchableOpacity onPress={() => handleEmailPress(modalContent.email)}>
     <View style={styles.modalTextContainer}>
       <Text style={styles.modalLabel}>Email</Text>
-      <Text style={styles.modalValue}>{modalContent.email}</Text>
+      <Text style={styles.modalTextLink}>{modalContent.email}</Text>
     </View>
+    </TouchableOpacity>
     <Text style={styles.modalText2}>This policy is to be matured on {modalContent.maturetext}</Text>
   </View>
 </Modal>
@@ -145,6 +159,12 @@ const data = [
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginBottom: 10,
+    },
+    modalTextLink: {
+      fontSize: 16,
+      textAlign: 'left',
+      flex: 1,
+      color: '#0400D3',
     },
     modalLabel: {
       fontSize: 16,
