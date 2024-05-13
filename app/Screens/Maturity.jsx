@@ -41,12 +41,12 @@ const data = [
     const hideModal = () => setModalVisible(false);
 
     const handleContactPress = (contact) => {
-      let phoneNumber = Platform.OS === 'ios' ? 'telprompt:${contact}' : 'tel:${contact}';
-      Linking.openURL('tel:${ phoneNumber}');
+      // let phoneNumber = Platform.OS === 'ios' ? 'telprompt:${contact}' : 'tel:${contact}';
+      Linking.openURL(`tel:${contact}`);
     };
 
     const handleEmailPress = (email) => {
-      Linking.openURL('mailto:${email}');
+      Linking.openURL(`mailto:${email}`);
     };
   
     return (
