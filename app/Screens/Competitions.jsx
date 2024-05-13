@@ -33,7 +33,8 @@ const Competitions = () => {
   const userPlace = limitedWinnersData.findIndex(item => item.name === user.name) + 1;
   const userItem = { ...user, place: userPlace };
   limitedWinnersData.push(userItem);
-  const [selectedValue, setSelectedValue] = useState('Island Ranking');
+  const [selectedValue, setSelectedValue] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     // Initialize the selected data based on the default selected value
@@ -42,6 +43,7 @@ const Competitions = () => {
 
   const handleSelectionChange = (val) => {
     setSelectedValue(val);
+    setShowDropdown(false);
     // Update the selected data based on the selected option
     switch (val) {
       case 'Island Ranking':
@@ -87,7 +89,7 @@ const Competitions = () => {
           { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
         ]);
         break;
-      case 'TOT Ranking':
+      case 'TOT Ranking  ':
           // Replace with your hard-coded team ranking data
         setSelectedData([
           { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
@@ -97,7 +99,7 @@ const Competitions = () => {
           { name: 'Edward', achievedTarget: '6,200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
         ]);
           break; 
-        case 'COT Ranking':
+        case 'COT Ranking  ':
             // Replace with your hard-coded team ranking data
           setSelectedData([
             { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
@@ -113,6 +115,37 @@ const Competitions = () => {
     }
   };
 
+  const renderDropdown = () => {
+    return (
+      <View style={styles.dropdownContainer}>
+        <TouchableOpacity onPress={() => setShowDropdown(!showDropdown)} style={styles.dropdownTouchable}>
+          <Text style={styles.dropdownText}>{selectedValue || 'Select Ranking  '}</Text>
+          <Icon name={showDropdown ? 'angle-up' : 'angle-down'} size={20} color="#000" style={styles.dropdownIcon} />
+        </TouchableOpacity>
+        {showDropdown && (
+          <View style={styles.dropdownOptions}>
+            <TouchableOpacity onPress={() => handleSelectionChange('Island Ranking')}>
+              <Text style={styles.optionText}>Island Ranking</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleSelectionChange('Regional Ranking')}>
+              <Text style={styles.optionText}>Regional Ranking</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleSelectionChange('Branch Ranking')}>
+              <Text style={styles.optionText}>Branch Ranking</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleSelectionChange('COT Ranking  ')}>
+              <Text style={styles.optionText}>COT Ranking</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleSelectionChange('TOT Ranking  ')}>
+              <Text style={styles.optionText}>TOT Ranking</Text>
+            </TouchableOpacity>
+            {/* Add more options as needed */}
+          </View>
+        )}
+      </View>
+    );
+  };
+  
 
   const renderProfilePic = (winner) => {
     if (winner.profilePic) {
@@ -128,11 +161,9 @@ const Competitions = () => {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
   
-
-
   const renderItem = ({ item }) => (
     <View>
-      <View style={[styles.itemContainer, { width: itemWidth }, parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 && styles.achievedItem]}>
+      <View style={[styles.itemContainer, { width: 370 }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image 
@@ -156,38 +187,36 @@ const Competitions = () => {
         )}
       </View>
       {/* Horizontal line */}
-      <View style={styles.horizontalLine} />
+      {/* <View style={styles.horizontalLine} /> */}
     </View>
   );
-  
-  
 
   const renderUser = () => (
     <View style={[styles.itemContainer, styles.userContainer, { width: itemWidth }]}>
       <View style={{ alignItems: 'center' }}>
-      <View style={[styles.imageContainer, { left: '30%', marginTop: 93 }]}> 
-        <Image 
-          source={require('../../components/user.jpg')} 
-          style={[styles.roundImage, { width: 58, height: 58 }]} 
-          resizeMode="cover" 
-        />
-      </View>
+        <View style={[styles.imageContainer, { left: '30%', marginTop: 93 }]}> 
+          <Image 
+            source={require('../../components/user.jpg')} 
+            style={[styles.roundImage, { width: 68, height: 68 }]} 
+            resizeMode="cover" 
+          />
+        </View>
       </View>
       <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: 'black' }]}>Sales amount</Text>
       <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: 'black' }]}>
-      {userItem.achievedTarget}
+        {userItem.achievedTarget}
       </Text>
       <View style={{ alignItems: 'center', marginTop: -38 }}>
-  <Text style={[styles.userPlace, { fontSize: 16 }]}>Your Place</Text>
-  <Text style={[styles.userPlace, { fontSize: 16, marginTop: 5 }]}>{userItem.place}</Text>
-</View>
-
+        <Text style={[styles.userPlace, { fontSize: 16 }]}>Your Place</Text>
+        <Text style={[styles.userPlace, { fontSize: 16, marginTop: 5 }]}>{userItem.place}</Text>
+      </View>
     </View>
   );
+  
 
 
   const screenWidth = Dimensions.get('window').width;
-  const itemWidth = screenWidth * 1; 
+  const itemWidth = screenWidth * 0.97; 
   const [showPicker, setShowPicker] = useState(false);
   const [selectedData, setSelectedData] = useState(limitedWinnersData); 
   const filteredSelectedData = selectedData.slice(3);
@@ -248,39 +277,19 @@ const Competitions = () => {
   
   return (
     <View style={styles.container}>
-      <View style={styles.dropdownContainer}>
-        <SelectList
-          data={[
-            { key: '1', value: 'Island Ranking' },
-            { key: '2', value: 'Regional Ranking' },
-            { key: '3', value: 'Branch Ranking' },
-            { key: '4', value: 'Team Ranking' },
-            { key: '5', value: 'COT Ranking' },
-            { key: '6', value: 'TOT Ranking' },
-          ]}
-          save="value"
-          setSelected={handleSelectionChange}
-          visible={true} 
-          style={styles.dropdown}
-          search={false}
-        >
-          <TouchableOpacity onPress={() => setShowPicker(!showPicker)} style={styles.dropdown}>
-            <Text style={styles.selectedValue}>{selectedValue}</Text>
-          </TouchableOpacity>
-        </SelectList>
-      </View>
+    {renderDropdown()}
     <View style={[styles.barContainer, { marginTop: 60 }, ]}>
     <Bar1
           profilePic={renderProfilePic(firstPlace)}
           name={firstPlace.name}
           achievedTarget={firstPlace.achievedTarget}
-        />
+    />
     <View style={{ marginTop: -150, alignItems: 'center' }}>
     <Bar2
-            profilePic={renderProfilePic(secondPlace)}
-            name={secondPlace.name}
-            achievedTarget={secondPlace.achievedTarget}
-          />
+          profilePic={renderProfilePic(secondPlace)}
+          name={secondPlace.name}
+          achievedTarget={secondPlace.achievedTarget}
+    />
       <Text style={styles.nameText}>{firstPlace.name}</Text>
       <Text style={styles.valueText}>{firstPlace.achievedTarget}</Text>
       <Text style={{ marginLeft: 10, marginTop: -40, fontSize:12, marginBottom: 10 }}>NOP:{firstPlace.NOP}</Text>
@@ -293,11 +302,12 @@ const Competitions = () => {
     </View>
   </View>
       <FlatList
-        data={filteredSelectedData}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={styles.flatListContainer}
-      />
+      data={filteredSelectedData}
+      renderItem={renderItem}
+      keyExtractor={(item, index) => index.toString()}
+      contentContainerStyle={styles.flatListContainer}
+      ItemSeparatorComponent={() => <View style={{ height: 3 }} />} // Add space between items
+    />
       <View style={{ alignItems: 'center' }}>
         {renderUser()}
       </View>
@@ -321,15 +331,15 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   flatListContainer: {
-    flexGrow: 1, // Added flexGrow to make sure it occupies the entire available space
+    flexGrow: 1, 
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 10,
   },
   itemContainer: {
-    padding: 15,
-    backgroundColor: '#fff', 
-    borderRadius: 10,
+    padding: 10,
+    backgroundColor: '#e8e6e3', 
+    borderRadius: 15,
     borderWidth: 0,
     borderColor: '#ddd',
   },
@@ -367,27 +377,30 @@ const styles = StyleSheet.create({
   targetText: {
     marginTop: 5,
   },
-  dropdown: {
+  dropdownContainer: {
+    width: 130,
+    alignSelf: 'left',
+    marginBottom: 20,
+    marginLeft: 0,
+    backgroundColor: '#e8e6e3',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 5,
-    padding: 1,
-    marginBottom: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 10,
   },
-  dropdownContainer: {
-    width: '42%', 
-    alignSelf: 'left',
-    marginBottom: 20, 
-  },
-  selectedValue: {
-    fontSize: 16,
+  dropdownText: {
+    fontSize: 12,
     color: '#333',
   },
-  picker: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    marginBottom: 10,
+  optionText: {
+    fontSize: 12,
+    color: '#333',
+    paddingVertical: 5,
+  },
+  selectedValue: {
+    fontSize: 12, 
+    color: '#333',
   },
   nameText: {
     fontSize: 18,
@@ -437,9 +450,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   userContainer: {
-    backgroundColor: '#bbbfc9', 
+    backgroundColor: '#d4d1cf', 
     borderColor: '#a8adba', 
-    borderWidth: 2,
+    marginTop: 8,
+    height:85,
   },
   userName: {
     fontWeight: 'bold',
@@ -473,6 +487,17 @@ const styles = StyleSheet.create({
     borderBottomColor: '#877c7b',
     borderBottomWidth: 1,
     marginVertical: 0,
+  },
+  dropdownTouchable: {
+    flexDirection: 'row',
+  },
+  dropdownIcon: {
+    marginTop: -2,
+  },
+  dropdownText: {
+    fontSize: 12,
+    color: '#333',
+    marginRight: 5, 
   },
 });
 
