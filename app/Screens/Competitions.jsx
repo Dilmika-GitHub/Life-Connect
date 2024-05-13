@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { SelectList } from 'react-native-dropdown-select-list';
@@ -7,15 +7,18 @@ import { Bar1, Bar2 } from "../../components/Chart";
 
 const Competitions = () => {
   const winnersData = [
-    { name: 'Clifford', achievedTarget: '5,652,125.00', NOP: '7'},
-    { name: 'Tara', achievedTarget: '4,252,241.00', NOP: '8'},
-    { name: 'Pascal', achievedTarget: '3,562,324.00', NOP: '5'},
-    { name: 'Pascal', achievedTarget: '3,412,324.00', NOP: '5'},
-    { name: 'Michel', achievedTarget: '1,000,000.00', NOP: '3'},
-    { name: 'Devin', achievedTarget: '200,000.00', NOP: '2'},
-    { name: 'Edward', achievedTarget: '1,200,000.00', NOP: '2'},
-    { name: 'Shen', achievedTarget: '100,000.00', NOP: '1'},
-    { name: 'Wilson', achievedTarget: '800,000.00', NOP: '1'},
+    { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
+    { name: 'Tara', achievedTarget: '14,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
+    { name: 'Pascal', achievedTarget: '13,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
+    { name: 'Pascal', achievedTarget: '9,412,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/img1.jpg') },
+    { name: 'Michel', achievedTarget: '8,000,000.00', NOP: '3', profilePic: require('../../components/user.jpg') },
+    { name: 'Devin', achievedTarget: '200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
+    { name: 'Edward', achievedTarget: '6,200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+    { name: 'Shen', achievedTarget: '100,000.00', NOP: '1', profilePic: require('../../assets/MDRTImages/img4.jpg') },
+    { name: 'Wilson', achievedTarget: '800,000.00', NOP: '1', profilePic: require('../../assets/MDRTImages/win3.jpg') },
+    { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img5.jpg') },
+    { name: 'Dias', achievedTarget: '25,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+    { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
   ];
 
   winnersData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, ''))- parseInt(a.achievedTarget.replace(/,/g, '')));
@@ -26,48 +29,84 @@ const Competitions = () => {
   const secondPlace = limitedWinnersData[1];
   const thirdPlace = limitedWinnersData[2];
 
-  const user = { name: 'Michel', achievedTarget: '1,000,000' };
+  const user = { name: 'Michel', achievedTarget: '8,000,000.00' };
   const userPlace = limitedWinnersData.findIndex(item => item.name === user.name) + 1;
   const userItem = { ...user, place: userPlace };
   limitedWinnersData.push(userItem);
+  const [selectedValue, setSelectedValue] = useState('Island Ranking');
 
+  useEffect(() => {
+    // Initialize the selected data based on the default selected value
+    handleSelectionChange(selectedValue);
+  }, []);
 
   const handleSelectionChange = (val) => {
     setSelectedValue(val);
     // Update the selected data based on the selected option
     switch (val) {
       case 'Island Ranking':
-        setSelectedData(limitedWinnersData);
+        setSelectedData(winnersData);
         break;
       case 'Regional Ranking':
         // Replace with your hard-coded regional ranking data
         setSelectedData([
-          { name: 'Regional Winner 1', achievedTarget: '1,000,000' },
-          { name: 'Regional Winner 6', achievedTarget: '5,000,000' },
-          { name: 'Regional Winner 3', achievedTarget: '700,000' },
-          { name: 'Regional Winner 2', achievedTarget: '800,000' },
-          { name: 'Regional Winner 4', achievedTarget: '700,000' },
-          { name: 'Regional Winner 5', achievedTarget: '700,000' },
+          { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
+          { name: 'Tara', achievedTarget: '14,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
+          { name: 'Pascal', achievedTarget: '13,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
+          { name: 'Pascal', achievedTarget: '9,412,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/img1.jpg') },
+          { name: 'Michel', achievedTarget: '8,000,000.00', NOP: '3', profilePic: require('../../components/user.jpg') },
+          { name: 'Devin', achievedTarget: '200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
+          { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img5.jpg') },
+          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+          { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
         ]);
         break;
       case 'Branch Ranking':
         // Replace with your hard-coded branch ranking data
         setSelectedData([
-          { name: 'Branch Winner 3', achievedTarget: '1,000,000' },
-          { name: 'Branch Winner 1', achievedTarget: '5,000,000' },
-          { name: 'Branch Winner 2', achievedTarget: '800,000' },
-          { name: 'Branch Winner 3', achievedTarget: '300,000' },
+          { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
+          { name: 'Tara', achievedTarget: '14,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
+          { name: 'Pascal', achievedTarget: '13,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
+          { name: 'Michel', achievedTarget: '8,000,000.00', NOP: '3', profilePic: require('../../components/user.jpg') },
+          { name: 'Edward', achievedTarget: '6,200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+          { name: 'Devin', achievedTarget: '200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
+          { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img5.jpg') },
+          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+          { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
         ]);
         break;
       case 'Team Ranking':
         // Replace with your hard-coded team ranking data
         setSelectedData([
-          { name: 'Team Winner 2', achievedTarget: '1,500,000' },
-          { name: 'Team Winner 1', achievedTarget: '200,000' },
-          { name: 'Team Winner 3', achievedTarget: '100,000' },
-          { name: 'Team Winner 2', achievedTarget: '800,000' },
+          { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
+          { name: 'Tara', achievedTarget: '14,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
+          { name: 'Pascal', achievedTarget: '13,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
+          { name: 'Michel', achievedTarget: '8,000,000.00', NOP: '3', profilePic: require('../../components/user.jpg') },
+          { name: 'Devin', achievedTarget: '200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
+          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+          { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
         ]);
         break;
+      case 'TOT Ranking':
+          // Replace with your hard-coded team ranking data
+        setSelectedData([
+          { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
+          { name: 'Tara', achievedTarget: '14,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
+          { name: 'Pascal', achievedTarget: '13,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
+          { name: 'Pascal', achievedTarget: '9,412,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/img1.jpg') },
+          { name: 'Edward', achievedTarget: '6,200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+        ]);
+          break; 
+        case 'COT Ranking':
+            // Replace with your hard-coded team ranking data
+          setSelectedData([
+            { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
+            { name: 'Tara', achievedTarget: '14,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
+            { name: 'Pascal', achievedTarget: '13,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
+            { name: 'Pascal', achievedTarget: '9,412,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/img1.jpg') },
+            { name: 'Edward', achievedTarget: '6,200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
+          ]);
+            break;  
       default:
         setSelectedData(limitedWinnersData);
         break;
@@ -85,6 +124,11 @@ const Competitions = () => {
     }
   };
 
+  const formatNumber = (number) => {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+  
+
 
   const renderItem = ({ item }) => (
     <View>
@@ -92,7 +136,7 @@ const Competitions = () => {
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image 
-              source={require('../../components/user.jpg')} 
+              source={item.profilePic} 
               style={[styles.roundImageforList, { width: 58, height: 58, marginRight:10 }]} 
               resizeMode="cover" 
             />
@@ -103,9 +147,13 @@ const Competitions = () => {
           </View>
           <Text style={[styles.itemTarget, { color: 'black', fontWeight: 'bold', marginTop: -15 }]}>{item.achievedTarget}</Text>
         </View>
-        {parseInt(item.achievedTarget.replace(/,/g, '')) >= 1000000 ? (
+        {parseInt(item.achievedTarget.replace(/,/g, '')) >= 6000000  ? (
           <Text style={[styles.achievedText, styles.achievedTextGreen, {fontSize: 14}]}>Achieved</Text>
-        ) : null}
+        ) : (
+          <Text style={[styles.itemTarget, { color: 'black', marginTop: -20, fontSize:14, }]}>
+            Need: {formatNumber(6000000 - parseInt(item.achievedTarget.replace(/,/g, '')))}
+          </Text>
+        )}
       </View>
       {/* Horizontal line */}
       <View style={styles.horizontalLine} />
@@ -140,7 +188,6 @@ const Competitions = () => {
 
   const screenWidth = Dimensions.get('window').width;
   const itemWidth = screenWidth * 1; 
-  const [selectedValue, setSelectedValue] = useState('Island Ranking');
   const [showPicker, setShowPicker] = useState(false);
   const [selectedData, setSelectedData] = useState(limitedWinnersData); 
   const filteredSelectedData = selectedData.slice(3);
@@ -150,6 +197,8 @@ const Competitions = () => {
     { key: '2', value: 'Regional Ranking' },
     { key: '3', value: 'Branch Ranking' },
     { key: '4', value: 'Team Ranking' },
+    { key: '5', value: 'COT Ranking' },
+    { key: '6', value: 'TOT Ranking' },
   ];
   
   const Bardata = {
@@ -199,7 +248,6 @@ const Competitions = () => {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>MDRT Competition Winners</Text>
       <View style={styles.dropdownContainer}>
         <SelectList
           data={[
@@ -207,6 +255,8 @@ const Competitions = () => {
             { key: '2', value: 'Regional Ranking' },
             { key: '3', value: 'Branch Ranking' },
             { key: '4', value: 'Team Ranking' },
+            { key: '5', value: 'COT Ranking' },
+            { key: '6', value: 'TOT Ranking' },
           ]}
           save="value"
           setSelected={handleSelectionChange}
@@ -233,10 +283,13 @@ const Competitions = () => {
           />
       <Text style={styles.nameText}>{firstPlace.name}</Text>
       <Text style={styles.valueText}>{firstPlace.achievedTarget}</Text>
+      <Text style={{ marginLeft: 10, marginTop: -40, fontSize:12, marginBottom: 10 }}>NOP:{firstPlace.NOP}</Text>
       <Text style={styles.secWinnerNameText}>{secondPlace.name}</Text>
       <Text style={styles.secWinnerValueText}>{secondPlace.achievedTarget}</Text>
+      <Text style={{ marginLeft: -230, marginTop: -15, fontSize:12, marginBottom: 10 }}>NOP:{secondPlace.NOP}</Text>
       <Text style={styles.thirdWinnerNameText}>{thirdPlace.name}</Text>
       <Text style={styles.WinnerValueText}>{thirdPlace.achievedTarget}</Text>
+      <Text style={{ marginLeft: 230, marginTop: -18, fontSize:12, marginBottom: 10 }}>NOP:{thirdPlace.NOP}</Text>
     </View>
   </View>
       <FlatList
@@ -278,13 +331,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff', 
     borderRadius: 10,
     borderWidth: 0,
-    borderColor: '#ddd', 
-    // shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 7 },
-    // shadowOpacity: 0.25,
-    // shadowRadius: 3.84,
-    // elevation: 5,
-    // marginVertical: 5,
+    borderColor: '#ddd',
   },
   itemName: {
     fontSize: 16,
@@ -307,7 +354,7 @@ const styles = StyleSheet.create({
   barContainer: {
     flexDirection: 'column',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: 15,
   },
   bar: {
     height: 20, 
@@ -329,7 +376,8 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     width: '42%', 
-    alignSelf: 'left', 
+    alignSelf: 'left',
+    marginBottom: 20, 
   },
   selectedValue: {
     fontSize: 16,
@@ -348,7 +396,7 @@ const styles = StyleSheet.create({
     textAlign: 'center', 
   },
   valueText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#75500b',
     marginTop: 10, 
@@ -358,11 +406,11 @@ const styles = StyleSheet.create({
   secWinnerNameText: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: -65, 
+    marginTop: -58, 
     marginLeft: -230,
   },
   secWinnerValueText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#75500b',
     marginTop: 0, 
@@ -376,7 +424,7 @@ const styles = StyleSheet.create({
     marginLeft: 230, 
   },
   WinnerValueText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#75500b',
     marginTop: 0, 
