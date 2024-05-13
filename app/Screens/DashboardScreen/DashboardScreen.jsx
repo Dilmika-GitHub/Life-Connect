@@ -3,6 +3,7 @@ import * as React from "react";
 import Svg, { G, Circle } from "react-native-svg";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Income from "./KPIs/Income";
 import FPkpi from "./KPIs/FPkpi";
 import NOPkpi from "./KPIs/NOPkpi";
 import FYPkpi from "./KPIs/FYPkpi";
@@ -41,7 +42,7 @@ export default function DashboardScreen({
         </Text>
       </View>
       <View style={styles.iconView}>
-        <MaterialCommunityIcons name="target" size={hp('5%')} color="black" />
+        <Income/>
       </View>
       <View style={styles.circleView(radius, halfCircle, strokeWidth)}>
         <Svg width={radius * 2} height={radius * 2} viewBox={viewBoxValue}>

@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     top: hp('8%'),
     position: "absolute",
     color:'white',
-    fontSize:hp('5%'),
+    fontSize:hp('4%'),
     fontFamily:'Poppins'
   },
   title: {
