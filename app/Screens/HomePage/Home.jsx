@@ -124,6 +124,7 @@ const CustomDrawerContent = ({ navigation }) => {
                 color={color}
               />
             )}
+            style={{marginTop:440}}
           />
         </View>
       </SafeAreaView>
