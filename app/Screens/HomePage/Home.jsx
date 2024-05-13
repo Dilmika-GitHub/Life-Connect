@@ -116,8 +116,8 @@ export default function Home() {
             headerRight: () => (
               <TouchableOpacity onPress={() => navigation.navigate('MDRT Ranking')}>
                 <Image
-                  source={require('../../../components/pngtree.jpg')}
-                  style={{ width: 30, height: 30 }}
+                  source={require('../../../components/icons8-chart-64.png')}
+                  style={{ width: 30, height: 30 ,margin:10}}
                 />
               </TouchableOpacity>
             )
