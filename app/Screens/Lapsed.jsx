@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Alert, Linking } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Alert, Linking, Platform } from 'react-native';
 import Modal from 'react-native-modal';
 import { SearchBar } from 'react-native-elements';
 
@@ -33,7 +33,8 @@ const data = [
   export default function Lapsed() {
     const [isModalVisible, setModalVisible] = useState(false);
     const [modalContent, setModalContent] = useState({ title: '', key: '', name: '', amount: '', contact: '', email:''});
-  
+    const [searchValue, setSearchValue] = useState('');
+
     const showDetails = (title, key, name, amount, contact, email) => {
       setModalContent({ title, key, name, amount, contact, email });
       setModalVisible(true);
@@ -42,7 +43,8 @@ const data = [
     const hideModal = () => setModalVisible(false);
 
     const handleContactPress = (contact) => {
-      Linking.openURL(`tel:${contact}`);
+      let phoneNumber = Platform.OS === 'ios' ? `telprompt:${contact}` : `tel:${contact}`;
+      Linking.openURL(`tel:${phoneNumber}`);
     };
 
     const handleEmailPress = (email) => {
@@ -57,6 +59,8 @@ const data = [
         inputContainerStyle={styles.inputContainer}
         inputStyle={styles.input}
         searchIcon={{ size: 24 }}
+        onChangeText={setSearchValue}
+        value={searchValue}
       />
       <View style={styles.container}>
         <FlatList
