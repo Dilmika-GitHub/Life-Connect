@@ -102,7 +102,7 @@ export default function GWPkpi({
       </TouchableOpacity>
 
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={handleCancel}
@@ -185,6 +185,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: hp("10%"),
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
     margin: hp("10%"),
@@ -194,8 +195,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
-      width: wp("10%"),
-      height: hp("10%"),
+      width: wp("2%"),
+      height: hp("1%"),
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
