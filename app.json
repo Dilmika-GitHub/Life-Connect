@@ -16,13 +16,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sanduni99.xProject"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.sanduni99.xProject"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -30,6 +32,15 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "ef59b0f6-9515-4522-9efb-66baf9a98f5b"
+      }
+    },
+    "owner": "sanduni99"
   }
 }

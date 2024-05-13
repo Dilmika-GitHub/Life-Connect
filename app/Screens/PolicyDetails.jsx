@@ -1,108 +1,32 @@
 import React from 'react';
-import { View, ScrollView, Text, StyleSheet } from 'react-native';
+import { View, ScrollView, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-const PolicyDetails = () => {
+const PolicyDetails = ({ navigation }) => {
+  const navigateToLapsedScreen = () => {
+    navigation.navigate('Lapsed');
+  };
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={[styles.section, styles.coloredSection]}>
-        <Text style={styles.sectionHeading}>DIVI THILINA</Text>
+      <View style={[styles.section1, styles.coloredSection]}>
+        <Text style={styles.sectionHeading}>Policy Overview</Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Policy No</Text>
-            <Text style={styles.tableCell2}>904126</Text>
+            <Text style={styles.tableCell}>View comprehensive information about your insurance policies, including details about inforced polices and those that have been lapsed.</Text>
           </View>
           <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Insured Name</Text>
-            <Text style={styles.tableCell2}>T. Thissa</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Premium</Text>
-            <Text style={styles.tableCell2}>4000.00</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Last paid due date</Text>
-            <Text style={styles.tableCell2}>2024/04/19</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Policy status</Text>
-            <Text style={styles.tableCell2}>Active</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Table/Term</Text>
-            <Text style={styles.tableCell2}>50/10</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Payment mode</Text>
-            <Text style={styles.tableCell2}>Monthly</Text>
+            <Text style={styles.sectionHeading2}>Inforced Policies</Text>
+            <Text style={styles.tableCell2}>38</Text>
           </View>
         </View>
       </View>
-      <View style={[styles.section, styles.coloredSection]}>
-        <Text style={styles.sectionHeading}>JANA DIRI</Text>
-        <View style={styles.table}>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Policy No</Text>
-            <Text style={styles.tableCell2}>904126</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Insured Name</Text>
-            <Text style={styles.tableCell2}>T. Thissa</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Premium</Text>
-            <Text style={styles.tableCell2}>4000.00</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Last paid due date</Text>
-            <Text style={styles.tableCell2}>2024/04/19</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Policy status</Text>
-            <Text style={styles.tableCell2}>Active</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Table/Term</Text>
-            <Text style={styles.tableCell2}>50/10</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Payment mode</Text>
-            <Text style={styles.tableCell2}>Monthly</Text>
-          </View>
+      <TouchableOpacity onPress={navigateToLapsedScreen}>
+      <View style={[styles.section2, styles.coloredSection2]}>
+        <View style={styles.tableRow2}>
+          <Text style={styles.sectionHeading3}>Lapsed Policies</Text>
+          <Text style={styles.tableCell3}>14</Text>
         </View>
       </View>
-      <View style={[styles.section, styles.coloredSection]}>
-        <Text style={styles.sectionHeading}>YASAS</Text>
-        <View style={styles.table}>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Policy No</Text>
-            <Text style={styles.tableCell2}>904126</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Insured Name</Text>
-            <Text style={styles.tableCell2}>T. Thissa</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Premium</Text>
-            <Text style={styles.tableCell2}>4000.00</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Last paid due date</Text>
-            <Text style={styles.tableCell2}>2024/04/19</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Policy status</Text>
-            <Text style={styles.tableCell2}>Active</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Table/Term</Text>
-            <Text style={styles.tableCell2}>50/10</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Payment mode</Text>
-            <Text style={styles.tableCell2}>Monthly</Text>
-          </View>
-        </View>
-      </View>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -115,19 +39,40 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor:'white'
   },
-  section: {
+  section1: {
     marginBottom: 20,
-    borderRadius: 5,
+    borderRadius: 12,
     overflow: 'hidden',
+    padding: 20,
+  },
+  section2: {
+    marginBottom: 20,
+    borderRadius: 12,
+    overflow: 'hidden',
+    padding: 20,
   },
   coloredSection: {
     backgroundColor: '#EBEBEB',
+  },
+  coloredSection2: {
+    backgroundColor: '#FF7758',
   },
   sectionHeading: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
-    paddingHorizontal: 10,
+  },
+  sectionHeading2: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: 'black',
+    paddingTop: 10,
+  },
+  sectionHeading3: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: 'white',
   },
   table: {
     width: '100%',
@@ -138,7 +83,12 @@ const styles = StyleSheet.create({
   tableRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderColor: '#EBEBEB', // Change to match section background color
+    borderColor: '#EBEBEB',
+  },
+  tableRow2: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: '#FF7758',
   },
   tableCell: {
     flex: 1,
@@ -146,8 +96,21 @@ const styles = StyleSheet.create({
   },
   tableCell2: {
     flex: 1,
-    padding: 10,
-    color: '#5E5959'
+    color: 'black',
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    paddingTop: 10,
+  },
+  tableCell3: {
+    flex: 1,
+    color: 'white',
+    fontSize: 24,
+    fontWeight: '600',
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    textAlign: 'right',
   },
 });
 
