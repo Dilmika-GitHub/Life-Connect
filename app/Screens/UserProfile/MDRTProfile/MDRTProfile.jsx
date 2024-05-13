@@ -1,5 +1,6 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 export default function MDRTProfile() {
   return (
@@ -89,50 +90,50 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     position: 'absolute',
-    left: '50%',
-    top: '16%', 
-    transform: [{ translateX: -100 }, { translateY: -100 }]
+    left: wp('50%'),
+    top: hp('16%'), 
+    transform: [{ translateX: -wp('25%') }, { translateY: -hp('12%') }]
   },
   roundImage: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    borderWidth: 3, // Border width for the gold color
-    borderColor: 'gold' // Gold color for the border
+    width: wp('50%'),
+    height: wp('50%'),
+    borderRadius: wp('25%'),
+    borderWidth: 3,
+    borderColor: 'gold'
   },
   imageText: {
-    marginTop: 10,
+    marginTop: hp('1%'),
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: wp('4%'),
     fontWeight: 'bold',
     color: 'black'
   },
   greySquare: {
-    width: 320,
-    height: 310,
+    width: wp('80%'),
+    height: hp('45%'),
     backgroundColor: 'lightgrey',
-    marginTop: 150, 
+    marginTop: hp('20%'), 
     alignSelf: 'center',
     borderRadius: 10,
-    padding: 10,
+    padding: wp('2.5%'),
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: hp('2%'),
   },
   specialRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 5,
+    marginBottom: hp('1%'),
   },
   titleText: {
-    fontSize: 16,
+    fontSize: wp('4%'),
     color: 'black',
-    minWidth: 100,
+    minWidth: wp('25%'),
   },
   normalText: {
-    fontSize: 16,
+    fontSize: wp('4%'),
     color: 'grey'
   },
 });
