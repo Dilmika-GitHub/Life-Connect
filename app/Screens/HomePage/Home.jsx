@@ -212,8 +212,8 @@ export default function Home() {
                 onPress={() => navigation.navigate("MDRT Ranking")}
               >
                 <Image
-                  source={require("../../../components/pngtree.jpg")}
-                  style={{ width: 30, height: 30 }}
+                  source={require("../../../components/pngtree.png")}
+                  style={{ width: 30, height: 30, margin: 10 }}
                 />
               </TouchableOpacity>
             ),

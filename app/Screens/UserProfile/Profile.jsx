@@ -1,5 +1,8 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
 import React from 'react';
+import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
+const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
 const Profile = () => {
   return (
@@ -9,7 +12,7 @@ const Profile = () => {
 
       {/* Bottom section border */}
       <View style={[styles.section, styles.bottomSection]}>
-        {/* Grey color square text */}
+        {/* Grey color square with text */}
         <View style={styles.greySquare}>
           <View style={styles.row}>
             <Text style={styles.titleText}>Agent Code:</Text>
@@ -27,7 +30,8 @@ const Profile = () => {
             <Text style={styles.titleText}>Mobile No:</Text>
             <Text style={styles.normalText}>077 123 4567</Text>
           </View>
-        </View> 
+          
+        </View>
       </View>
 
       {/* Profile Image */}
@@ -61,47 +65,45 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     position: 'absolute',
-    left: '50%',
-    top: '16%', 
-    transform: [{ translateX: -100 }, { translateY: -100 }]
+    left: wp('50%'),  // Use widthPercentageToDP for consistent positioning
+    top: hp('16%'),   // Use heightPercentageToDP for consistent positioning
+    transform: [{ translateX: -wp('25%') }, { translateY: -hp('12%') }]  // Ensure the translation is proportionate
   },
   roundImage: {
-    width: 200, 
-    height: 200, 
-    borderRadius: 100
+    width: wp('50%'),  // Adjust width and height to be responsive
+    height: wp('50%'), // Make it square based on width
+    borderRadius: wp('25%'), // Half of the width/height to ensure a perfect circle
   },
   imageText: {
-    marginTop: 10, 
+    marginTop: hp('1.5%'),
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
     fontWeight: 'bold',
     color: 'black'
   },
   greySquare: {
-    width: 320,
-    height: 140,
+    width: wp('80%'),
+    height: hp('20%'),  // Adjust height based on design needs
     backgroundColor: 'lightgrey',
-    marginTop: 150, 
+    marginTop: hp('20%'),  // Increase margin top to be proportionate
     alignSelf: 'center',
     borderRadius: 10,
-    padding: 10,
+    padding: wp('2.5%'),  // Responsive padding
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: hp('2%'),  // Responsive margin bottom
   },
   titleText: {
-    fontSize: 16,
+    fontSize: wp('4%'),  // Responsive font size
     color: 'black',
-    minWidth: 100, // Ensure alignment
+    minWidth: wp('25%'),  // Ensure alignment with responsive minimum width
   },
   normalText: {
-    fontSize: 16,
+    fontSize: wp('4%'),  // Responsive font size
     color: 'grey'
   },
 });
-
-
 
 export default Profile;
