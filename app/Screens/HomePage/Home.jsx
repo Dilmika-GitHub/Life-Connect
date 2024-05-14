@@ -113,7 +113,7 @@ const CustomDrawerContent = ({ navigation }) => {
           )}
         />
         {/* Logout Drawer Item */}
-        <View style={{ flex: 1, justifyContent: "flex-end" }}>
+        <View style={{ flex: 1, justifyContent: "flex-end", bottom:0 }}>
           <DrawerItem
             label="Logout"
             onPress={handleLogout}
@@ -157,7 +157,7 @@ const CustomDrawerContent = ({ navigation }) => {
               name="logout"
               size={40}
               color="black"
-              style={{ marginBottom: 10 }}
+              style={{ marginBottom: 10}}
             />
             <Text style={{ fontSize: 18, marginBottom: 5 }}>
               Do you really want to exit the app?
