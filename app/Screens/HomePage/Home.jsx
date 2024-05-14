@@ -113,7 +113,7 @@ const CustomDrawerContent = ({ navigation }) => {
           )}
         />
         {/* Logout Drawer Item */}
-        <View style={{ flex: 1, justifyContent: "flex-end" }}>
+        <View style={{ flex: 1, justifyContent: "flex-end", bottom:0 }}>
           <DrawerItem
             label="Logout"
             onPress={handleLogout}
@@ -124,6 +124,7 @@ const CustomDrawerContent = ({ navigation }) => {
                 color={color}
               />
             )}
+            style={{marginTop:440}}
           />
         </View>
       </SafeAreaView>
@@ -156,7 +157,7 @@ const CustomDrawerContent = ({ navigation }) => {
               name="logout"
               size={40}
               color="black"
-              style={{ marginBottom: 10 }}
+              style={{ marginBottom: 10}}
             />
             <Text style={{ fontSize: 18, marginBottom: 5 }}>
               Do you really want to exit the app?
@@ -212,8 +213,8 @@ export default function Home() {
                 onPress={() => navigation.navigate("MDRT Ranking")}
               >
                 <Image
-                  source={require("../../../components/pngtree.jpg")}
-                  style={{ width: 30, height: 30 }}
+                  source={require("../../../components/pngtree.png")}
+                  style={{ width: 30, height: 30, margin: 10 }}
                 />
               </TouchableOpacity>
             ),

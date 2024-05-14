@@ -11,12 +11,15 @@ import {
 import { Waves, Waves2, Waves3 } from "../../../components/Waves";
 import { Link } from "expo-router";
 import { useFonts } from "expo-font";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
+
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [fontsLoaded] = useFonts({
-    "Poppins-Bold": require("../../../assets/font/Poppins-Bold.ttf"),
+    "Poppins-Regular": require("../../../assets/font/Poppins-Regular.ttf"),
     // Add other font weights and styles if necessary
   });
 
@@ -70,55 +73,64 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   welcomeText:{
-    top:-402,
-    left:-90,
+    //bottom:wp('70%'),
+    //right:wp('25%'),
+    width: hp('50%'),
+    height: wp('50%'),
+    left: wp('10%'),
+    top: hp('5%'),
+    position: "absolute",
     color:'white',
-    fontSize:36,
-    fontFamily:'Poppins'
+    fontSize:hp('4%'),
+    fontFamily:'Poppins',
   },
   title: {
-    fontSize: 30,
-    width: 338,
-    height: 67,
-    left: 40,
-    top: 260,
+    fontSize: wp('8%'),
+    width: wp('25%'),
+    height: hp('25%'),
+    left: wp('8%'),
+    top: hp('29%'),
     position: "absolute",
     color: "black",
     fontFamily: "poppins",
-    fontWeight:'400'
+    fontWeight:'400',
   },
   input: {
-    width: "80%",
-    height: 40,
+    height: hp('5%'),
     borderColor: "#8b8b8b99",
-    borderWidth: 1,
     borderRadius: 10,
     marginBottom: 10,
     paddingHorizontal: 10,
+    width: wp("80%"),
+    borderWidth: 2,
+    fontSize: wp("4.5%"),
   },
   wavesTop: {
     position: "absolute",
-    top: -330,
+    top: -wp('58%'),
+    height: hp('71%'),
     left: 0,
     right: 0,
   },
   wavesTopSub: {
     position: "absolute",
-    top: -233,
+    top: -wp('37%'),
+    height: hp('73%'),
     left: 0,
     right: 0,
   },
   wavesBottom: {
     position: "absolute",
-    bottom: -300,
+    bottom: -hp('24%'),
+    height: hp('72%'),
     left: 0,
     right: 0,
   },
   loginButton: {
-    width: 140,
-    height: 50,
-    left: 250,
-    top: 700,
+    width: wp('33%'),
+    height: hp('6%'),
+    left: wp('60%'),
+    top: hp('77%'),
     position: 'absolute',
     backgroundColor: 'white',
     borderRadius: 20,
@@ -152,15 +164,16 @@ const styles = StyleSheet.create({
   // },
 
   loginButtonText: {
-    width: 55,
-    height: 33,
-    left: 42,
-    top: 9,
+    width: wp('30%'),
+    height: hp('30%'),
+    left: wp('9.5%'),
+    top: hp('0.8%'),
     position: 'absolute',
     color: 'black',
-    fontSize: 20,
+    fontSize: wp('6%'),
+    fontSize: hp('3%'),
     fontFamily: 'Poppins', // Make sure 'Poppins' is correctly loaded in your project
-    fontWeight: '400',
+    fontWeight: 400,
     zIndex: 2, // Ensure the button text appears above the background
   },
 });
