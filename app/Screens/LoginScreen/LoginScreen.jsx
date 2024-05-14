@@ -19,7 +19,7 @@ const LoginScreen = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [fontsLoaded] = useFonts({
-    "Poppins-Bold": require("../../../assets/font/Poppins-Bold.ttf"),
+    "Poppins-Regular": require("../../../assets/font/Poppins-Regular.ttf"),
     // Add other font weights and styles if necessary
   });
 
@@ -77,12 +77,12 @@ const styles = StyleSheet.create({
     //right:wp('25%'),
     width: hp('50%'),
     height: wp('50%'),
-    left: wp('8%'),
-    top: hp('8%'),
+    left: wp('10%'),
+    top: hp('5%'),
     position: "absolute",
     color:'white',
     fontSize:hp('4%'),
-    fontFamily:'Poppins'
+    fontFamily:'Poppins',
   },
   title: {
     fontSize: wp('8%'),
@@ -107,14 +107,14 @@ const styles = StyleSheet.create({
   },
   wavesTop: {
     position: "absolute",
-    top: -wp('50%'),
+    top: -wp('58%'),
     height: hp('71%'),
     left: 0,
     right: 0,
   },
   wavesTopSub: {
     position: "absolute",
-    top: -wp('27%'),
+    top: -wp('37%'),
     height: hp('73%'),
     left: 0,
     right: 0,
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     width: wp('33%'),
     height: hp('6%'),
     left: wp('60%'),
-    top: hp('85%'),
+    top: hp('77%'),
     position: 'absolute',
     backgroundColor: 'white',
     borderRadius: 20,
@@ -166,11 +166,12 @@ const styles = StyleSheet.create({
   loginButtonText: {
     width: wp('30%'),
     height: hp('30%'),
-    left: wp('10%'),
-    top: hp('0.5%'),
+    left: wp('9.5%'),
+    top: hp('0.8%'),
     position: 'absolute',
     color: 'black',
     fontSize: wp('6%'),
+    fontSize: hp('3%'),
     fontFamily: 'Poppins', // Make sure 'Poppins' is correctly loaded in your project
     fontWeight: 400,
     zIndex: 2, // Ensure the button text appears above the background
