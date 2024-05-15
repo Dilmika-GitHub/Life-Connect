@@ -20,12 +20,12 @@ const { height, width } = Dimensions.get("window");
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export default function GWPkpi({
-  percentage = 68,
+  percentage = 45,
   color = "grey",
   animatedCircleColor = "#B3755F",
   strokeWidth = hp("2.5%"),
   smallRadius = wp("14%"),
-  textColor = "black",
+  Color = "black",
   max = 100,
 }) {
   const CircleRef = useRef();
@@ -63,7 +63,7 @@ export default function GWPkpi({
             height={smallRadius * 2}
             viewBox={viewBoxValue}
           >
-            <G rotation="-90" origin={`${halfCircle}, ${halfCircle}`}>
+            <G rotation="-90" origin={`${halfCircle}, ${halfCircle}`} style={{marginLeft:10,}}>
               <Circle
                 cx="50%"
                 cy="50%"
@@ -154,7 +154,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: "lightgrey",
   },
-  chartContainer: {},
+  chartContainer: {
+    
+  },
   percentageTextContainer: {
     position: "absolute",
     top: "50%",

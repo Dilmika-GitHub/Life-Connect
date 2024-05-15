@@ -20,7 +20,7 @@ const { height, width } = Dimensions.get("window");
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export default function FPkpi({
-  percentage = 68,
+  percentage = 8,
   color = "grey",
   animatedCircleColor = "#ffdb16",
   strokeWidth = hp("2.5%"),
