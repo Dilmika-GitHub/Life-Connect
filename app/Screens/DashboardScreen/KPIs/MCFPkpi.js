@@ -59,7 +59,7 @@ export default function MCFPkpi({
       <TouchableOpacity onPress={handlePress} style={styles.touchableArea}>
         <View style={styles.chartContainer}>
           <Svg
-            width={smallRadius * 2}
+            width={smallRadius * 1.5}
             height={smallRadius * 2}
             viewBox={viewBoxValue}
           >
@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    height:wp("20%"),
   },
   touchableArea: {
     flexDirection: "row",
