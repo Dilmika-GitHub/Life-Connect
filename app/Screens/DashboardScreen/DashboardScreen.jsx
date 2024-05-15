@@ -67,6 +67,7 @@ export default function DashboardScreen({
               strokeDashoffset={strokeDashoffset}
               strokeOpacity={1.0}
               fill="transparent"
+              strokeLinecap="round"
             />
           </G>
         </Svg>

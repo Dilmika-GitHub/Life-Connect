@@ -5,6 +5,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 
 const Income = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [inputValue, setInputValue] = useState("");
 
   const openModal = () => {
     setModalVisible(true);
@@ -13,7 +14,7 @@ const Income = () => {
   const closeModal = () => {
     setModalVisible(false);
   };
-  const [inputValue, setInputValue] = useState("");
+
   const handlePress = () => {
     setModalVisible(true);
   };
@@ -36,27 +37,31 @@ const Income = () => {
       </TouchableOpacity>
       
       <Modal
-        nimationType="fade"
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={handleCancel}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
+        <View style={[styles.centeredView, {padding: hp("5%")}]} >
+          <View style={[styles.modalView, {height: hp("22%"), width: wp("70%")}]}>
             <Text style={styles.modalText}>Set your target for Income</Text>
             <TextInput
               style={styles.input}
-              onChangeText={setInputValue}
+              onChangeText={text => {
+                const numericValue = text.replace(/[^0-9]/g, '');
+                setInputValue(numericValue);
+              }}
               value={inputValue}
+              keyboardType='numeric'
             />
             <View style={styles.buttonRow}>
               <TouchableOpacity
                 onPress={handleSubmit}
-                style={styles.blueButton}
+                style={[styles.blueButton, {height: hp("5.5%"), width: wp("30%")}]}
               >
                 <Text style={styles.buttonText}>Set Target</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={handleCancel} style={styles.redButton}>
+              <TouchableOpacity onPress={handleCancel} style={[styles.redButton, {height: hp("5.5%"), width: wp("30%")}]} >
                 <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
@@ -68,63 +73,75 @@ const Income = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconView: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: wp('2%'),
+      height: hp('1%'),
     },
-
-    centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: hp("10%"),
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      },
-      modalView: {
-        margin: hp("10%"),
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: wp("10%"),
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-          width: wp("2%"),
-          height: hp("1%"),
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-      },
-      modalText: {
-        marginBottom: 15,
-        textAlign: "center",
-        fontSize: wp("4.5%"),
-      },
-      input: {
-        height: hp("5%"),
-        width: wp("50%"),
-        margin: 12,
-        borderWidth: 1,
-        padding: 10,
-        fontSize: wp("4.5%"),
-      },
-      buttonRow: {
-        flexDirection: "row",
-      },
-      blueButton: {
-        backgroundColor: "blue",
-        padding: wp("4%"),
-        borderRadius: 5,
-        marginRight: 10,
-      },
-      redButton: {
-        backgroundColor: "red",
-        padding: wp("4%"),
-        borderRadius: 5,
-      },
-      buttonText: {
-        color: "white",
-        fontSize: wp("4.5%"),
-      },
-})
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    padding: wp("2%"),
+  },
+  modalText: {
+    textAlign: 'center',
+    fontSize: wp('4.5%'),
+    marginBottom: hp('2%'),
+  },
+  input: {
+    height: hp('5%'),
+    width: wp('50%'),
+    marginVertical: hp('2%'),
+    borderBottomWidth: 1,
+    borderBottomColor: 'black', 
+    padding: hp('1%'),
+    fontSize: wp('4.5%'),
+    marginTop:1,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: wp('60%'),
+  },
+  blueButton: {
+    backgroundColor: 'blue',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight:10,
+  },
+  redButton: {
+    backgroundColor: 'red',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: wp('4%'),
+    textAlign: 'center',
+    paddingVertical: hp('1%'),
+    paddingHorizontal: wp('3%'),
+  },
+});
 
 export default Income;
