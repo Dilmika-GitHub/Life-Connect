@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 export default function MDRTProfile() {
@@ -10,53 +10,55 @@ export default function MDRTProfile() {
 
       {/* Bottom section border */}
       <View style={[styles.section, styles.bottomSection]}>
-        {/* Grey color square text */}
-        <View style={styles.greySquare}>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>Agent Code</Text>
-            <Text style={styles.normalText}>904126</Text>
+        {/* Scrollable Grey color square text */}
+        <ScrollView style={styles.greySquareScroll}>
+          <View style={styles.greySquare}>
+            <View style={styles.row}>
+              <Text style={styles.titleText}>Agent Code</Text>
+              <Text style={styles.normalText}>904126</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.titleText}>Target</Text>
+              <Text style={styles.normalText}>1,456,856.00</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.titleText}>No OF Policies:</Text>
+              <Text style={styles.normalText}>26</Text>
+            </View>
+            <View style={styles.specialRow}>
+              <Text style={styles.titleText}>MDRT Ranking</Text>
+              <Text style={styles.normalText}>23</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.titleText}>Need more</Text>
+              <Text style={styles.normalText}>achieved</Text>
+            </View>
+            <View style={styles.specialRow}>
+              <Text style={styles.titleText}>TOT Ranking</Text>
+              <Text style={styles.normalText}>--</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.titleText}>Need more</Text>
+              <Text style={styles.normalText}>1,214,456.00</Text>
+            </View>
+            <View style={styles.specialRow}>
+              <Text style={styles.titleText}>COT Ranking</Text>
+              <Text style={styles.normalText}>--</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.titleText}>Need more</Text>
+              <Text style={styles.normalText}>3,456,568.00</Text>
+            </View>
+            <View style={styles.specialRow}>
+              <Text style={styles.titleText}>HOF Ranking</Text>
+              <Text style={styles.normalText}>--</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.titleText}>Need more</Text>
+              <Text style={styles.normalText}>9,156,788.00</Text>
+            </View>
           </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>Target</Text>
-            <Text style={styles.normalText}>1,456,856.00</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>No OF Policies:</Text>
-            <Text style={styles.normalText}>26</Text>
-          </View>
-          <View style={styles.specialRow}>
-            <Text style={styles.titleText}>MDRT Ranking</Text>
-            <Text style={styles.normalText}>23</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>Need more</Text>
-            <Text style={styles.normalText}>achieved</Text>
-          </View>
-          <View style={styles.specialRow}>
-            <Text style={styles.titleText}>TOT Ranking</Text>
-            <Text style={styles.normalText}>--</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>Need more</Text>
-            <Text style={styles.normalText}>1,214,456.00</Text>
-          </View>
-          <View style={styles.specialRow}>
-            <Text style={styles.titleText}>COT Ranking</Text>
-            <Text style={styles.normalText}>--</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>Need more</Text>
-            <Text style={styles.normalText}>3,456,568.00</Text>
-          </View>
-          <View style={styles.specialRow}>
-            <Text style={styles.titleText}>HOF Ranking</Text>
-            <Text style={styles.normalText}>--</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>Need more</Text>
-            <Text style={styles.normalText}>9,156,788.00</Text>
-          </View>
-        </View> 
+        </ScrollView>
       </View>
 
       {/* Profile Image */}
@@ -69,7 +71,7 @@ export default function MDRTProfile() {
         <Text style={styles.imageText}>Michel Smith</Text>
       </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -91,8 +93,8 @@ const styles = StyleSheet.create({
   imageContainer: {
     position: 'absolute',
     left: wp('50%'),
-    top: hp('16%'), 
-    transform: [{ translateX: -wp('25%') }, { translateY: -hp('12%') }]
+    top: hp('10%'), // Adjusted top to make more space
+    transform: [{ translateX: -wp('25%') }, { translateY: -hp('10%') }]
   },
   roundImage: {
     width: wp('50%'),
@@ -108,12 +110,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black'
   },
-  greySquare: {
+  greySquareScroll: {
     width: wp('80%'),
-    height: hp('45%'),
-    backgroundColor: 'lightgrey',
-    marginTop: hp('20%'), 
+    height: hp('55%'), // This sets the scrollable area's height
+    marginTop: hp('30%'),
     alignSelf: 'center',
+  },
+  greySquare: {
+    width: '100%',
+    backgroundColor: 'lightgrey',
     borderRadius: 10,
     padding: wp('2.5%'),
   },
