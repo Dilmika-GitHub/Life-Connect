@@ -4,7 +4,6 @@ import { Picker } from '@react-native-picker/picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Bar1, Bar2 } from "../../components/Chart";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const Competitions = () => {
   const winnersData = [
@@ -36,23 +35,16 @@ const Competitions = () => {
   limitedWinnersData.push(userItem);
   const [selectedValue, setSelectedValue] = useState('Island Ranking');
   const [showDropdown, setShowDropdown] = useState(false);
-  const { width, height } = Dimensions.get("window"); 
-  const screenWidth = Dimensions.get('window').width;
-  const itemWidth = screenWidth * 0.97; 
-  const [showPicker, setShowPicker] = useState(false);
-  const [selectedData, setSelectedData] = useState(limitedWinnersData); 
-  const filteredSelectedData = selectedData.slice(3);
-  const formatNumber = (number) => {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
 
   useEffect(() => {
+    // Initialize the selected data based on the default selected value
     handleSelectionChange(selectedValue);
   }, []);
 
   const handleSelectionChange = (val) => {
     setSelectedValue(val);
     setShowDropdown(false);
+    // Update the selected data based on the selected option
     switch (val) {
       case 'Island Ranking':
         setSelectedData(winnersData);
@@ -124,34 +116,36 @@ const Competitions = () => {
   };
 
   const renderDropdown = () => {
-  return (
-    <View style={styles.dropdownContainer}>
-      <TouchableOpacity onPress={() => setShowDropdown(!showDropdown)} style={styles.dropdownTouchable}>
-        <Text style={[styles.dropdownText, { fontSize: wp('3.5%') }]}>{selectedValue}</Text>
-        <Icon name={showDropdown ? 'angle-up' : 'angle-down'} size={wp('5%')} color="#000" style={styles.dropdownIcon} />
-      </TouchableOpacity>
-      {showDropdown && (
-        <View style={styles.dropdownOptions}>
-          <TouchableOpacity onPress={() => handleSelectionChange('Island Ranking')}>
-            <Text style={styles.optionText}>Island Ranking</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleSelectionChange('Regional Ranking')}>
-            <Text style={styles.optionText}>Regional Ranking</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleSelectionChange('Branch Ranking')}>
-            <Text style={styles.optionText}>Branch Ranking</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleSelectionChange('COT Ranking')}>
-            <Text style={styles.optionText}>COT Ranking</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleSelectionChange('TOT Ranking')}>
-            <Text style={styles.optionText}>TOT Ranking</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
-  );
-};
+    return (
+      <View style={styles.dropdownContainer}>
+        <TouchableOpacity onPress={() => setShowDropdown(!showDropdown)} style={styles.dropdownTouchable}>
+          <Text style={styles.dropdownText}>{selectedValue}</Text>
+          <Icon name={showDropdown ? 'angle-up' : 'angle-down'} size={20} color="#000" style={styles.dropdownIcon} />
+        </TouchableOpacity>
+        {showDropdown && (
+          <View style={styles.dropdownOptions}>
+            <TouchableOpacity onPress={() => handleSelectionChange('Island Ranking')}>
+              <Text style={styles.optionText}>Island Ranking</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleSelectionChange('Regional Ranking')}>
+              <Text style={styles.optionText}>Regional Ranking</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleSelectionChange('Branch Ranking')}>
+              <Text style={styles.optionText}>Branch Ranking</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleSelectionChange('COT Ranking')}>
+              <Text style={styles.optionText}>COT Ranking</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleSelectionChange('TOT Ranking')}>
+              <Text style={styles.optionText}>TOT Ranking</Text>
+            </TouchableOpacity>
+            {/* Add more options as needed */}
+          </View>
+        )}
+      </View>
+    );
+  };
+  
 
   const renderProfilePic = (winner) => {
     if (winner.profilePic) {
@@ -159,18 +153,22 @@ const Competitions = () => {
       return <Image source={{ uri: winner.profilePic }} style={styles.profilePic} />;
     } else {
       // Return the default profile picture icon
-      return <Icon name="user-circle" size={wp('6%')} color="#FF5733" style={{ marginRight: wp('2%') }} />;
+      return <Icon name="user-circle" size={26} color="#FF5733" style={{ marginRight: 10 }} />;
     }
+  };
+
+  const formatNumber = (number) => {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
   
   const renderItem = ({ item }) => (
     <View>
-      <View style={[styles.itemContainer, { width: wp('95%') }]}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: hp('0.1%') }}>
+      <View style={[styles.itemContainer, { width: 370 }]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image 
               source={item.profilePic} 
-              style={[styles.roundImageforList, { width: wp('15%'), height: hp('7%'), marginRight:wp('3%') }]}
+              style={[styles.roundImageforList, { width: 58, height: 58, marginRight:10 }]} 
               resizeMode="cover" 
             />
             <View>
@@ -178,12 +176,12 @@ const Competitions = () => {
               <Text style={[styles.itemNOP, { color: '#5e5b5b' }]}>NOP: {item.NOP}</Text>
             </View>
           </View>
-          <Text style={[styles.itemTarget, { color: 'black', fontWeight: 'bold', marginTop: -hp('1.9%') }]}>{item.achievedTarget}</Text>
+          <Text style={[styles.itemTarget, { color: 'black', fontWeight: 'bold', marginTop: -15 }]}>{item.achievedTarget}</Text>
         </View>
         {parseInt(item.achievedTarget.replace(/,/g, '')) >= 6000000  ? (
-          <Text style={[styles.achievedText, styles.achievedTextGreen, {fontSize: wp('3.6%')}]}>Achieved</Text>
+          <Text style={[styles.achievedText, styles.achievedTextGreen, {fontSize: 14}]}>Achieved</Text>
         ) : (
-          <Text style={[styles.itemTarget, { color: 'black', marginTop: -hp('2.5%'), fontSize:wp('3.5%') }]}>
+          <Text style={[styles.itemTarget, { color: 'black', marginTop: -20, fontSize:14, }]}>
             Need: {formatNumber(6000000 - parseInt(item.achievedTarget.replace(/,/g, '')))}
           </Text>
         )}
@@ -196,24 +194,32 @@ const Competitions = () => {
   const renderUser = () => (
     <View style={[styles.itemContainer, styles.userContainer, { width: itemWidth }]}>
       <View style={{ alignItems: 'center' }}>
-        <View style={[styles.imageContainer, { left: '29%', marginTop: hp('11.5%') }]}>
+        <View style={[styles.imageContainer, { left: '30%', marginTop: 93 }]}> 
           <Image 
             source={require('../../components/user.jpg')} 
-            style={[styles.roundImage, { width: wp('17%'), height:  hp('8%') }]}
+            style={[styles.roundImage, { width: 68, height: 68 }]} 
             resizeMode="cover" 
           />
         </View>
       </View>
-      <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: 'black', marginTop: hp('1%') }]}>Sales amount</Text>
-      <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: 'black', marginTop: hp('1%') }]}>
+      <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: 'black' }]}>Sales amount</Text>
+      <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: 'black' }]}>
         {userItem.achievedTarget}
       </Text>
-      <View style={{ alignItems: 'center', marginTop: -hp('5%') }}>
-        <Text style={[styles.userPlace, { fontSize: wp('4%') }]}>Your Place</Text>
-        <Text style={[styles.userPlace, { fontSize: wp('4%'), marginTop: hp('1%') }]}>{userItem.place}</Text>
+      <View style={{ alignItems: 'center', marginTop: -38 }}>
+        <Text style={[styles.userPlace, { fontSize: 16 }]}>Your Place</Text>
+        <Text style={[styles.userPlace, { fontSize: 16, marginTop: 5 }]}>{userItem.place}</Text>
       </View>
     </View>
   );
+  
+
+
+  const screenWidth = Dimensions.get('window').width;
+  const itemWidth = screenWidth * 0.97; 
+  const [showPicker, setShowPicker] = useState(false);
+  const [selectedData, setSelectedData] = useState(limitedWinnersData); 
+  const filteredSelectedData = selectedData.slice(3);
 
   const data = [
     { key: '1', value: 'Island Ranking' },
@@ -268,16 +274,17 @@ const Competitions = () => {
     
   };
   
+  
   return (
     <View style={styles.container}>
     {renderDropdown()}
-    <View style={[styles.barContainer, { marginTop: hp('7%') }, ]}>
+    <View style={[styles.barContainer, { marginTop: 60 }, ]}>
     <Bar1
           profilePic={renderProfilePic(firstPlace)}
           name={firstPlace.name}
           achievedTarget={firstPlace.achievedTarget}
     />
-    <View style={{ marginTop: -200, alignItems: 'center' }}>
+    <View style={{ marginTop: -150, alignItems: 'center' }}>
     <Bar2
           profilePic={renderProfilePic(secondPlace)}
           name={secondPlace.name}
@@ -285,13 +292,13 @@ const Competitions = () => {
     />
       <Text style={styles.nameText}>{firstPlace.name}</Text>
       <Text style={styles.valueText}>{firstPlace.achievedTarget}</Text>
-      <Text style={{ marginLeft: wp('2%'), marginTop: -hp('5.5%'), fontSize:wp('3.5%'), marginBottom: hp('3%') }}>NOP:{firstPlace.NOP}</Text>
+      <Text style={{ marginLeft: 10, marginTop: -40, fontSize:12, marginBottom: 10 }}>NOP:{firstPlace.NOP}</Text>
       <Text style={styles.secWinnerNameText}>{secondPlace.name}</Text>
       <Text style={styles.secWinnerValueText}>{secondPlace.achievedTarget}</Text>
-      <Text style={{ marginLeft: -230, marginTop: -20, fontSize:wp('3.5%'), marginBottom: 10 }}>NOP:{secondPlace.NOP}</Text>
+      <Text style={{ marginLeft: -230, marginTop: -15, fontSize:12, marginBottom: 10 }}>NOP:{secondPlace.NOP}</Text>
       <Text style={styles.thirdWinnerNameText}>{thirdPlace.name}</Text>
       <Text style={styles.WinnerValueText}>{thirdPlace.achievedTarget}</Text>
-      <Text style={{ marginLeft: wp('60%'), marginTop: -hp('2.5%'), fontSize:wp('3.5%'), marginBottom: hp('3%') }}>NOP:{thirdPlace.NOP}</Text>
+      <Text style={{ marginLeft: 230, marginTop: -18, fontSize:12, marginBottom: 10 }}>NOP:{thirdPlace.NOP}</Text>
     </View>
   </View>
       <FlatList
@@ -311,8 +318,7 @@ const Competitions = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: wp('1%'),
-    paddingTop: hp('1%'),
+    padding: 10,
     backgroundColor: '#f5f5f5', 
   },
   achievedItem: {
@@ -331,18 +337,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   itemContainer: {
-    padding: wp('2%'),
+    padding: 10,
     backgroundColor: '#e8e6e3', 
-    borderRadius: wp('3%'),
+    borderRadius: 15,
     borderWidth: 0,
     borderColor: '#ddd',
   },
   itemName: {
-    fontSize: wp('4.2%'),
+    fontSize: 16,
     fontWeight: 'bold',
   },
   itemTarget: {
-    fontSize: wp('4%'),
+    fontSize: 16,
     textAlign: 'right',
   },
   achievedText: {
@@ -358,7 +364,7 @@ const styles = StyleSheet.create({
   barContainer: {
     flexDirection: 'column',
     alignItems: 'center',
-    marginBottom: hp('1.5%'),
+    marginBottom: 15,
   },
   bar: {
     height: 20, 
@@ -372,9 +378,9 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   dropdownContainer: {
-    width: wp('36%'),
+    width: 130,
     alignSelf: 'left',
-    marginBottom: hp('2%'),
+    marginBottom: 20,
     marginLeft: 0,
     backgroundColor: '#e8e6e3',
     borderWidth: 1,
@@ -384,22 +390,22 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   dropdownText: {
-    fontSize: 16,
+    fontSize: 12,
     color: '#333',
   },
   optionText: {
-    fontSize: wp('3.5%'),
+    fontSize: 12,
     color: '#333',
-    paddingVertical: hp('0.2%'),
+    paddingVertical: 5,
   },
   selectedValue: {
-    fontSize: 16, 
+    fontSize: 12, 
     color: '#333',
   },
   nameText: {
-    fontSize: wp('4.5%'),
+    fontSize: 18,
     fontWeight: 'bold',
-    marginTop: -hp('12%'),
+    marginTop: -100, 
     textAlign: 'center', 
   },
   valueText: {
@@ -411,9 +417,9 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   secWinnerNameText: {
-    fontSize: wp('4.5%'),
+    fontSize: 18,
     fontWeight: 'bold',
-    marginTop: -hp('6.5%'),
+    marginTop: -58, 
     marginLeft: -230,
   },
   secWinnerValueText: {
@@ -425,9 +431,9 @@ const styles = StyleSheet.create({
     marginLeft: -230,
   },
   thirdWinnerNameText: {
-    fontSize: wp('4.5%'),
+    fontSize: 18,
     fontWeight: 'bold',
-    marginTop: -hp('7.5%'),
+    marginTop: -65, 
     marginLeft: 230, 
   },
   WinnerValueText: {
@@ -438,13 +444,16 @@ const styles = StyleSheet.create({
     marginLeft: 230, 
     marginBottom: 20, 
   },
+  profilePic: {
+    width: 26,
+    height: 26,
+    marginRight: 10,
+  },
   userContainer: {
     backgroundColor: '#d4d1cf', 
     borderColor: '#a8adba', 
     marginTop: 8,
-    height:hp('10%'),
-    // paddingHorizontal: wp('1%'),
-    // paddingVertical: hp('1%'),
+    height:85,
   },
   userName: {
     fontWeight: 'bold',
@@ -464,7 +473,7 @@ const styles = StyleSheet.create({
   },
   roundImage: {
     width: 200,
-    height:  hp('30%'),
+    height: 200,
     borderRadius: 100,
     borderWidth: 3, 
     borderColor: '#7facf5'
@@ -483,13 +492,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   dropdownIcon: {
-    marginLeft: wp('0.9%'),
+    marginTop: -2,
   },
   dropdownText: {
-    fontSize: wp('4%'),
+    fontSize: 12,
     color: '#333',
     marginRight: 5, 
   },
 });
 
 export default Competitions
+
+
+
+
+
