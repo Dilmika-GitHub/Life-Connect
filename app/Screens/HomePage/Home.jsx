@@ -101,8 +101,16 @@ const CustomDrawerContent = ({ navigation }) => {
             />
           )}
         />
+        {/* Custom DrawerItem for "Maturity" */}
         <DrawerItem
-          label="Maturity"
+          label={() => (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text>Maturity          </Text>
+              <View style={{ backgroundColor: "#FF5733", borderRadius: 20, marginLeft: 5, paddingHorizontal: 10, paddingVertical: 5 }}>
+                <Text style={{ color: "#fff" }}>3</Text>
+              </View>
+            </View>
+          )}
           onPress={() => navigation.navigate("Maturity")}
           icon={({ focused, color, size }) => (
             <Ionicons
