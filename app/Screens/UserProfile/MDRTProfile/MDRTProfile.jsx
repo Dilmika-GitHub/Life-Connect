@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   greySquareScroll: {
     width: wp('80%'),
     height: hp('55%'), // This sets the scrollable area's height
-    marginTop: hp('30%'),
+    marginTop: hp('20%'),
     alignSelf: 'center',
   },
   greySquare: {
