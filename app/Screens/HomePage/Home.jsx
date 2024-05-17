@@ -14,6 +14,7 @@ import {
   Modal,
   Button,
   SafeAreaView,
+  Dimensions,
 } from "react-native";
 import DashboardScreen from "../DashboardScreen/DashboardScreen";
 import SettingsScreen from "../SettingsScreen";
@@ -23,6 +24,7 @@ import PolicyDetails from "../PolicyDetails";
 import Maturity from "../Maturity";
 import Lapsed from "../Lapsed"
 import MDRTProfile from "../UserProfile/MDRTProfile/MDRTProfile";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const Drawer = createDrawerNavigator();
 
@@ -132,7 +134,7 @@ const CustomDrawerContent = ({ navigation }) => {
                 color={color}
               />
             )}
-            style={{marginTop:440}}
+            style={{marginTop:hp('50%')}}
           />
         </View>
       </SafeAreaView>
@@ -195,6 +197,7 @@ const CustomDrawerContent = ({ navigation }) => {
     </DrawerContentScrollView>
   );
 };
+const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
 export default function Home() {
   return (
