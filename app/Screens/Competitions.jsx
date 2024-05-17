@@ -4,6 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Bar1, Bar2 } from "../../components/Chart";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const Competitions = () => {
   const winnersData = [
@@ -117,36 +118,49 @@ const Competitions = () => {
 
   const renderDropdown = () => {
     return (
-      <View style={styles.dropdownContainer}>
+      <View style={[styles.dropdownContainer, { zIndex: 1 }]}>
         <TouchableOpacity onPress={() => setShowDropdown(!showDropdown)} style={styles.dropdownTouchable}>
           <Text style={styles.dropdownText}>{selectedValue}</Text>
-          <Icon name={showDropdown ? 'angle-up' : 'angle-down'} size={20} color="#000" style={styles.dropdownIcon} />
+          <Icon name={showDropdown ? 'angle-up' : 'angle-down'} size={20} color="#000" style={[styles.dropdownIcon, { right: -10 }]} />
         </TouchableOpacity>
         {showDropdown && (
-          <View style={styles.dropdownOptions}>
-            <TouchableOpacity onPress={() => handleSelectionChange('Island Ranking')}>
-              <Text style={styles.optionText}>Island Ranking</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectionChange('Regional Ranking')}>
-              <Text style={styles.optionText}>Regional Ranking</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectionChange('Branch Ranking')}>
-              <Text style={styles.optionText}>Branch Ranking</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectionChange('COT Ranking')}>
-              <Text style={styles.optionText}>COT Ranking</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectionChange('TOT Ranking')}>
-              <Text style={styles.optionText}>TOT Ranking</Text>
-            </TouchableOpacity>
-            {/* Add more options as needed */}
+          <View style={{ position: 'relative' }}>
+            <View style={[styles.dropdownOptionsBackground, { position: 'absolute', top: 0, left: 0, zIndex: 0, width: '100%', height: '100%'}]} />
+            <View style={[styles.dropdownOptionsContainer, { position: 'absolute', top: 20, left: -7, backgroundColor: '#e8e6e3', width: wp('35%'), alignSelf: 'left',
+                marginBottom: 20,
+                marginLeft: 0,
+                backgroundColor: '#e8e6e3',
+                borderWidth: 1,
+                borderColor: '#ddd',
+                borderRadius: 5,
+                paddingHorizontal: 8,
+                paddingVertical: 10 }]}>
+              <View style={styles.dropdownOptions}>
+                <TouchableOpacity onPress={() => handleSelectionChange('Island Ranking')}>
+                  <Text style={styles.optionText}>Island Ranking</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleSelectionChange('Regional Ranking')}>
+                  <Text style={styles.optionText}>Regional Ranking</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleSelectionChange('Branch Ranking')}>
+                  <Text style={styles.optionText}>Branch Ranking</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleSelectionChange('COT Ranking')}>
+                  <Text style={styles.optionText}>COT Ranking</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleSelectionChange('TOT Ranking')}>
+                  <Text style={styles.optionText}>TOT Ranking</Text>
+                </TouchableOpacity>
+                {/* Add more options as needed */}
+              </View>
+            </View>
           </View>
         )}
       </View>
     );
   };
   
-
+  
   const renderProfilePic = (winner) => {
     if (winner.profilePic) {
       // Return the profile picture fetched from the URL
@@ -163,7 +177,7 @@ const Competitions = () => {
   
   const renderItem = ({ item }) => (
     <View>
-      <View style={[styles.itemContainer, { width: 370 }]}>
+      <View style={[styles.itemContainer, { width: wp('92%') }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image 
@@ -213,8 +227,6 @@ const Competitions = () => {
     </View>
   );
   
-
-
   const screenWidth = Dimensions.get('window').width;
   const itemWidth = screenWidth * 0.97; 
   const [showPicker, setShowPicker] = useState(false);
@@ -295,10 +307,10 @@ const Competitions = () => {
       <Text style={{ marginLeft: 10, marginTop: -40, fontSize:12, marginBottom: 10 }}>NOP:{firstPlace.NOP}</Text>
       <Text style={styles.secWinnerNameText}>{secondPlace.name}</Text>
       <Text style={styles.secWinnerValueText}>{secondPlace.achievedTarget}</Text>
-      <Text style={{ marginLeft: -230, marginTop: -15, fontSize:12, marginBottom: 10 }}>NOP:{secondPlace.NOP}</Text>
+      <Text style={{ marginLeft: -230, marginTop: -17, fontSize:12, marginBottom: 14 }}>NOP:{secondPlace.NOP}</Text>
       <Text style={styles.thirdWinnerNameText}>{thirdPlace.name}</Text>
       <Text style={styles.WinnerValueText}>{thirdPlace.achievedTarget}</Text>
-      <Text style={{ marginLeft: 230, marginTop: -18, fontSize:12, marginBottom: 10 }}>NOP:{thirdPlace.NOP}</Text>
+      <Text style={{ marginLeft: 230, marginTop: -19, fontSize:12, marginBottom: 14 }}>NOP:{thirdPlace.NOP}</Text>
     </View>
   </View>
       <FlatList
@@ -378,7 +390,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   dropdownContainer: {
-    width: 130,
+    width: wp('35%'),
     alignSelf: 'left',
     marginBottom: 20,
     marginLeft: 0,
@@ -419,7 +431,7 @@ const styles = StyleSheet.create({
   secWinnerNameText: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: -58, 
+    marginTop: -60, 
     marginLeft: -230,
   },
   secWinnerValueText: {
@@ -433,7 +445,7 @@ const styles = StyleSheet.create({
   thirdWinnerNameText: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: -65, 
+    marginTop: -72, 
     marginLeft: 230, 
   },
   WinnerValueText: {
@@ -493,6 +505,7 @@ const styles = StyleSheet.create({
   },
   dropdownIcon: {
     marginTop: -2,
+    //marginLeft: 17,
   },
   dropdownText: {
     fontSize: 12,
