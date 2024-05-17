@@ -23,8 +23,8 @@ export default function MCFPkpi({
   percentage = 68,
   color = "grey",
   animatedCircleColor = "#FEA58F",
-  strokeWidth = hp("2.5%"),
-  smallRadius = wp("14%"),
+  strokeWidth = wp("1%"),
+  smallRadius = wp("9%"),
   textColor = "black",
   max = 100,
 }) {
@@ -59,7 +59,7 @@ export default function MCFPkpi({
       <TouchableOpacity onPress={handlePress} style={styles.touchableArea}>
         <View style={styles.chartContainer}>
           <Svg
-            width={smallRadius * 1.5}
+            width={smallRadius * 2}
             height={smallRadius * 2}
             viewBox={viewBoxValue}
           >
@@ -69,7 +69,7 @@ export default function MCFPkpi({
                 cy="50%"
                 r={smallRadius}
                 stroke={color}
-                strokeWidth={10}
+                strokeWidth={strokeWidth}
                 strokeOpacity={0.2}
                 fill="transparent"
               />
@@ -79,7 +79,7 @@ export default function MCFPkpi({
                 cy="50%"
                 r={smallRadius}
                 stroke={animatedCircleColor}
-                strokeWidth={10}
+                strokeWidth={strokeWidth}
                 strokeDasharray={circleCircumference}
                 strokeDashoffset={strokeDashoffset}
                 strokeOpacity={1.0}
@@ -121,7 +121,8 @@ export default function MCFPkpi({
             />
             <View style={styles.buttonRow}>
               <TouchableOpacity
-                style={[styles.blueButton, {height: hp("5.5%"), width: wp("30%")}]}
+              onPress={handleSubmit}
+                style={[styles.blueButton, {height: hp("5.5%"), width: wp("30%")},]}
                 >
                   <Text style={styles.buttonText}>Set Target</Text>
                 </TouchableOpacity>
@@ -156,19 +157,12 @@ const styles = StyleSheet.create({
   chartContainer: {},
   percentageTextContainer: {
     position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: [
-      { translateX: -(wp("8.5%") / 2) },
-      { translateY: -(hp("4.50%") / 2) },
-    ],
-    justifyContent: "center",
-    alignItems: "center",
+    top: wp("5.5%"),
+    left: wp("5.5%"),
   },
   percentageText: {
     color: "black",
     fontSize: wp("4.5%"),
-    textAlign: "center",
   },
   textContainer: {
     flex: 0.8,
@@ -176,13 +170,13 @@ const styles = StyleSheet.create({
   titleText: {
     textAlign: "left",
     fontWeight: "bold",
-    marginLeft: hp("1.2%"),
+    marginLeft: hp("5%"),
     color: "black",
     fontSize: wp("4.5%"),
   },
   detailsText: {
     textAlign: "left",
-    marginLeft: hp("1.2%"),
+    marginLeft: hp("5%"),
     color: "black",
     fontSize: wp("4.5%"),
   },

@@ -17,7 +17,7 @@ export default function DashboardScreen({
   percentage = 65,
   color = "grey",
   animatedCircleColor = "#05beda",
-  strokeWidth = hp('5%'),
+  strokeWidth = wp('8%'),
   radius = wp('30%'),
   textColor = "black",
   max = 100,
@@ -72,7 +72,7 @@ export default function DashboardScreen({
           </G>
         </Svg>
         <View style={styles.absoluteCenter}>
-          <Text style={styles.valueText(textColor || color)}>
+          <Text style={styles.valueText(textColor || color) }>
             Accumulated
           </Text>
           <Text style={styles.valueText(textColor || color)}>
@@ -120,6 +120,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     justifyContent: "center",
     alignItems: "center",
+    Top: hp("22%"),
+    center: wp("50%"),
   },
   valueText: (color) => ({
     color: color,
@@ -127,6 +129,6 @@ const styles = StyleSheet.create({
   }),
   kpiContainer: {
     paddingLeft: wp('0.5%'),
-    paddingBottom: hp('1%'),
+    paddingBottom: hp('2%'),
   },
 });
