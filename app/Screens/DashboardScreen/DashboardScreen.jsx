@@ -1,8 +1,10 @@
 import { StyleSheet, Text, View, Animated, ScrollView, Dimensions } from "react-native";
-import * as React from "react";
+import React, { useState, useEffect } from 'react';
 import Svg, { G, Circle } from "react-native-svg";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { lockToPortrait, lockToAllOrientations } from "../OrientationLock";
+import { useIsFocused } from '@react-navigation/native';
 import Income from "./KPIs/Income";
 import FPkpi from "./KPIs/FPkpi";
 import NOPkpi from "./KPIs/NOPkpi";
@@ -24,6 +26,14 @@ export default function DashboardScreen({
   totalvalue = "6,60,00,000",
   currencyType = "Rs",
 }) {
+  const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isFocused) {
+            lockToPortrait();
+        }
+    }, [isFocused]);
+
   const CircleRef = React.useRef();
   const halfCircle = radius + strokeWidth;
   const viewBoxValue = `0 0 ${halfCircle * 2} ${halfCircle * 2}`;
