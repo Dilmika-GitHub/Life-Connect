@@ -20,12 +20,12 @@ const { height, width } = Dimensions.get("window");
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export default function GWPkpi({
-  percentage = 68,
+  percentage = 45,
   color = "grey",
   animatedCircleColor = "#B3755F",
   strokeWidth = hp("2.5%"),
   smallRadius = wp("14%"),
-  textColor = "black",
+  Color = "black",
   max = 100,
 }) {
   const CircleRef = useRef();
@@ -59,17 +59,17 @@ export default function GWPkpi({
       <TouchableOpacity onPress={handlePress} style={styles.touchableArea}>
         <View style={styles.chartContainer}>
           <Svg
-            width={smallRadius * 2}
+            width={smallRadius * 1.5}
             height={smallRadius * 2}
             viewBox={viewBoxValue}
           >
-            <G rotation="-90" origin={`${halfCircle}, ${halfCircle}`}>
+            <G rotation="-90" origin={`${halfCircle}, ${halfCircle}`} style={{marginLeft:10,}}>
               <Circle
                 cx="50%"
                 cy="50%"
                 r={smallRadius}
                 stroke={color}
-                strokeWidth={strokeWidth}
+                strokeWidth={10}
                 strokeOpacity={0.2}
                 fill="transparent"
               />
@@ -79,7 +79,7 @@ export default function GWPkpi({
                 cy="50%"
                 r={smallRadius}
                 stroke={animatedCircleColor}
-                strokeWidth={strokeWidth}
+                strokeWidth={10}
                 strokeDasharray={circleCircumference}
                 strokeDashoffset={strokeDashoffset}
                 strokeOpacity={1.0}
@@ -107,22 +107,26 @@ export default function GWPkpi({
         visible={modalVisible}
         onRequestClose={handleCancel}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
+        <View style={[styles.centeredView, {padding: hp("5%")}]} >
+          <View style={[styles.modalView, {height: hp("22%"), width: wp("70%")}]}>
             <Text style={styles.modalText}>Set your target for GWP</Text>
             <TextInput
               style={styles.input}
-              onChangeText={setInputValue}
+              onChangeText={text => {
+                const numericValue = text.replace(/[^0-9]/g, '');
+                setInputValue(numericValue);
+              }}
               value={inputValue}
+              keyboardType='numeric'
             />
             <View style={styles.buttonRow}>
               <TouchableOpacity
                 onPress={handleSubmit}
-                style={styles.blueButton}
+                style={[styles.blueButton, {height: hp("5.5%"), width: wp("30%")}]}
               >
                 <Text style={styles.buttonText}>Set Target</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={handleCancel} style={styles.redButton}>
+              <TouchableOpacity onPress={handleCancel} style={[styles.redButton, {height: hp("5.5%"), width: wp("30%")}]} >
                 <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
@@ -136,6 +140,9 @@ export default function GWPkpi({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height:wp("20%"),
   },
   touchableArea: {
     flexDirection: "row",
@@ -147,7 +154,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: "lightgrey",
   },
-  chartContainer: {},
+  chartContainer: {
+    
+  },
   percentageTextContainer: {
     position: "absolute",
     top: "50%",
@@ -182,55 +191,62 @@ const styles = StyleSheet.create({
   },
   centeredView: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: hp("10%"),
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
-    margin: hp("10%"),
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 20,
-    padding: wp("10%"),
-    alignItems: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
-      width: wp("2%"),
-      height: hp("1%"),
+      width: wp('2%'),
+      height: hp('1%'),
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    padding: wp("2%"),
   },
   modalText: {
-    marginBottom: 15,
-    textAlign: "center",
-    fontSize: wp("4.5%"),
+    textAlign: 'center',
+    fontSize: wp('4.5%'),
+    marginBottom: hp('2%'),
   },
   input: {
-    height: hp("5%"),
-    width: wp("50%"),
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-    fontSize: wp("4.5%"),
+    height: hp('5%'),
+    width: wp('50%'),
+    marginVertical: hp('2%'),
+    borderBottomWidth: 1,
+    borderBottomColor: 'black', 
+    padding: hp('1%'),
+    fontSize: wp('4.5%'),
+    marginTop:1,
   },
   buttonRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: wp('60%'),
   },
   blueButton: {
-    backgroundColor: "blue",
-    padding: wp("4%"),
+    backgroundColor: 'blue',
     borderRadius: 5,
-    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight:10,
   },
   redButton: {
-    backgroundColor: "red",
-    padding: wp("4%"),
+    backgroundColor: 'red',
     borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonText: {
-    color: "white",
-    fontSize: wp("4.5%"),
+    color: 'white',
+    fontSize: wp('4%'),
+    textAlign: 'center',
+    paddingVertical: hp('1%'),
+    paddingHorizontal: wp('3%'),
   },
 });
