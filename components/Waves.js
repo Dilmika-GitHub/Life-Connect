@@ -39,7 +39,7 @@ export const Waves3 = ({ style }) => {
   return (
     <Svg
       style={style}
-      viewBox="0 0 390 291"
+      viewBox="0 -100 390 291"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
