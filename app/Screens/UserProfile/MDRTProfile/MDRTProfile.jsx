@@ -1,8 +1,18 @@
-import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import React, { useState, useEffect } from 'react';
+import { lockToPortrait, lockToAllOrientations } from "../../OrientationLock";
+import { useIsFocused } from '@react-navigation/native';
 
 export default function MDRTProfile() {
+  const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isFocused) {
+            lockToPortrait();
+        }
+    }, [isFocused]);
+
   return (
     <View style={styles.container}>
       {/* Top section border */}

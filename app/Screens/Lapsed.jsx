@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, TouchableOpacity, Alert, Linking, Platform } from 'react-native';
 import Modal from 'react-native-modal';
 import { SearchBar } from 'react-native-elements';
+import { lockToAllOrientations, lockToPortrait } from './OrientationLock';
+import { useIsFocused } from '@react-navigation/native';
 
 const data = [
     { title: 'DIVI THILINA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', contact: '076 123 4567', email: 'dilshan@gmail.com'},
@@ -30,7 +32,15 @@ const data = [
     </TouchableOpacity>
   );
   
-  export default function Lapsed() {
+  export default function Lapsed(navigation) {
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isFocused) {
+            lockToAllOrientations();
+        }
+    }, [isFocused]);
+
     const [isModalVisible, setModalVisible] = useState(false);
     const [modalContent, setModalContent] = useState({ title: '', key: '', name: '', amount: '', contact: '', email:''});
     const [searchValue, setSearchValue] = useState('');

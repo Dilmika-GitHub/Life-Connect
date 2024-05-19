@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { lockToPortrait, lockToAllOrientations } from "./OrientationLock";
+import { useIsFocused } from '@react-navigation/native';
 import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { SelectList } from 'react-native-dropdown-select-list';
@@ -273,7 +275,13 @@ const Competitions = () => {
     },
     
   };
-  
+  const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isFocused) {
+            lockToPortrait();
+        }
+    }, [isFocused]);
   
   return (
     <View style={styles.container}>
