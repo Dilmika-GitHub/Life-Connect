@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { lockToPortrait, lockToAllOrientations } from "../OrientationLock";
+import { useIsFocused } from '@react-navigation/native';
 import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
 const Profile = () => {
+  const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isFocused) {
+            lockToPortrait();
+        }
+    }, [isFocused]);
+
   return (
     <View style={styles.container}>
       {/* Top section with a simple color background */}

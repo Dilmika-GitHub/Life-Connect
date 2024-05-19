@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, TouchableOpacity, Alert, Linking, Platform } from 'react-native';
 import Modal from 'react-native-modal';
+import { lockToPortrait, lockToAllOrientations } from "./OrientationLock";
+import { useIsFocused } from '@react-navigation/native'; 
 
 const data = [
     { title:'YASTIYA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', contact: '076 123 4567', email: 'dilshan@gmail.com', maturetext: '2024/05/05'},
@@ -30,6 +32,14 @@ const data = [
   );
   
   export default function Maturity() {
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isFocused) {
+            lockToAllOrientations();
+        }
+    }, [isFocused]);
+
     const [isModalVisible, setModalVisible] = useState(false);
     const [modalContent, setModalContent] = useState({title: '', key: '', name: '', amount: '', contact: '', email:'', maturetext:'' });
   
