@@ -4,7 +4,7 @@
     "slug": "xProject",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "xProject-scheme",
+    "scheme": "xproject-scheme",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -16,15 +16,14 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.sanduni99.xProject"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.sanduni99.xProject"
+      "package": "com.dexter_rhys.xProject"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -38,9 +37,8 @@
         "origin": false
       },
       "eas": {
-        "projectId": "ef59b0f6-9515-4522-9efb-66baf9a98f5b"
+        "projectId": "bd6776eb-8798-4bfc-bf58-63a3ec02708c"
       }
-    },
-    "owner": "sanduni99"
+    }
   }
 }
