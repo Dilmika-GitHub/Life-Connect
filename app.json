@@ -4,7 +4,7 @@
     "slug": "xProject",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "xProject-scheme",
+    "scheme": "xproject-scheme",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
