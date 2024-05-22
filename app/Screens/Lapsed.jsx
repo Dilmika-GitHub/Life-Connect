@@ -4,10 +4,11 @@ import Modal from 'react-native-modal';
 import { SearchBar } from 'react-native-elements';
 import { lockToAllOrientations, lockToPortrait } from './OrientationLock';
 import { useIsFocused } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const data = [
-    { title: 'DIVI THILINA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', contact: '076 123 4567', email: 'dilshan@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15585XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', contact: '076 123 4589', email: 'sudarshan@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', contact: '9476 123 4567', email: 'dilshan@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP15585XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', contact: '94 76 333 7582', email: 'sudarshan@gmail.com'},
     { title: 'DIVI THILINA', key: 'GP10225XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00', contact: '076 345 4567', email: 'silva@gmail.com'},
     { title: 'DIVI THILINA', key: 'GP15586XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00' , contact: '076 768 4897', email: 'tharanga@gmail.com'},
     { title: 'DIVI THILINA', key: 'GP10226XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00' , contact: '076 123 4653', email: 'kulasekara@gmail.com'},
@@ -60,6 +61,12 @@ const data = [
     const handleEmailPress = (email) => {
       Linking.openURL(`mailto:${email}`);
     };
+    const handleWhatsAppPress = (contact) => {
+      let url = `whatsapp://send?phone=${contact}`;
+      Linking.openURL(url).catch(() => {
+        Alert.alert('Error', 'WhatsApp not installed or invalid contact number.');
+      });
+    };
     
     return (
       <View style={styles.searchbar}>
@@ -104,12 +111,29 @@ const data = [
               <Text style={styles.modalLabel}>Sum Assured </Text>
               <Text style={styles.modalText}>{modalContent.amount}</Text>
             </View>
-            <TouchableOpacity onPress={() => handleContactPress(modalContent.contact)}>
+            {/* <TouchableOpacity onPress={() => handleContactPress(modalContent.contact)}> */}
             <View style={styles.modalRow}>
               <Text style={styles.modalLabel}>Contact No. </Text>
-              <Text style={styles.modalTextLink}>{modalContent.contact}</Text>
+              <Text style={styles.modalText}>{modalContent.contact}</Text>
             </View>
-            </TouchableOpacity>
+            {/* </TouchableOpacity> */}
+            <View style={styles.modalRow}>
+            <Icon
+                  name="phone"
+                  size={20}
+                  color="blue"
+                  onPress={() => handleContactPress(modalContent.contact)}
+                  style={styles.contactIcon}
+                /> 
+            <Icon
+                  name="whatsapp"
+                  size={20}
+                  color="green"
+                  onPress={() => handleWhatsAppPress(modalContent.contact)}
+                  style={styles.whatsappIcon}
+                /> 
+            </View>
+
             <TouchableOpacity onPress={() => handleEmailPress(modalContent.email)}>
             <View style={styles.modalRow}>
               <Text style={styles.modalLabel}>Email </Text>
@@ -210,5 +234,11 @@ const data = [
     },
     input: {
       fontSize: 16,
-    },  
+    },
+    whatsappIcon: {
+      marginRight: 100,
+    },
+    contactIcon: {
+      marginLeft: 190,
+    },
   });
