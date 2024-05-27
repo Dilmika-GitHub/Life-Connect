@@ -8,24 +8,24 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const data = [
-    { title: 'DIVI THILINA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', contact: '94 76 123 4567', email: 'dilshan@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15585XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', contact: '94 75 669 2520', email: 'sudarshan@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10225XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00', contact: '94 76 345 4567', email: 'silva@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15586XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00' , contact: '94 76 768 4897', email: 'tharanga@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10226XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00' , contact: '94 76 123 4653', email: 'kulasekara@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15587XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00' , contact: '94 76 836 0388', email: 'gunathilake@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10227XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00' , contact: '94 76 171 5346', email: 'dilshan@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15588XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00' , contact: '94 78 325 6972', email: 'sudarshan@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10228XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00' , contact: '94 71 123 4567', email: 'silva@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15589XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00' , contact: '94 77 177 5767', email: 'dTharanga@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10229XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00' , contact: '94 76 567 4567', email: 'kulasekara@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15581XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00' , contact: '94 75 768 4235', email: 'gunathilake@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', date: '2024/05/27', contact: '94 76 123 4567', email: 'dilshan@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP15585XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', date: '2024/05/27', contact: '94 75 669 2520', email: 'sudarshan@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP10225XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00', date: '2024/05/27', contact: '94 76 345 4567', email: 'silva@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP15586XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00', date: '2024/05/27', contact: '94 76 768 4897', email: 'tharanga@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP10226XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00', date: '2024/05/27', contact: '94 76 123 4653', email: 'kulasekara@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP15587XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00', date: '2024/05/27', contact: '94 76 836 0388', email: 'gunathilake@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP10227XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', date: '2024/05/27', contact: '94 76 171 5346', email: 'dilshan@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP15588XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', date: '2024/05/27', contact: '94 78 325 6972', email: 'sudarshan@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP10228XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00', date: '2024/05/27', contact: '94 71 123 4567', email: 'silva@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP15589XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00', date: '2024/05/27', contact: '94 77 177 5767', email: 'dTharanga@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP10229XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00', date: '2024/05/27', contact: '94 76 567 4567', email: 'kulasekara@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP15581XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00', date: '2024/05/27', contact: '94 75 768 4235', email: 'gunathilake@gmail.com'},
   ];
 
-  const Item = ({title,  name, amount, contact, email, keyText, index, onPress }) => (
+  const Item = ({title,  name, amount, date, contact, email, keyText, index, onPress }) => (
     <TouchableOpacity
       style={[styles.item]}
-      onPress={() => onPress(title, keyText, name, amount, contact, email)}
+      onPress={() => onPress(title, keyText, name, amount,date, contact, email)}
     >
       <Text style={styles.keyText}>{keyText}</Text>
       <Text style={styles.name}>{name}</Text>
@@ -45,11 +45,11 @@ const data = [
     }, [isFocused]);
 
     const [isModalVisible, setModalVisible] = useState(false);
-    const [modalContent, setModalContent] = useState({ title: '', key: '', name: '', amount: '', contact: '', email:''});
+    const [modalContent, setModalContent] = useState({ title: '', key: '', name: '', amount: '', date: '', contact: '', email:''});
     const [searchValue, setSearchValue] = useState('');
 
-    const showDetails = (title, key, name, amount, contact, email) => {
-      setModalContent({ title, key, name, amount, contact, email });
+    const showDetails = (title, key, name, amount, date, contact, email) => {
+      setModalContent({ title, key, name, amount, date, contact, email });
       setModalVisible(true);
     };
   
@@ -89,6 +89,7 @@ const data = [
               title={item.title}
               name={item.name}
               amount={item.amount}
+              date={item.date}
               contact={item.contact}
               email={item.email}
               keyText={item.key}
@@ -112,6 +113,10 @@ const data = [
             <View style={styles.modalRow}>
               <Text style={styles.modalLabel}>Sum Assured </Text>
               <Text style={styles.modalText}>{modalContent.amount}</Text>
+            </View>
+            <View style={styles.modalRow}>
+              <Text style={styles.modalLabel}>Lapsed Date </Text>
+              <Text style={styles.modalText}>{modalContent.date}</Text>
             </View>
             {/* <TouchableOpacity onPress={() => handleContactPress(modalContent.contact)}> */}
             <View style={styles.modalRow}>
