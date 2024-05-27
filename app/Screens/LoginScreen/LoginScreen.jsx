@@ -75,25 +75,21 @@ const styles = StyleSheet.create({
   welcomeText:{
     //bottom:wp('70%'),
     //right:wp('25%'),
-    width: hp('50%'),
-    height: wp('50%'),
-    left: wp('10%'),
-    top: hp('5%'),
-    position: "absolute",
+    //width: wp('60%'),
+    //height: hp('50%'),
+    right: wp('20%'),
+    top: -hp('50%'),
+    //position: "absolute",
     color:'white',
     fontSize:hp('4%'),
     fontFamily:'Poppins',
   },
   title: {
     fontSize: wp('8%'),
-    width: wp('25%'),
-    height: hp('25%'),
-    left: wp('8%'),
-    top: hp('29%'),
-    position: "absolute",
+    right: wp('30%'),
+    top: -hp('5%'),
     color: "black",
     fontFamily: "poppins",
-    fontWeight:'400',
   },
   input: {
     height: hp('5%'),
@@ -107,33 +103,28 @@ const styles = StyleSheet.create({
   },
   wavesTop: {
     position: "absolute",
-    top: -wp('58%'),
-    height: hp('71%'),
     left: 0,
     right: 0,
   },
   wavesTopSub: {
     position: "absolute",
-    top: -wp('37%'),
-    height: hp('73%'),
     left: 0,
     right: 0,
   },
   wavesBottom: {
     position: "absolute",
-    bottom: -hp('24%'),
-    height: hp('72%'),
     left: 0,
     right: 0,
   },
   loginButton: {
     width: wp('33%'),
     height: hp('6%'),
-    left: wp('60%'),
-    top: hp('77%'),
-    position: 'absolute',
+    top: hp('29%'),
+    left: wp('30%'),
     backgroundColor: 'white',
     borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
     shadowColor: 'rgba(0, 0, 0, 0.25)',
     shadowOffset: {
       width: 0,
@@ -164,17 +155,10 @@ const styles = StyleSheet.create({
   // },
 
   loginButtonText: {
-    width: wp('30%'),
-    height: hp('30%'),
-    left: wp('9.5%'),
-    top: hp('0.8%'),
-    position: 'absolute',
     color: 'black',
-    fontSize: wp('6%'),
     fontSize: hp('3%'),
-    fontFamily: 'Poppins', // Make sure 'Poppins' is correctly loaded in your project
-    fontWeight: 400,
-    zIndex: 2, // Ensure the button text appears above the background
+    fontFamily: 'Poppins-Regular', // Make sure 'Poppins' is correctly loaded in your project
+    fontWeight: '400',
   },
 });
 
