@@ -48,7 +48,7 @@ export default function DashboardScreen({
     <ScrollView style={styles.scrollView}>
       <View style={styles.centeredView}>
         <Text style={styles.titleText(textColor || color)}>
-          Sales Performance
+          Income Performance
         </Text>
       </View>
       <View style={styles.iconView}>
