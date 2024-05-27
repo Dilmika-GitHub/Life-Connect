@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Alert, Linking, Platform } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Alert, Linking, Platform, Dimensions } from 'react-native';
 import Modal from 'react-native-modal';
 import { SearchBar } from 'react-native-elements';
 import { lockToAllOrientations, lockToPortrait } from './OrientationLock';
 import { useIsFocused } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const data = [
-    { title: 'DIVI THILINA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', contact: '076 123 4567', email: 'dilshan@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15585XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', contact: '076 123 4589', email: 'sudarshan@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10225XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00', contact: '076 345 4567', email: 'silva@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15586XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00' , contact: '076 768 4897', email: 'tharanga@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10226XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00' , contact: '076 123 4653', email: 'kulasekara@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15587XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00' , contact: '076 836 0388', email: 'gunathilake@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10227XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00' , contact: '076 171 5346', email: 'dilshan@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15588XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00' , contact: '078 325 6972', email: 'sudarshan@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10228XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00' , contact: '071 123 4567', email: 'silva@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15589XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00' , contact: '077 177 5767', email: 'dTharanga@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10229XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00' , contact: '076 567 4567', email: 'kulasekara@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15581XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00' , contact: '075 768 4235', email: 'gunathilake@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', contact: '94 76 123 4567', email: 'dilshan@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP15585XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', contact: '94 75 669 2520', email: 'sudarshan@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP10225XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00', contact: '94 76 345 4567', email: 'silva@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP15586XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00' , contact: '94 76 768 4897', email: 'tharanga@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP10226XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00' , contact: '94 76 123 4653', email: 'kulasekara@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP15587XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00' , contact: '94 76 836 0388', email: 'gunathilake@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP10227XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00' , contact: '94 76 171 5346', email: 'dilshan@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP15588XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00' , contact: '94 78 325 6972', email: 'sudarshan@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP10228XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00' , contact: '94 71 123 4567', email: 'silva@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP15589XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00' , contact: '94 77 177 5767', email: 'dTharanga@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP10229XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00' , contact: '94 76 567 4567', email: 'kulasekara@gmail.com'},
+    { title: 'DIVI THILINA', key: 'GP15581XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00' , contact: '94 75 768 4235', email: 'gunathilake@gmail.com'},
   ];
 
   const Item = ({title,  name, amount, contact, email, keyText, index, onPress }) => (
@@ -31,7 +33,8 @@ const data = [
       {/* <Text style={styles.contact}>{contact}</Text> */}
     </TouchableOpacity>
   );
-  
+  const { width, height } = Dimensions.get("window"); // Get screen dimensions
+
   export default function Lapsed(navigation) {
     const isFocused = useIsFocused();
 
@@ -59,6 +62,12 @@ const data = [
 
     const handleEmailPress = (email) => {
       Linking.openURL(`mailto:${email}`);
+    };
+    const handleWhatsAppPress = (contact) => {
+      let url = `whatsapp://send?phone=${contact}`;
+      Linking.openURL(url).catch(() => {
+        Alert.alert('Error', 'WhatsApp not installed or invalid contact number.');
+      });
     };
     
     return (
@@ -104,12 +113,29 @@ const data = [
               <Text style={styles.modalLabel}>Sum Assured </Text>
               <Text style={styles.modalText}>{modalContent.amount}</Text>
             </View>
-            <TouchableOpacity onPress={() => handleContactPress(modalContent.contact)}>
+            {/* <TouchableOpacity onPress={() => handleContactPress(modalContent.contact)}> */}
             <View style={styles.modalRow}>
               <Text style={styles.modalLabel}>Contact No. </Text>
-              <Text style={styles.modalTextLink}>{modalContent.contact}</Text>
+              <Text style={styles.modalText}>{modalContent.contact}</Text>
             </View>
-            </TouchableOpacity>
+            {/* </TouchableOpacity> */}
+            <View style={styles.modalRow}>
+            <Icon
+                  name="phone"
+                  size={20}
+                  color="blue"
+                  onPress={() => handleContactPress(modalContent.contact)}
+                  style={styles.contactIcon}
+                /> 
+            <Icon
+                  name="whatsapp"
+                  size={20}
+                  color="green"
+                  onPress={() => handleWhatsAppPress(modalContent.contact)}
+                  style={styles.whatsappIcon}
+                /> 
+            </View>
+
             <TouchableOpacity onPress={() => handleEmailPress(modalContent.email)}>
             <View style={styles.modalRow}>
               <Text style={styles.modalLabel}>Email </Text>
@@ -210,5 +236,12 @@ const data = [
     },
     input: {
       fontSize: 16,
-    },  
-  });
+    },
+    whatsappIcon: {
+      marginRight: wp('15'),
+      // marginLeft: wp('50'),
+    },
+    contactIcon: {
+      marginLeft: wp('45') ,
+    },
+  })
