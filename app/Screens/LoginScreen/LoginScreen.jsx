@@ -12,7 +12,7 @@ import { Waves, Waves2, Waves3 } from "../../../components/Waves";
 import { Link } from "expo-router";
 import { useFonts } from "expo-font";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-
+import CheckConnection from "../../../components/checkConnection";
 
 
 const LoginScreen = () => {
@@ -60,6 +60,7 @@ const LoginScreen = () => {
         </Link>
       </TouchableOpacity>
       <Text style={styles.welcomeText}>WELCOME</Text>
+      <CheckConnection />
     </View>
   );
 };
