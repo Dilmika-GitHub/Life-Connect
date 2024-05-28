@@ -107,7 +107,7 @@ const CustomDrawerContent = ({ navigation }) => {
         <DrawerItem
           label={() => (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text>Maturity          </Text>
+              <Text style={{color:'#595959'}}>Maturity          </Text>
               <View style={{ backgroundColor: "#FF5733", borderRadius: 20, marginLeft: 5, paddingHorizontal: 10, paddingVertical: 5 }}>
                 <Text style={{ color: "#fff" }}>3</Text>
               </View>

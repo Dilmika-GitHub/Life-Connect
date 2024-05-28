@@ -11,6 +11,7 @@ import NOPkpi from "./KPIs/NOPkpi";
 import FYPkpi from "./KPIs/FYPkpi";
 import GWPkpi from "./KPIs/GWPkpi";
 import MCFPkpi from "./KPIs/MCFPkpi";
+import CheckConnection from "../../../components/checkConnection";
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const { height, width } = Dimensions.get('window');
@@ -46,6 +47,7 @@ export default function DashboardScreen({
 
   return (
     <ScrollView style={styles.scrollView}>
+      <CheckConnection />
       <View style={styles.centeredView}>
         <Text style={styles.titleText(textColor || color)}>
           Income Performance
