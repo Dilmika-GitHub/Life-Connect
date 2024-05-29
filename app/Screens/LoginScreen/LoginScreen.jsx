@@ -1,51 +1,74 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
-  Button,
-  StyleSheet,
   TouchableOpacity,
+  StyleSheet,
   Dimensions,
+  Modal,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Waves, Waves2, Waves3 } from "../../../components/Waves";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import { useFonts } from "expo-font";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CheckConnection from "../../../components/checkConnection";
-const [isAuthenticated, setIsAuthenticated] = useState(false);
-
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showSavePasswordPopup, setShowSavePasswordPopup] = useState(false);
+  const router = useRouter();
+
   const [fontsLoaded] = useFonts({
     "Poppins-Regular": require("../../../assets/font/Poppins-Regular.ttf"),
     // Add other font weights and styles if necessary
   });
 
+  useEffect(() => {
+    const checkStoredCredentials = async () => {
+      const storedUsername = await AsyncStorage.getItem("username");
+      const storedPassword = await AsyncStorage.getItem("password");
+      if (storedUsername && storedPassword) {
+        setUsername(storedUsername);
+        setPassword(storedPassword);
+      }
+    };
+
+    checkStoredCredentials();
+  }, []);
+
   const handleLogin = () => {
-    console.log("Username:", username);
-    console.log("Password:", password);
-    if(username == "admin" && password == "admin") {
-      setIsAuthenticated(true);
+    if (username === "admin" && password === "admin") {
+      const firstLogin = !localStorage.getItem('loggedBefore');
+      if (firstLogin) {
+        setShowSavePasswordPopup(true);
+      } else {
+        router.push("../Screens/HomePage/Home");
+      }
     } else {
       alert("Invalid credentials");
     }
-    //want to add navigation
+  };
+
+  const handleSavePassword = async (save) => {
+    if (save) {
+      await AsyncStorage.setItem("username", username);
+      await AsyncStorage.setItem("password", password);
+    }
+    localStorage.setItem('loggedBefore', 'true');
+    setShowSavePasswordPopup(false);
+    router.push("../Screens/HomePage/Home");
   };
 
   return (
     <View style={styles.container}>
-      
       <Waves2 style={styles.wavesTopSub} />
       <Waves style={styles.wavesTop} />
-
-      
-
       <Waves3 style={styles.wavesBottom}></Waves3>
       <Text style={styles.title}>Login</Text>
-      
+
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -59,20 +82,43 @@ const LoginScreen = () => {
         value={password}
         secureTextEntry
       />
-      
+
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-      {/* <Link style={styles.loginText} href={'../Screens/HomePage/Home'} asChild> */}
         <Text style={styles.loginButtonText}>Login</Text>
-        {/* </Link> */}
       </TouchableOpacity>
-      {isAuthenticated && (
-        <Link style={styles.hiddenLink} href={'../Screens/HomePage/Home'} />
-      )}
       <Text style={styles.welcomeText}>WELCOME</Text>
       <CheckConnection />
+
+      <Modal
+        visible={showSavePasswordPopup}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowSavePasswordPopup(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Do you want to save your password?</Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => handleSavePassword(true)}
+              >
+                <Text style={styles.modalButtonText}>Yes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => handleSavePassword(false)}
+              >
+                <Text style={styles.modalButtonText}>No</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
+
 const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
 const styles = StyleSheet.create({
@@ -82,17 +128,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
-  welcomeText:{
-    //bottom:wp('70%'),
-    //right:wp('25%'),
-    //width: wp('60%'),
-    //height: hp('50%'),
+  welcomeText: {
     right: wp('20%'),
     top: -hp('50%'),
-    //position: "absolute",
-    color:'white',
-    fontSize:hp('4%'),
-    fontFamily:'Poppins',
+    color: 'white',
+    fontSize: hp('4%'),
+    fontFamily: 'Poppins',
   },
   title: {
     fontSize: wp('8%'),
@@ -145,30 +186,46 @@ const styles = StyleSheet.create({
     elevation: 2, // For Android shadow
     zIndex: 1, // Ensure the button text appears above the background
   },
-
-  // loginButton: {
-  //   width: width * 0.4, // Set width based on screen width
-  //   height: height * 0.07, // Set height based on screen height
-  //   backgroundColor: "white",
-  //   borderRadius: 20,
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  //   marginTop: height * 0.03, // Set margin top based on screen height
-  //   shadowColor: "rgba(0, 0, 0, 0.25)",
-  //   shadowOffset: {
-  //     width: 0,
-  //     height: 2,
-  //   },
-  //   shadowOpacity: 1,
-  //   shadowRadius: 2,
-  //   elevation: 2,
-  // },
-
   loginButtonText: {
     color: 'black',
     fontSize: hp('3%'),
     fontFamily: 'Poppins-Regular', // Make sure 'Poppins' is correctly loaded in your project
     fontWeight: '400',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    width: wp("80%"),
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalText: {
+    fontSize: wp('5%'),
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  modalButton: {
+    flex: 1,
+    marginHorizontal: 10,
+    paddingVertical: 10,
+    backgroundColor: "#007bff",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  modalButtonText: {
+    color: "white",
+    fontSize: wp('4%'),
   },
 });
 
