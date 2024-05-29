@@ -13,6 +13,7 @@ import { Link } from "expo-router";
 import { useFonts } from "expo-font";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CheckConnection from "../../../components/checkConnection";
+const [isAuthenticated, setIsAuthenticated] = useState(false);
 
 
 const LoginScreen = () => {
@@ -26,6 +27,11 @@ const LoginScreen = () => {
   const handleLogin = () => {
     console.log("Username:", username);
     console.log("Password:", password);
+    if(username == "admin" && password == "admin") {
+      setIsAuthenticated(true);
+    } else {
+      alert("Invalid credentials");
+    }
     //want to add navigation
   };
 
@@ -55,10 +61,13 @@ const LoginScreen = () => {
       />
       
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-      <Link style={styles.loginText} href={'../Screens/HomePage/Home'} asChild>
+      {/* <Link style={styles.loginText} href={'../Screens/HomePage/Home'} asChild> */}
         <Text style={styles.loginButtonText}>Login</Text>
-        </Link>
+        {/* </Link> */}
       </TouchableOpacity>
+      {isAuthenticated && (
+        <Link style={styles.hiddenLink} href={'../Screens/HomePage/Home'} />
+      )}
       <Text style={styles.welcomeText}>WELCOME</Text>
       <CheckConnection />
     </View>
