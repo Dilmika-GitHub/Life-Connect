@@ -19,6 +19,7 @@ const LoginScreen = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showSavePasswordPopup, setShowSavePasswordPopup] = useState(false);
+  const [hasSavedCredentials, setHasSavedCredentials] = useState(false);
   const router = useRouter();
 
   const [fontsLoaded] = useFonts({
@@ -30,9 +31,17 @@ const LoginScreen = () => {
     const checkStoredCredentials = async () => {
       const storedUsername = await AsyncStorage.getItem("username");
       const storedPassword = await AsyncStorage.getItem("password");
+      const loggedBefore = await AsyncStorage.getItem('loggedBefore');
       if (storedUsername && storedPassword) {
         setUsername(storedUsername);
         setPassword(storedPassword);
+        setHasSavedCredentials(true);
+      }
+      else {
+        setHasSavedCredentials(false);
+      }
+      if (!loggedBefore) {
+        await AsyncStorage.setItem('loggedBefore', 'true');
       }
     };
 
@@ -41,10 +50,7 @@ const LoginScreen = () => {
 
   const handleLogin = async() => {
     if (username === "admin" && password === "admin") {
-      const loggedBefore = await AsyncStorage.getItem('loggedBefore');
-      // const firstLogin = async () => !(await AsyncStorage.getItem('loggedBefore'));
-      if (loggedBefore) 
-      {
+      if (!hasSavedCredentials) {
         setShowSavePasswordPopup(true);
       } else {
         router.push("../Screens/HomePage/Home");
@@ -59,7 +65,7 @@ const LoginScreen = () => {
       await AsyncStorage.setItem("username", username);
       await AsyncStorage.setItem("password", password);
     }
-    await AsyncStorage.setItem('loggedBefore', 'true');
+    // await AsyncStorage.setItem('loggedBefore', 'true');
     setShowSavePasswordPopup(false);
     router.push("../Screens/HomePage/Home");
   };
