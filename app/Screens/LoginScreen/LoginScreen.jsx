@@ -39,10 +39,12 @@ const LoginScreen = () => {
     checkStoredCredentials();
   }, []);
 
-  const handleLogin = () => {
+  const handleLogin = async() => {
     if (username === "admin" && password === "admin") {
-      const firstLogin = async () => !(await AsyncStorage.getItem('loggedBefore'));
-      if (firstLogin) {
+      const loggedBefore = await AsyncStorage.getItem('loggedBefore');
+      // const firstLogin = async () => !(await AsyncStorage.getItem('loggedBefore'));
+      if (loggedBefore) 
+      {
         setShowSavePasswordPopup(true);
       } else {
         router.push("../Screens/HomePage/Home");
