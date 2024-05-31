@@ -27,6 +27,7 @@ const LoginScreen = () => {
     // Add other font weights and styles if necessary
   });
 
+  //check if credentials saved
   useEffect(() => {
     const checkStoredCredentials = async () => {
       const storedUsername = await AsyncStorage.getItem("username");
@@ -48,18 +49,20 @@ const LoginScreen = () => {
     checkStoredCredentials();
   }, []);
 
+  // check credentials and ask to save if not saved
   const handleLogin = async() => {
     if (username === "admin" && password === "admin") {
       if (!hasSavedCredentials) {
         setShowSavePasswordPopup(true);
       } else {
-        router.push("../Screens/HomePage/Home");
+        router.push("../Screens/HomePage/Home"); //if credentials already saved
       }
     } else {
       alert("Invalid credentials");
     }
   };
 
+  // save password
   const handleSavePassword = async (save) => {
     if (save) {
       await AsyncStorage.setItem("username", username);
@@ -67,7 +70,7 @@ const LoginScreen = () => {
     }
     // await AsyncStorage.setItem('loggedBefore', 'true');
     setShowSavePasswordPopup(false);
-    router.push("../Screens/HomePage/Home");
+    router.push("..Screens/HomePage/Home");
   };
 
   return (
