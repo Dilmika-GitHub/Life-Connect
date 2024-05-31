@@ -1,28 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { lockToPortrait, lockToAllOrientations } from "../OrientationLock";
-import { useIsFocused } from '@react-navigation/native';
-import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-
-const { width, height } = Dimensions.get("window"); // Get screen dimensions
+import { View, Text, StyleSheet, Image } from 'react-native';
+import React from 'react';
+import { Link } from "expo-router";
 
 const Profile = () => {
-  const isFocused = useIsFocused();
-
-    useEffect(() => {
-        if (isFocused) {
-            lockToPortrait();
-        }
-    }, [isFocused]);
-
   return (
     <View style={styles.container}>
-      {/* Top section with a simple color background */}
+      {/* Top section border */}
       <View style={[styles.section, styles.topSection]}></View>
 
-      {/* Bottom section containing user information */}
+      {/* Bottom section border */}
       <View style={[styles.section, styles.bottomSection]}>
-        {/* Information box with user details */}
+        {/* Grey color square text */}
         <View style={styles.greySquare}>
           <View style={styles.row}>
             <Text style={styles.titleText}>Agent Code:</Text>
@@ -40,10 +28,15 @@ const Profile = () => {
             <Text style={styles.titleText}>Mobile No:</Text>
             <Text style={styles.normalText}>077 123 4567</Text>
           </View>
-        </View>
+          <View style={styles.row}>
+          <Link style={styles.loginText} href={'../LoginScreen/ChangePassword'} asChild>
+            <Text style={styles.changePasswordText}>Change Password</Text>
+            </Link>
+          </View>
+        </View> 
       </View>
 
-      {/* Circular profile image */}
+      {/* Profile Image */}
       <View style={styles.imageContainer}>
         <Image 
           source={require('../../../components/user.jpg')} 
@@ -74,45 +67,51 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     position: 'absolute',
-    left: wp('50%'),  // Center horizontally
-    top: hp('16%'),   // Position vertically
-    transform: [{ translateX: -wp('25%') }, { translateY: -hp('12%') }]  // Adjust to center the image
+    left: '50%',
+    top: '16%', 
+    transform: [{ translateX: -100 }, { translateY: -100 }]
   },
   roundImage: {
-    width: wp('50%'),
-    height: wp('50%'),
-    borderRadius: wp('25%'),  // Circular image
+    width: 200, 
+    height: 200, 
+    borderRadius: 100
   },
   imageText: {
-    marginTop: hp('1.5%'),
+    marginTop: 10, 
     textAlign: 'center',
-    fontSize: wp('4%'),
+    fontSize: 16,
     fontWeight: 'bold',
     color: 'black'
   },
   greySquare: {
-    width: wp('80%'),
-    height: hp('25%'),
+    width: 320,
+    height: 155,
     backgroundColor: 'lightgrey',
-    marginTop: hp('34%'),
+    marginTop: 150, 
     alignSelf: 'center',
     borderRadius: 10,
-    padding: wp('2.5%'),
+    padding: 10,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: hp('2%'),
+    marginBottom: 10,
   },
   titleText: {
-    fontSize: wp('4%'),
+    fontSize: 16,
     color: 'black',
-    minWidth: wp('25%'),
+    minWidth: 100, // Ensure alignment
   },
   normalText: {
-    fontSize: wp('4%'),
+    fontSize: 16,
     color: 'grey'
   },
+  changePasswordText:{
+    fontSize: 16,
+    color: 'blue',
+  }
 });
+
+
 
 export default Profile;
