@@ -55,7 +55,7 @@ const LoginScreen = () => {
       if (!hasSavedCredentials) {
         setShowSavePasswordPopup(true);
       } else {
-        router.push("../Screens/HomePage/Home"); //if credentials already saved
+        router.push("/Screens/HomePage/Home"); //if credentials already saved
       }
     } else {
       alert("Invalid credentials");
@@ -63,15 +63,35 @@ const LoginScreen = () => {
   };
 
   // save password
-  const handleSavePassword = async (save) => {
-    if (save) {
-      await AsyncStorage.setItem("username", username);
-      await AsyncStorage.setItem("password", password);
-    }
-    // await AsyncStorage.setItem('loggedBefore', 'true');
-    setShowSavePasswordPopup(false);
-    router.push("../Screens/HomePage/Home"); //should change in 1st time login
-  };
+  // const handleSavePassword = async (save) => {
+  //   if (save) {
+  //     await AsyncStorage.setItem("username", username);
+  //     await AsyncStorage.setItem("password", password);
+  //   }
+  //   // await AsyncStorage.setItem('loggedBefore', 'true');
+  //   setShowSavePasswordPopup(false);
+  //   router.push("../Screens/HomePage/Home"); //should change in 1st time login
+  // };
+
+  // save password
+const handleSavePassword = async (save) => {
+  const loggedBefore = await AsyncStorage.getItem('loggedBefore');
+
+  if (save) {
+    await AsyncStorage.setItem("username", username);
+    await AsyncStorage.setItem("password", password);
+  }
+  
+  setShowSavePasswordPopup(false);
+
+  if (loggedBefore) {
+    router.push("/Screens/HomePage/Home"); // for subsequent logins
+  } else {
+    await AsyncStorage.setItem('loggedBefore', 'true');
+    router.push("/Screens/HomePage/Home"); // for the first login
+  }
+};
+
 
   return (
     <View style={styles.container}>
