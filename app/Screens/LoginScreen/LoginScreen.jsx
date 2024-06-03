@@ -70,7 +70,7 @@ const LoginScreen = () => {
     }
     // await AsyncStorage.setItem('loggedBefore', 'true');
     setShowSavePasswordPopup(false);
-    router.push("..Screens/HomePage/Home");
+    router.push("../Screens/HomePage/Home"); //should change in 1st time login
   };
 
   return (
