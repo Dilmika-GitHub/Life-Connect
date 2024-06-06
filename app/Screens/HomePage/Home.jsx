@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, CommonActions } from "@react-navigation/native";
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -25,6 +25,9 @@ import Maturity from "../Maturity";
 import Lapsed from "../Lapsed"
 import MDRTProfile from "../UserProfile/MDRTProfile/MDRTProfile";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoginScreen from "../LoginScreen/LoginScreen";
+import ChangePassword from "../LoginScreen/ChangePassword";
 
 const Drawer = createDrawerNavigator();
 
@@ -36,9 +39,21 @@ const CustomDrawerContent = ({ navigation }) => {
     setLogoutConfirmationVisible(true);
   };
 
-  const handleConfirmLogout = () => {
+  const handleConfirmLogout = async () => {
     setLogoutConfirmationVisible(false);
-    // Optionally, navigate to the login screen here if needed
+
+    // await AsyncStorage.clear(); //uncomment if you want to clear credentials when login out
+
+    // Reset the navigation stack and navigate to the Login screen
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      })
+    );
+    
+    // await AsyncStorage.removeItem("username");
+    // await AsyncStorage.removeItem("password");
   };
 
   const handleCancelLogout = () => {
@@ -235,6 +250,8 @@ export default function Home() {
         <Drawer.Screen name="Maturity" component={Maturity} />
         <Drawer.Screen name="Lapsed" component={Lapsed} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
+        <Drawer.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false }} />
+        <Drawer.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       </Drawer.Navigator>
     </NavigationContainer>
   );

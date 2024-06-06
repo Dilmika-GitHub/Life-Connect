@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { lockToPortrait, lockToAllOrientations } from "./OrientationLock";
-import { useIsFocused } from '@react-navigation/native';
-import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
+import { useIsFocused, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity, Image, BackHandler } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Bar1, Bar2 } from "../../components/Chart";
 
 const Competitions = () => {
+  const navigation = useNavigation();
   const winnersData = [
     { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
     { name: 'Tara', achievedTarget: '14,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
@@ -147,6 +148,8 @@ const Competitions = () => {
       </View>
     );
   };
+
+  useEffect
   
 
   const renderProfilePic = (winner) => {
@@ -214,8 +217,20 @@ const Competitions = () => {
       </View>
     </View>
   );
-  
 
+  //hardware back button function
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        navigation.navigate('MDRT');
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [navigation])
+  );
 
   const screenWidth = Dimensions.get('window').width;
   const itemWidth = screenWidth * 0.97; 
