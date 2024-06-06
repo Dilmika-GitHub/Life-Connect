@@ -14,7 +14,6 @@ import { useRouter } from "expo-router";
 import { useFonts } from "expo-font";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CheckConnection from "../../../components/checkConnection";
-import axios from "axios";
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -51,38 +50,15 @@ const LoginScreen = () => {
   }, []);
 
   // check credentials and ask to save if not saved
-  // const handleLogin = async() => {
-  //   if (username === "admin" && password === "admin") {
-  //     if (!hasSavedCredentials) {
-  //       setShowSavePasswordPopup(true);
-  //     } else {
-  //       router.push("/Screens/HomePage/Home"); //if credentials already saved
-  //     }
-  //   } else {
-  //     alert("Invalid credentials");
-  //   }
-  // };
-
-  const handleLogin = async () => {
-    try {
-      const response = await axios.post("http://203.115.11.236:10155/SalesTrackAppAPI/swagger/index.html", {
-        userName: username,
-        password: password,
-        isActive: "Y",
-      });
-
-      if (response.data.success) { 
-        if (!hasSavedCredentials) {
-          setShowSavePasswordPopup(true);
-        } else {
-          router.push("/Screens/HomePage/Home");
-        }
+  const handleLogin = async() => {
+    if (username === "admin" && password === "admin") {
+      if (!hasSavedCredentials) {
+        setShowSavePasswordPopup(true);
       } else {
-        alert("Invalid credentials");
+        router.push("/Screens/HomePage/Home"); //if credentials already saved
       }
-    } catch (error) {
-      console.error("Login error: ", error);
-      alert("An error occurred during login. Please try again.");
+    } else {
+      alert("Invalid credentials");
     }
   };
 
