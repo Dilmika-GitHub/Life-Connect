@@ -16,6 +16,7 @@
     "@react-navigation/drawer": "^6.6.15",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/stack": "^6.3.29",
+    "axios": "^1.7.2",
     "expo-router": "^3.5.14",
     "expo-screen-orientation": "^7.0.5",
     "expo-status-bar": "~1.12.1",
