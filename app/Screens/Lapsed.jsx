@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Alert, Linking, Platform, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Alert, Linking, Platform, Dimensions, BackHandler } from 'react-native';
 import Modal from 'react-native-modal';
 import { SearchBar } from 'react-native-elements';
 import { lockToAllOrientations, lockToPortrait } from './OrientationLock';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
@@ -35,7 +35,7 @@ const data = [
   );
   const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
-  export default function Lapsed(navigation) {
+  export default function Lapsed({navigation}) {
     const isFocused = useIsFocused();
 
     useEffect(() => {
@@ -43,6 +43,22 @@ const data = [
             lockToAllOrientations();
         }
     }, [isFocused]);
+
+    useFocusEffect(
+      React.useCallback(() => {
+          const backAction = () => {
+              navigation.navigate('PolicyDetails');
+              return true;
+          };
+
+          const backHandler = BackHandler.addEventListener(
+              "hardwareBackPress",
+              backAction
+          );
+
+          return () => backHandler.remove();
+      }, [navigation])
+  );
 
     const [isModalVisible, setModalVisible] = useState(false);
     const [modalContent, setModalContent] = useState({ title: '', key: '', name: '', amount: '', date: '', contact: '', email:''});

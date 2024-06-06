@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'; // Make sure to install this or use any icon library you prefer
 import { Link } from "expo-router";
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ChangePassword = ({navigation}) => {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -39,6 +40,19 @@ const ChangePassword = ({navigation}) => {
   const navigateToProfilePage = () => {
     navigation.navigate('My Profile');
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        navigation.navigate('My Profile');
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [navigation])
+  );
 
   return (
     <View style={styles.container}>

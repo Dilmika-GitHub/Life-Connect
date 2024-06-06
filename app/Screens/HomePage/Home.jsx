@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { NavigationContainer, CommonActions } from "@react-navigation/native";
 import {
   createDrawerNavigator,
@@ -15,8 +15,6 @@ import {
   Button,
   SafeAreaView,
   Dimensions,
-  BackHandler,
-  Alert,
 } from "react-native";
 import DashboardScreen from "../DashboardScreen/DashboardScreen";
 import SettingsScreen from "../SettingsScreen";
@@ -216,67 +214,9 @@ const CustomDrawerContent = ({ navigation }) => {
 };
 const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
-const Home = () => {
-  const navigationRef = useRef();
-  const routeNameRef = useRef();
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [history, setHistory] = useState(["Home"]);  // Initialize with "Home"
-
-  useEffect(() => {
-    const backAction = () => {
-      if (isDrawerOpen) {
-        setIsDrawerOpen(false);
-        return true;
-      } else if (history.length > 1) {
-        setHistory(prevHistory => {
-          const newHistory = [...prevHistory];
-          newHistory.pop();
-          const previousRoute = newHistory[newHistory.length - 1];
-          navigationRef.current?.navigate(previousRoute);
-          return newHistory;
-        });
-        return true;
-      } else if (routeNameRef.current === "Home") {
-        Alert.alert("Hold on!", "Are you sure you want to exit?", [
-          {
-            text: "Cancel",
-            onPress: () => null,
-            style: "cancel",
-          },
-          { text: "YES", onPress: () => BackHandler.exitApp() },
-        ]);
-        return true;
-      } else {
-        navigationRef.current?.navigate("Home");
-        return true;
-      }
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, [isDrawerOpen, history]);
-
+export default function Home() {
   return (
-    <NavigationContainer independent={true}
-      ref={navigationRef}
-      onReady={() => {
-        routeNameRef.current = navigationRef.current.getCurrentRoute().name;
-      }}
-      onStateChange={async () => {
-        const previousRouteName = routeNameRef.current;
-        const currentRouteName = navigationRef.current.getCurrentRoute().name;
-
-        if (previousRouteName !== currentRouteName) {
-          setHistory(prevHistory => [...prevHistory, currentRouteName]);
-        }
-
-        routeNameRef.current = currentRouteName;
-      }}
-    >
+    <NavigationContainer independent={true}>
       <Drawer.Navigator
         initialRouteName="Home"
         drawerContent={(props) => <CustomDrawerContent {...props} />}
@@ -286,8 +226,6 @@ const Home = () => {
           },
           headerTintColor: "#fff",
         }}
-        onDrawerOpen={() => setIsDrawerOpen(true)}
-        onDrawerClose={() => setIsDrawerOpen(false)}
       >
         <Drawer.Screen name="Home" component={DashboardScreen} />
         <Drawer.Screen name="MDRT Ranking" component={Competitions} />
@@ -317,6 +255,4 @@ const Home = () => {
       </Drawer.Navigator>
     </NavigationContainer>
   );
-};
-
-export default Home;
+}
