@@ -27,6 +27,7 @@ import MDRTProfile from "../UserProfile/MDRTProfile/MDRTProfile";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginScreen from "../LoginScreen/LoginScreen";
+import ChangePassword from "../LoginScreen/ChangePassword";
 
 const Drawer = createDrawerNavigator();
 
@@ -249,6 +250,7 @@ export default function Home() {
         <Drawer.Screen name="Maturity" component={Maturity} />
         <Drawer.Screen name="Lapsed" component={Lapsed} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
+        <Drawer.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false }} />
         <Drawer.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       </Drawer.Navigator>
     </NavigationContainer>

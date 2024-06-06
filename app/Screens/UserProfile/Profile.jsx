@@ -2,7 +2,12 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import React from 'react';
 import { Link } from "expo-router";
 
-const Profile = () => {
+const Profile = ({navigation}) => {
+
+  const navigateToPasswordChange = () => {
+    navigation.navigate('ChangePassword');
+  };
+  
   return (
     <View style={styles.container}>
       {/* Top section border */}
@@ -29,9 +34,9 @@ const Profile = () => {
             <Text style={styles.normalText}>077 123 4567</Text>
           </View>
           <View style={styles.row}>
-          <Link style={styles.loginText} href={'../LoginScreen/ChangePassword'} asChild>
-            <Text style={styles.changePasswordText}>Change Password</Text>
-            </Link>
+          {/* <Link style={styles.loginText} > */}
+            <Text style={styles.changePasswordText} onPress={navigateToPasswordChange}>Change Password</Text>
+            {/* </Link> */}
           </View>
         </View> 
       </View>

@@ -83,6 +83,17 @@ const LoginScreen = () => {
       Alert.alert("Error", error.message);
     }
   };
+
+
+  // save password
+const handleSavePassword = async (save) => {
+  const loggedBefore = await AsyncStorage.getItem('loggedBefore');
+
+  if (save) {
+    await AsyncStorage.setItem("username", username);
+    await AsyncStorage.setItem("password", password);
+  }
+
   
 
   // Save password
