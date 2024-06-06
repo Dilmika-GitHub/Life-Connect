@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
   Modal,
+  Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Waves, Waves2, Waves3 } from "../../../components/Waves";
@@ -27,7 +28,7 @@ const LoginScreen = () => {
     // Add other font weights and styles if necessary
   });
 
-  //check if credentials saved
+  // Check if credentials are saved
   useEffect(() => {
     const checkStoredCredentials = async () => {
       const storedUsername = await AsyncStorage.getItem("username");
@@ -37,8 +38,7 @@ const LoginScreen = () => {
         setUsername(storedUsername);
         setPassword(storedPassword);
         setHasSavedCredentials(true);
-      }
-      else {
+      } else {
         setHasSavedCredentials(false);
       }
       if (!loggedBefore) {
@@ -49,49 +49,60 @@ const LoginScreen = () => {
     checkStoredCredentials();
   }, []);
 
-  // check credentials and ask to save if not saved
-  const handleLogin = async() => {
-    if (username === "admin" && password === "admin") {
-      if (!hasSavedCredentials) {
-        setShowSavePasswordPopup(true);
+  // Handle login
+  const handleLogin = async () => {
+    console.log(username)
+    console.log(password)
+    try {
+      const response = await fetch('http://203.115.11.236:10155/SalesTrackAppAPI/api/v1/Account/Authanticate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userName: username,
+          password: password,
+          isActive: 'Y', 
+        }),
+      });
+  
+      const jsonResponse = await response.json();
+      
+      console.log('Response:', jsonResponse); 
+  
+      if (response.ok && jsonResponse.status === "Y") { 
+        if (!hasSavedCredentials) {
+          setShowSavePasswordPopup(true);
+        } else {
+          router.push("/Screens/HomePage/Home"); // If credentials already saved
+        }
       } else {
-        router.push("/Screens/HomePage/Home"); //if credentials already saved
+        alert(`Invalid credentials: ${jsonResponse.error || 'Unknown error'}`);
       }
-    } else {
-      alert("Invalid credentials");
+    } catch (error) {
+      Alert.alert("Error", error.message);
     }
   };
-
-  // save password
-  // const handleSavePassword = async (save) => {
-  //   if (save) {
-  //     await AsyncStorage.setItem("username", username);
-  //     await AsyncStorage.setItem("password", password);
-  //   }
-  //   // await AsyncStorage.setItem('loggedBefore', 'true');
-  //   setShowSavePasswordPopup(false);
-  //   router.push("../Screens/HomePage/Home"); //should change in 1st time login
-  // };
-
-  // save password
-const handleSavePassword = async (save) => {
-  const loggedBefore = await AsyncStorage.getItem('loggedBefore');
-
-  if (save) {
-    await AsyncStorage.setItem("username", username);
-    await AsyncStorage.setItem("password", password);
-  }
   
-  setShowSavePasswordPopup(false);
 
-  if (loggedBefore) {
-    router.push("/Screens/HomePage/Home"); // for subsequent logins
-  } else {
-    await AsyncStorage.setItem('loggedBefore', 'true');
-    router.push("/Screens/HomePage/Home"); // for the first login
-  }
-};
+  // Save password
+  const handleSavePassword = async (save) => {
+    const loggedBefore = await AsyncStorage.getItem('loggedBefore');
 
+    if (save) {
+      await AsyncStorage.setItem("username", username);
+      await AsyncStorage.setItem("password", password);
+    }
+    
+    setShowSavePasswordPopup(false);
+
+    if (loggedBefore) {
+      router.push("/Screens/HomePage/Home"); // For subsequent logins
+    } else {
+      await AsyncStorage.setItem('loggedBefore', 'true');
+      router.push("/Screens/HomePage/Home"); // For the first login
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -159,17 +170,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
-  welcomeText:{
-    left:50,
+  welcomeText: {
+    left: 50,
     top: 50,
     position: "absolute",
-    color:'white',
-    fontSize:'35',
-    fontFamily:'Poppins',
+    color: 'white',
+    fontSize: 35,
+    fontFamily: 'Poppins',
   },
   title: {
     fontSize: 30,
-    position:'static',
+    position: 'static',
     right: 0,
     top: -10,
     color: "black",
