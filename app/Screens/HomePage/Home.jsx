@@ -27,7 +27,7 @@ import MDRTProfile from "../UserProfile/MDRTProfile/MDRTProfile";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginScreen from "../LoginScreen/LoginScreen";
-import ChangePassword from "../LoginScreen/ChangePassword";
+import ChangePassword from "../ChangePassword";
 
 const Drawer = createDrawerNavigator();
 
