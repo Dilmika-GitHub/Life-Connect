@@ -21,6 +21,7 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
   const [showSavePasswordPopup, setShowSavePasswordPopup] = useState(false);
   const [hasSavedCredentials, setHasSavedCredentials] = useState(false);
+  const [newCredentials, setNewCredentials] = useState(null); // To store new credentials
   const router = useRouter();
 
   const [fontsLoaded] = useFonts({
@@ -71,7 +72,11 @@ const LoginScreen = () => {
       console.log('Response:', jsonResponse); 
   
       if (response.ok && jsonResponse.status === "Y") { 
-        if (!hasSavedCredentials) {
+        const storedUsername = await AsyncStorage.getItem("username");
+        const storedPassword = await AsyncStorage.getItem("password");
+
+        if (storedUsername !== username || storedPassword !== password) {
+          setNewCredentials({ username, password });
           setShowSavePasswordPopup(true);
         } else {
           router.push("/Screens/HomePage/Home"); // If credentials already saved
@@ -90,14 +95,15 @@ const LoginScreen = () => {
     const loggedBefore = await AsyncStorage.getItem('loggedBefore');
 
     if (save) {
-      await AsyncStorage.setItem("username", username);
-      await AsyncStorage.setItem("password", password);
+      await AsyncStorage.setItem("username", newCredentials.username);
+      await AsyncStorage.setItem("password", newCredentials.password);
     }
     
     setShowSavePasswordPopup(false);
+    setNewCredentials(null);
 
     if (loggedBefore) {
-      router.push("/Screens/HomePage/Home"); // For subsequent logins
+      router.push("/Screens/HomePage/Home");
     } else {
       await AsyncStorage.setItem('loggedBefore', 'true');
       router.push("/Screens/HomePage/Home"); // For the first login
