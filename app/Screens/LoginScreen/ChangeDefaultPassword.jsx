@@ -56,17 +56,12 @@ const ChangeDefaultPassword = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={navigateToProfilePage}>
-        {/* <Link style={styles.loginText} href={'../UserProfile/Profile'} asChild> */}
-          <Icon name="arrow-back" size={24} color="#000" />
-        {/* </Link> */}
-      </TouchableOpacity>
       <Text style={styles.welcomeNote}>Welcome to Life Track App</Text>
       <Image
         source={require('../../../assets/changePassword.png')} 
         style={styles.image}
       />
-      <Text style={styles.discription}>Since this is your first login kindly set a new password</Text>
+      <Text style={styles.discription}>Since this is your first login, kindly set a new password.</Text>
 
       <Text style={styles.subtitle}>Please Enter Current Password</Text>
       <View style={styles.inputContainer}>
@@ -130,9 +125,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
-  },
-  backButton: {
-    marginBottom: 20,
   },
   welcomeNote: {
     fontSize: 30,
