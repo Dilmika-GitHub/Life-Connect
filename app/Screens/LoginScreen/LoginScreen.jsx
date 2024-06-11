@@ -94,7 +94,8 @@ const LoginScreen = () => {
   const handleSavePassword = async (save) => {
     const loggedBefore = await AsyncStorage.getItem('loggedBefore');
 
-    if (save) {
+    if (save && newCredentials) {
+      await clearStoredCredentials();
       await AsyncStorage.setItem("username", newCredentials.username);
       await AsyncStorage.setItem("password", newCredentials.password);
     }
@@ -108,6 +109,12 @@ const LoginScreen = () => {
       await AsyncStorage.setItem('loggedBefore', 'true');
       router.push("/Screens/HomePage/Home"); // For the first login
     }
+  };
+
+  // Clear stored credentials
+  const clearStoredCredentials = async () => {
+    await AsyncStorage.removeItem("username");
+    await AsyncStorage.removeItem("password");
   };
 
   return (
