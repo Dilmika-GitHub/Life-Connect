@@ -26,6 +26,7 @@ const LoginScreen = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const router = useRouter();
+  const [newCredentials, setNewCredentials] = useState(null); // To store new credentials
 
   const [fontsLoaded] = useFonts({
     "Poppins-Regular": require("../../../assets/font/Poppins-Regular.ttf"),
