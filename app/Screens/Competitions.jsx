@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
+import { lockToPortrait, lockToAllOrientations } from "./OrientationLock";
+import { useIsFocused, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity, Image, BackHandler } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Bar1, Bar2 } from "../../components/Chart";
 
 const Competitions = () => {
+  const navigation = useNavigation();
   const winnersData = [
     { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
     { name: 'Tara', achievedTarget: '14,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
@@ -33,7 +36,7 @@ const Competitions = () => {
   const userPlace = limitedWinnersData.findIndex(item => item.name === user.name) + 1;
   const userItem = { ...user, place: userPlace };
   limitedWinnersData.push(userItem);
-  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedValue, setSelectedValue] = useState('Island Ranking');
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
@@ -89,7 +92,7 @@ const Competitions = () => {
           { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
         ]);
         break;
-      case 'TOT Ranking  ':
+      case 'TOT Ranking':
           // Replace with your hard-coded team ranking data
         setSelectedData([
           { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
@@ -99,7 +102,7 @@ const Competitions = () => {
           { name: 'Edward', achievedTarget: '6,200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
         ]);
           break; 
-        case 'COT Ranking  ':
+        case 'COT Ranking':
             // Replace with your hard-coded team ranking data
           setSelectedData([
             { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
@@ -119,7 +122,7 @@ const Competitions = () => {
     return (
       <View style={styles.dropdownContainer}>
         <TouchableOpacity onPress={() => setShowDropdown(!showDropdown)} style={styles.dropdownTouchable}>
-          <Text style={styles.dropdownText}>{selectedValue || 'Select Ranking  '}</Text>
+          <Text style={styles.dropdownText}>{selectedValue}</Text>
           <Icon name={showDropdown ? 'angle-up' : 'angle-down'} size={20} color="#000" style={styles.dropdownIcon} />
         </TouchableOpacity>
         {showDropdown && (
@@ -133,10 +136,10 @@ const Competitions = () => {
             <TouchableOpacity onPress={() => handleSelectionChange('Branch Ranking')}>
               <Text style={styles.optionText}>Branch Ranking</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectionChange('COT Ranking  ')}>
+            <TouchableOpacity onPress={() => handleSelectionChange('COT Ranking')}>
               <Text style={styles.optionText}>COT Ranking</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectionChange('TOT Ranking  ')}>
+            <TouchableOpacity onPress={() => handleSelectionChange('TOT Ranking')}>
               <Text style={styles.optionText}>TOT Ranking</Text>
             </TouchableOpacity>
             {/* Add more options as needed */}
@@ -145,6 +148,8 @@ const Competitions = () => {
       </View>
     );
   };
+
+  useEffect
   
 
   const renderProfilePic = (winner) => {
@@ -212,8 +217,20 @@ const Competitions = () => {
       </View>
     </View>
   );
-  
 
+  //hardware back button function
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        navigation.navigate('MDRT');
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [navigation])
+  );
 
   const screenWidth = Dimensions.get('window').width;
   const itemWidth = screenWidth * 0.97; 
@@ -273,7 +290,13 @@ const Competitions = () => {
     },
     
   };
-  
+  const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isFocused) {
+            lockToPortrait();
+        }
+    }, [isFocused]);
   
   return (
     <View style={styles.container}>
@@ -501,6 +524,9 @@ const styles = StyleSheet.create({
   },
 });
 
-
-
 export default Competitions
+
+
+
+
+

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
+import { NavigationContainer, CommonActions } from "@react-navigation/native";
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -14,6 +14,8 @@ import {
   Modal,
   Button,
   SafeAreaView,
+  Dimensions,
+  ActivityIndicator 
 } from "react-native";
 import DashboardScreen from "../DashboardScreen/DashboardScreen";
 import SettingsScreen from "../SettingsScreen";
@@ -23,25 +25,71 @@ import PolicyDetails from "../PolicyDetails";
 import Maturity from "../Maturity";
 import Lapsed from "../Lapsed"
 import MDRTProfile from "../UserProfile/MDRTProfile/MDRTProfile";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoginScreen from "../LoginScreen/LoginScreen";
+import ChangePassword from "../ChangePassword";
+import axios from 'axios';
+import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 
 const Drawer = createDrawerNavigator();
 
 const CustomDrawerContent = ({ navigation }) => {
-  const [logoutConfirmationVisible, setLogoutConfirmationVisible] =
-    useState(false);
+  const [logoutConfirmationVisible, setLogoutConfirmationVisible] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() =>{
+    const fetchUserData = async () => {
+      try {
+        const token = await AsyncStorage.getItem('accessToken');
+        const email = await AsyncStorage.getItem('email');
+        const categoryType = await AsyncStorage.getItem('categoryType');
+
+        const response = await axios.get(BASE_URL+ENDPOINTS.PROFILE_DETAILS,{
+          headers:{
+            Authorization: `Bearer ${token}`
+          },
+          params: {
+            email: email,
+            catType: categoryType
+          }
+        });
+        setUserData(response.data);
+      } catch(error){
+        console.error('Error fetching user data:',error);
+      } finally{
+        setLoading(false);
+      }
+    };
+    fetchUserData();
+  },[]);
 
   const handleLogout = () => {
     setLogoutConfirmationVisible(true);
   };
 
-  const handleConfirmLogout = () => {
+  const handleConfirmLogout = async () => {
     setLogoutConfirmationVisible(false);
-    // Optionally, navigate to the login screen here if needed
+
+    // await AsyncStorage.clear(); //uncomment if you want to clear credentials when login out
+
+    // Reset the navigation stack and navigate to the Login screen
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      })
+    );
+    
+    // await AsyncStorage.removeItem("username");
+    // await AsyncStorage.removeItem("password");
   };
 
   const handleCancelLogout = () => {
     setLogoutConfirmationVisible(false);
   };
+  
 
   return (
     <DrawerContentScrollView>
@@ -62,8 +110,8 @@ const CustomDrawerContent = ({ navigation }) => {
             style={{ width: 40, height: 40, borderRadius: 20, marginRight: 10 }}
           />
           <View style={{ flexDirection: "column" }}>
-            <Text style={{ fontSize: 16 }}>Michael Smith</Text>
-            <Text style={{ fontSize: 12 }}>michalsmitch12@gmail.com</Text>
+          <Text style={{ fontSize: 16 }}>{userData?.intial?.trim()} {userData?.name}</Text>
+          <Text style={{ fontSize: 12 }}>{userData?.email || 'michalsmitch12@gmail.com'}</Text>
           </View>
         </TouchableOpacity>
 
@@ -101,8 +149,16 @@ const CustomDrawerContent = ({ navigation }) => {
             />
           )}
         />
+        {/* Custom DrawerItem for "Maturity" */}
         <DrawerItem
-          label="Maturity"
+          label={() => (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={{color:'#595959'}}>Maturity          </Text>
+              <View style={{ backgroundColor: "#FF5733", borderRadius: 20, marginLeft: 5, paddingHorizontal: 10, paddingVertical: 5 }}>
+                <Text style={{ color: "#fff" }}>3</Text>
+              </View>
+            </View>
+          )}
           onPress={() => navigation.navigate("Maturity")}
           icon={({ focused, color, size }) => (
             <Ionicons
@@ -124,7 +180,7 @@ const CustomDrawerContent = ({ navigation }) => {
                 color={color}
               />
             )}
-            style={{marginTop:440}}
+            style={{marginTop:hp('50%')}}
           />
         </View>
       </SafeAreaView>
@@ -187,6 +243,7 @@ const CustomDrawerContent = ({ navigation }) => {
     </DrawerContentScrollView>
   );
 };
+const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
 export default function Home() {
   return (
@@ -224,6 +281,8 @@ export default function Home() {
         <Drawer.Screen name="Maturity" component={Maturity} />
         <Drawer.Screen name="Lapsed" component={Lapsed} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
+        <Drawer.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false }} />
+        <Drawer.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       </Drawer.Navigator>
     </NavigationContainer>
   );

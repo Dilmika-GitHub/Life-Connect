@@ -1,10 +1,50 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 
-const { width, height } = Dimensions.get("window"); // Get screen dimensions
+const Profile = ({ navigation }) => {
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-const Profile = () => {
+  const fetchUserData = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken'); 
+      const email = await AsyncStorage.getItem('email'); 
+      const categoryType = await AsyncStorage.getItem('categoryType');
+
+      console.log(token);
+
+      const response = await axios.get(BASE_URL+ENDPOINTS.PROFILE_DETAILS,{
+          headers:{
+            Authorization: `Bearer ${token}`
+          },
+          params: {
+            email: email,
+            catType: categoryType
+          }
+        });
+      setUserData(response.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const navigateToPasswordChange = () => {
+    navigation.navigate('ChangePassword');
+  };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
   return (
     <View style={styles.container}>
       {/* Top section border */}
@@ -12,40 +52,50 @@ const Profile = () => {
 
       {/* Bottom section border */}
       <View style={[styles.section, styles.bottomSection]}>
-        {/* Grey color square with text */}
+        {/* Grey color square text */}
         <View style={styles.greySquare}>
           <View style={styles.row}>
             <Text style={styles.titleText}>Agent Code:</Text>
-            <Text style={styles.normalText}>123456</Text>
+            <Text style={styles.normalText}>{userData?.agent_code || 'N/A'}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.titleText}>New Agent Code:</Text>
+            <Text style={styles.normalText}>{userData?.newagt || 'N/A'}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>NIC No:</Text>
-            <Text style={styles.normalText}>987654321V</Text>
+            <Text style={styles.normalText}>{userData?.idnum || 'N/A'}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>E-mail:</Text>
-            <Text style={styles.normalText}>michalsmitch12@gmail.com</Text>
+            <Text style={styles.normalText}>{userData?.email || 'N/A'}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>Mobile No:</Text>
-            <Text style={styles.normalText}>077 123 4567</Text>
+            <Text style={styles.normalText}>{userData?.phmob?.trim() || 'N/A'}</Text>
           </View>
-          
+          <View style={styles.row}>
+            <Text style={styles.titleText}>Date of Birth:</Text>
+            <Text style={styles.normalText}>{userData?.dob || 'N/A'}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.changePasswordText} onPress={navigateToPasswordChange}>Change Password</Text>
+          </View>
         </View>
       </View>
 
       {/* Profile Image */}
       <View style={styles.imageContainer}>
-        <Image 
-          source={require('../../../components/user.jpg')} 
+        <Image
+          source={require('../../../components/user.jpg')}
           style={styles.roundImage}
-          resizeMode="cover" 
+          resizeMode="cover"
         />
-        <Text style={styles.imageText}>Michel Smith</Text>
+        <Text style={styles.imageText}>{userData?.intial?.trim()} {userData?.name?.trim()}</Text>
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -56,53 +106,57 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   topSection: {
-    flex: 1, 
-    backgroundColor: '#FEA58F'
+    flex: 1,
+    backgroundColor: '#FEA58F',
   },
   bottomSection: {
-    flex: 5, 
-    backgroundColor: 'white'
+    flex: 5,
+    backgroundColor: 'white',
   },
   imageContainer: {
     position: 'absolute',
-    left: wp('50%'),  // Use widthPercentageToDP for consistent positioning
-    top: hp('16%'),   // Use heightPercentageToDP for consistent positioning
-    transform: [{ translateX: -wp('25%') }, { translateY: -hp('12%') }]  // Ensure the translation is proportionate
+    left: '50%',
+    top: '16%',
+    transform: [{ translateX: -100 }, { translateY: -100 }],
   },
   roundImage: {
-    width: wp('50%'),  // Adjust width and height to be responsive
-    height: wp('50%'), // Make it square based on width
-    borderRadius: wp('25%'), // Half of the width/height to ensure a perfect circle
+    width: 200,
+    height: 200,
+    borderRadius: 100,
   },
   imageText: {
-    marginTop: hp('1.5%'),
+    marginTop: 10,
     textAlign: 'center',
-    fontSize: wp('4%'), // Responsive font size
+    fontSize: 16,
     fontWeight: 'bold',
-    color: 'black'
+    color: 'black',
   },
   greySquare: {
-    width: wp('80%'),
-    height: hp('20%'),  // Adjust height based on design needs
+    width: 320,
+    height: 155,
     backgroundColor: 'lightgrey',
-    marginTop: hp('20%'),  // Increase margin top to be proportionate
+    marginTop: 150,
     alignSelf: 'center',
     borderRadius: 10,
-    padding: wp('2.5%'),  // Responsive padding
+    padding: 10,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: hp('2%'),  // Responsive margin bottom
+    marginBottom: 10,
   },
   titleText: {
-    fontSize: wp('4%'),  // Responsive font size
+    fontSize: 16,
     color: 'black',
-    minWidth: wp('25%'),  // Ensure alignment with responsive minimum width
+    minWidth: 100, // Ensure alignment
   },
   normalText: {
-    fontSize: wp('4%'),  // Responsive font size
-    color: 'grey'
+    fontSize: 16,
+    color: 'grey',
+  },
+  changePasswordText: {
+    fontSize: 16,
+    color: 'blue',
   },
 });
 
