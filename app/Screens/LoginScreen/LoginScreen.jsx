@@ -15,17 +15,20 @@ import { useRouter } from "expo-router";
 import { useFonts } from "expo-font";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CheckConnection from "../../../components/checkConnection";
+import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showSavePasswordPopup, setShowSavePasswordPopup] = useState(false);
   const [hasSavedCredentials, setHasSavedCredentials] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
   const router = useRouter();
 
   const [fontsLoaded] = useFonts({
     "Poppins-Regular": require("../../../assets/font/Poppins-Regular.ttf"),
-    // Add other font weights and styles if necessary
   });
 
   // Check if credentials are saved
@@ -53,8 +56,9 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     console.log(username)
     console.log(password)
+
     try {
-      const response = await fetch('http://203.115.11.236:10155/SalesTrackAppAPI/api/v1/Account/Authanticate', {
+      const response = await fetch(BASE_URL+ENDPOINTS.AUTHENTICATE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,16 +75,33 @@ const LoginScreen = () => {
       console.log('Response:', jsonResponse); 
   
       if (response.ok && jsonResponse.status === "Y") { 
+        await AsyncStorage.setItem("accessToken", jsonResponse.accsesstoken);
+        await AsyncStorage.setItem("categoryType", jsonResponse.cattype);
+        await AsyncStorage.setItem("email", jsonResponse.email);
+
         if (!hasSavedCredentials) {
           setShowSavePasswordPopup(true);
         } else {
-          router.push("/Screens/HomePage/Home"); // If credentials already saved
+          if(jsonResponse.firstAttempt === "Y"){
+            router.push("/Screens/LoginScreen/ChangeDefaultPassword")
+          }
+          else{
+            if(jsonResponse.cattype === "Ag"){
+              router.push("/Screens/HomePage/Home");
+            }
+            else{
+              router.push("/Screens/LoginScreen/AccountTypeSelection");
+            }  
+          }
+          
         }
       } else {
-        alert(`Invalid credentials: ${jsonResponse.error || 'Unknown error'}`);
+        setAlertMessage(`${jsonResponse.error || 'Unknown error'}`);
+        setShowAlert(true);
       }
     } catch (error) {
-      Alert.alert("Error", error.message);
+      setAlertMessage(`Error: ${error.message}`);
+      setShowAlert(true);
     }
   };
   
@@ -157,6 +178,18 @@ const LoginScreen = () => {
           </View>
         </View>
       </Modal>
+      <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Login Error"
+        message={alertMessage}
+        closeOnTouchOutside={false}
+        closeOnHardwareBackPress={false}
+        showConfirmButton={true}
+        confirmText="OK"
+        confirmButtonColor="#FF7758"
+        onConfirmPressed={() => setShowAlert(false)}
+      />
     </View>
   );
 };
