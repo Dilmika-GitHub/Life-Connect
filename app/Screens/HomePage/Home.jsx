@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavigationContainer, CommonActions } from "@react-navigation/native";
 import {
   createDrawerNavigator,
@@ -15,6 +15,7 @@ import {
   Button,
   SafeAreaView,
   Dimensions,
+  ActivityIndicator 
 } from "react-native";
 import DashboardScreen from "../DashboardScreen/DashboardScreen";
 import SettingsScreen from "../SettingsScreen";
@@ -28,12 +29,41 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginScreen from "../LoginScreen/LoginScreen";
 import ChangePassword from "../ChangePassword";
+import axios from 'axios';
+import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 
 const Drawer = createDrawerNavigator();
 
 const CustomDrawerContent = ({ navigation }) => {
-  const [logoutConfirmationVisible, setLogoutConfirmationVisible] =
-    useState(false);
+  const [logoutConfirmationVisible, setLogoutConfirmationVisible] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() =>{
+    const fetchUserData = async () => {
+      try {
+        const token = await AsyncStorage.getItem('accessToken');
+        const email = await AsyncStorage.getItem('email');
+        const categoryType = await AsyncStorage.getItem('categoryType');
+
+        const response = await axios.get(BASE_URL+ENDPOINTS.PROFILE_DETAILS,{
+          headers:{
+            Authorization: `Bearer ${token}`
+          },
+          params: {
+            email: email,
+            catType: categoryType
+          }
+        });
+        setUserData(response.data);
+      } catch(error){
+        console.error('Error fetching user data:',error);
+      } finally{
+        setLoading(false);
+      }
+    };
+    fetchUserData();
+  },[]);
 
   const handleLogout = () => {
     setLogoutConfirmationVisible(true);
@@ -59,6 +89,7 @@ const CustomDrawerContent = ({ navigation }) => {
   const handleCancelLogout = () => {
     setLogoutConfirmationVisible(false);
   };
+  
 
   return (
     <DrawerContentScrollView>
@@ -79,8 +110,8 @@ const CustomDrawerContent = ({ navigation }) => {
             style={{ width: 40, height: 40, borderRadius: 20, marginRight: 10 }}
           />
           <View style={{ flexDirection: "column" }}>
-            <Text style={{ fontSize: 16 }}>Michael Smith</Text>
-            <Text style={{ fontSize: 12 }}>michalsmitch12@gmail.com</Text>
+          <Text style={{ fontSize: 16 }}>{userData?.intial?.trim()} {userData?.name}</Text>
+          <Text style={{ fontSize: 12 }}>{userData?.email || 'michalsmitch12@gmail.com'}</Text>
           </View>
         </TouchableOpacity>
 
