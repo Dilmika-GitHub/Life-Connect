@@ -7,12 +7,14 @@ import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 const Profile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [categoryType, setCategoryType] = useState(null);
 
   const fetchUserData = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken'); 
       const email = await AsyncStorage.getItem('email'); 
       const categoryType = await AsyncStorage.getItem('categoryType');
+      setCategoryType(categoryType);
 
       console.log(token);
 
@@ -55,31 +57,65 @@ const Profile = ({ navigation }) => {
         {/* Grey color square text */}
         <View style={styles.greySquare}>
           <View style={styles.row}>
-            <Text style={styles.titleText}>Agent Code:</Text>
-            <Text style={styles.normalText}>{userData?.agent_code || 'N/A'}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>New Agent Code:</Text>
-            <Text style={styles.normalText}>{userData?.newagt || 'N/A'}</Text>
+            {categoryType === "Ag" ? (
+              <>
+                <Text style={styles.titleText}>Agent Code:</Text>
+                <Text style={styles.normalText}>
+                  {userData?.agent_code || "N/A"}
+                </Text>
+              </>
+            ) : categoryType === "Or" ? (
+              <>
+                <Text style={styles.titleText}>Organizer Code:</Text>
+                <Text style={styles.normalText}>
+                  {userData?.orgnizer_code || "N/A"}
+                </Text>
+              </>
+            ) : null}
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>NIC No:</Text>
-            <Text style={styles.normalText}>{userData?.idnum || 'N/A'}</Text>
+            <Text style={styles.normalText}>{userData?.idnum || "N/A"}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>E-mail:</Text>
-            <Text style={styles.normalText}>{userData?.email || 'N/A'}</Text>
+            <Text style={styles.normalText}>{userData?.email || "N/A"}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>Mobile No:</Text>
-            <Text style={styles.normalText}>{userData?.phmob?.trim() || 'N/A'}</Text>
+            <Text style={styles.normalText}>
+              {userData?.phmob?.trim() || "N/A"}
+            </Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.titleText}>Home Phone No:</Text>
+            <Text style={styles.normalText}>
+              {userData?.phres?.trim() || "N/A"}
+            </Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>Date of Birth:</Text>
-            <Text style={styles.normalText}>{userData?.dob || 'N/A'}</Text>
+            <Text style={styles.normalText}>{userData?.dob || "N/A"}</Text>
           </View>
+          
+            {categoryType === "Or" ? (
+              <>
+              <View style={styles.row}>
+                <Text style={styles.titleText}>Organizer Team Code:</Text>
+                <Text style={styles.normalText}>
+                  {userData?.or_team_code || "N/A"}
+                </Text>
+                </View>
+              </>
+            ) : null}
+          
           <View style={styles.row}>
-            <Text style={styles.changePasswordText} onPress={navigateToPasswordChange}>Change Password</Text>
+            <Text
+              style={styles.changePasswordText}
+              onPress={navigateToPasswordChange}
+            >
+              Change Password
+            </Text>
           </View>
         </View>
       </View>
@@ -87,11 +123,13 @@ const Profile = ({ navigation }) => {
       {/* Profile Image */}
       <View style={styles.imageContainer}>
         <Image
-          source={require('../../../components/user.jpg')}
+          source={require("../../../components/user.jpg")}
           style={styles.roundImage}
           resizeMode="cover"
         />
-        <Text style={styles.imageText}>{userData?.intial?.trim()} {userData?.name?.trim()}</Text>
+        <Text style={styles.imageText}>
+          {userData?.intial?.trim()} {userData?.name?.trim()}
+        </Text>
       </View>
     </View>
   );
