@@ -106,7 +106,7 @@ export default function DashboardScreen({
         </Svg>
         <View style={styles.absoluteCenter}>
           <Text style={styles.valueText(textColor || color) }>
-            Accumulated
+          Estimated
           </Text>
           <Text style={styles.valueText(textColor || color)}>
             {totalvalueText}
