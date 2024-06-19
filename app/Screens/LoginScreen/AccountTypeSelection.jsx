@@ -12,8 +12,10 @@ const AccountTypeSelectionScreen = () => {
 
     // Navigate to the respective screen based on the selection
     if (type === "Organizer") {
-      router.push("/Screens/Organizer/Home");
+      await AsyncStorage.setItem("categoryType", "Or");
+      router.push("/Screens/HomePage/Home");
     } else if (type === "Agent") {
+      await AsyncStorage.setItem("categoryType", "Ag");
       router.push("/Screens/HomePage/Home");
     }
   };

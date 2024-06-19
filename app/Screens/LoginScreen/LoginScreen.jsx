@@ -78,6 +78,7 @@ const LoginScreen = () => {
       if (response.ok && jsonResponse.status === "Y") { 
         await AsyncStorage.setItem("accessToken", jsonResponse.accsesstoken);
         await AsyncStorage.setItem("categoryType", jsonResponse.cattype);
+        await AsyncStorage.setItem("email", jsonResponse.email);
 
         if (!hasSavedCredentials) {
           setShowSavePasswordPopup(true);
@@ -86,7 +87,7 @@ const LoginScreen = () => {
             router.push("/Screens/LoginScreen/ChangeDefaultPassword")
           }
           else{
-            if(jsonResponse.cattype === "A"){
+            if(jsonResponse.cattype === "Ag"){
               router.push("/Screens/HomePage/Home");
             }
             else{
