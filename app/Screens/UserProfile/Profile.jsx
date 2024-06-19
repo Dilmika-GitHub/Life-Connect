@@ -79,7 +79,7 @@ const Profile = ({ navigation }) => {
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>E-mail:</Text>
-            <Text style={styles.normalText}>{userData?.email || "N/A"}</Text>
+            <Text style={styles.normalText}>{userData?.email?.trim() || "N/A"}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>Mobile No:</Text>
@@ -171,7 +171,6 @@ const styles = StyleSheet.create({
   },
   greySquare: {
     width: 320,
-    height: 155,
     backgroundColor: 'lightgrey',
     marginTop: 150,
     alignSelf: 'center',
@@ -186,7 +185,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 16,
     color: 'black',
-    minWidth: 100, // Ensure alignment
+    minWidth: 100,
   },
   normalText: {
     fontSize: 16,
