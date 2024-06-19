@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import React, { useState, useEffect } from 'react';
 import { lockToPortrait, lockToAllOrientations } from "../../OrientationLock";
 import { useIsFocused } from '@react-navigation/native';
@@ -67,6 +66,7 @@ export default function MDRTProfile() {
               <Text style={styles.titleText}>Need more</Text>
               <Text style={styles.normalText}>9,156,788.00</Text>
             </View>
+            
           </View>
         </ScrollView>
       </View>
@@ -102,53 +102,49 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     position: 'absolute',
-    left: wp('50%'),
-    top: hp('10%'), // Adjusted top to make more space
-    transform: [{ translateX: -wp('25%') }, { translateY: -hp('10%') }]
+    left: '50%',
+    top: '16%',
+    transform: [{ translateX: -100 }, { translateY: -100 }],
   },
   roundImage: {
-    width: wp('50%'),
-    height: wp('50%'),
-    borderRadius: wp('25%'),
+    width: 200,
+    height: 200,
+    borderRadius: 100,
     borderWidth: 3,
     borderColor: 'gold'
   },
   imageText: {
-    marginTop: hp('1%'),
+    marginTop: 10,
     textAlign: 'center',
-    fontSize: wp('4%'),
+    fontSize: 16,
     fontWeight: 'bold',
-    color: 'black'
-  },
-  greySquareScroll: {
-    width: wp('80%'),
-    height: hp('55%'), // This sets the scrollable area's height
-    marginTop: hp('30%'),
-    alignSelf: 'center',
+    color: 'black',
   },
   greySquare: {
-    width: '100%',
+    width: 320,
+    marginTop: 150,
     backgroundColor: 'lightgrey',
     borderRadius: 10,
-    padding: wp('2.5%'),
+    padding: 10,
+    alignSelf: 'center',
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: hp('2%'),
+    marginBottom: 10,
   },
   specialRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: hp('1%'),
+    marginBottom: 10,
   },
   titleText: {
-    fontSize: wp('4%'),
+    fontSize: 16,
     color: 'black',
-    minWidth: wp('25%'),
+    minWidth: 100, // Ensure alignment
   },
   normalText: {
-    fontSize: wp('4%'),
-    color: 'grey'
+    fontSize: 16,
+    color: 'grey',
   },
 });
