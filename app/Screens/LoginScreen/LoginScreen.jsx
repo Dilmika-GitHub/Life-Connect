@@ -17,6 +17,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import CheckConnection from "../../../components/checkConnection";
 import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 import AwesomeAlert from 'react-native-awesome-alerts';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -27,10 +28,15 @@ const LoginScreen = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const router = useRouter();
   const [newCredentials, setNewCredentials] = useState(null); // To store new credentials
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const [fontsLoaded] = useFonts({
     "Poppins-Regular": require("../../../assets/font/Poppins-Regular.ttf"),
   });
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
 
   // Check if credentials are saved
   useEffect(() => {
@@ -147,13 +153,18 @@ const LoginScreen = () => {
         onChangeText={(text) => setUsername(text)}
         value={username}
       />
+      <View style={styles.inputContainer}>
       <TextInput
-        style={styles.input}
+        style={styles.passwordInput}
         placeholder="Password"
         onChangeText={(text) => setPassword(text)}
         value={password}
-        secureTextEntry
+        secureTextEntry={!passwordVisible}
       />
+      <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
+        <Icon name={passwordVisible ? "eye" : "eye-off"} size={20} color="#000" />
+      </TouchableOpacity>
+      </View>
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Login</Text>
@@ -238,6 +249,27 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     fontSize: wp("4.5%"),
   },
+  inputContainer: {
+    width: wp("80%"),
+    height: hp('5%'),
+    borderColor: "#ccc",
+    borderRadius: 10,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    borderWidth: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: wp("4.5%"),
+    height: hp('5%'),
+    width: wp("80%"),
+    borderColor: "#8b8b8b99",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingLeft: 0,
+  },
   wavesTop: {
     position: "absolute",
     left: 0,
@@ -312,6 +344,11 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: "white",
     fontSize: wp('4%'),
+  },
+  eyeIcon: {
+    padding: 10,
+    position: 'absolute',
+    right: 0,
   },
 });
 
