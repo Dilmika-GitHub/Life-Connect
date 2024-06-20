@@ -15,7 +15,8 @@ import {
   Button,
   SafeAreaView,
   Dimensions,
-  ActivityIndicator 
+  ActivityIndicator,
+  Alert 
 } from "react-native";
 import DashboardScreen from "../DashboardScreen/DashboardScreen";
 import SettingsScreen from "../SettingsScreen";
@@ -57,6 +58,25 @@ const CustomDrawerContent = ({ navigation }) => {
         });
         setUserData(response.data);
       } catch(error){
+        if(error.response.status === 401){
+          Alert.alert(
+            'Session Expired',
+            'Your session has expired. Please log in again.',
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  navigation.dispatch(
+                    CommonActions.reset({
+                      index: 0,
+                      routes: [{ name: 'Login' }],
+                    })
+                  );
+                },
+              },
+            ],
+          );
+        }
         console.error('Error fetching user data:',error);
       } finally{
         setLoading(false);
@@ -111,7 +131,7 @@ const CustomDrawerContent = ({ navigation }) => {
           />
           <View style={{ flexDirection: "column" }}>
           <Text style={{ fontSize: 16 }}>{userData?.intial?.trim()} {userData?.name}</Text>
-          <Text style={{ fontSize: 12 }}>{userData?.email || 'michalsmitch12@gmail.com'}</Text>
+          <Text style={{ fontSize: 12 }}>{userData?.email}</Text>
           </View>
         </TouchableOpacity>
 

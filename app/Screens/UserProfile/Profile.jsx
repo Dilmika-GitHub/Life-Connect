@@ -1,13 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState, useCallback  } from 'react';
+import { View, Text, StyleSheet, Image, ActivityIndicator, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/native';
 import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
+import { CommonActions } from '@react-navigation/native';
+import route from 'color-convert/route';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const Profile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [categoryType, setCategoryType] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
+
+  const handleErrorResponse = (error) => {
+    if (error.response.status === 401) {
+      setShowAlert(true);
+    }
+  };
+
+  const handleConfirm = () => {
+    setShowAlert(false);
+    navigation.navigate('Login');
+  };
 
   const fetchUserData = async () => {
     try {
@@ -15,8 +31,6 @@ const Profile = ({ navigation }) => {
       const email = await AsyncStorage.getItem('email'); 
       const categoryType = await AsyncStorage.getItem('categoryType');
       setCategoryType(categoryType);
-
-      console.log(token);
 
       const response = await axios.get(BASE_URL+ENDPOINTS.PROFILE_DETAILS,{
           headers:{
@@ -28,16 +42,20 @@ const Profile = ({ navigation }) => {
           }
         });
       setUserData(response.data);
+      console.log("called");
     } catch (error) {
+      handleErrorResponse(error);
       console.error('Error fetching user data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserData();
+    }, [])
+  );
 
   const navigateToPasswordChange = () => {
     navigation.navigate('ChangePassword');
@@ -131,6 +149,18 @@ const Profile = ({ navigation }) => {
           {userData?.intial?.trim()} {userData?.name?.trim()}
         </Text>
       </View>
+      <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Session Expired"
+        message="Please Log Again!"
+        closeOnTouchOutside={false}
+        closeOnHardwareBackPress={false}
+        showConfirmButton={true}
+        confirmText="OK"
+        confirmButtonColor="#FF7758"
+        onConfirmPressed={handleConfirm}
+      />
     </View>
   );
 };
