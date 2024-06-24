@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
   },
   greySquare: {
     width: 320,
-    height: 155,
     backgroundColor: 'lightgrey',
     marginTop: 150,
     alignSelf: 'center',
