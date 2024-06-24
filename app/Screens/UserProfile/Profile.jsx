@@ -42,6 +42,15 @@ const Profile = ({ navigation }) => {
           }
         });
       setUserData(response.data);
+      if (categoryType === "Ag") {
+        await AsyncStorage.setItem("agencyCode", response.data?.agent_code);
+      }
+      if (categoryType === "Or") {
+        await AsyncStorage.setItem("agencyCode", response.data?.orgnizer_code);
+        
+      } else {
+        
+      }
       console.log("called");
     } catch (error) {
       handleErrorResponse(error);
