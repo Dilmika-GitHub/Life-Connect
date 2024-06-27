@@ -16,6 +16,7 @@ const Profile = ({ navigation }) => {
 
   const handleErrorResponse = (error) => {
     if (error.response.status === 401) {
+      console.log(error.response.status);
       setShowAlert(true);
     }
   };
@@ -71,7 +72,7 @@ const Profile = ({ navigation }) => {
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size="large" color="#FEA58F" />;
   }
 
   return (
@@ -157,6 +158,7 @@ const Profile = ({ navigation }) => {
         <Text style={styles.imageText}>
           {userData?.intial?.trim()} {userData?.name?.trim()}
         </Text>
+     
       </View>
       <AwesomeAlert
         show={showAlert}

@@ -8,6 +8,7 @@ import {
   Dimensions,
   Modal,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Waves, Waves2, Waves3 } from "../../../components/Waves";
@@ -25,6 +26,7 @@ const LoginScreen = () => {
   const [hasSavedCredentials, setHasSavedCredentials] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const [fontsLoaded] = useFonts({
@@ -54,6 +56,7 @@ const LoginScreen = () => {
 
   // Handle login
   const handleLogin = async () => {
+    setLoading(true);
     console.log(username)
     console.log(password)
 
@@ -98,10 +101,12 @@ const LoginScreen = () => {
       } else {
         setAlertMessage(`${jsonResponse.error || 'Unknown error'}`);
         setShowAlert(true);
+        setLoading(false);
       }
     } catch (error) {
       setAlertMessage(`Error: ${error.message}`);
       setShowAlert(true);
+      setLoading(false);
     }
   };
   
@@ -146,8 +151,12 @@ const LoginScreen = () => {
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>Login</Text>
+<TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
+        {loading ? (
+          <ActivityIndicator size="small" color="#0000ff" /> // Loading spinner
+        ) : (
+          <Text style={styles.loginButtonText}>Login</Text>
+        )}
       </TouchableOpacity>
       <Text style={styles.welcomeText}>WELCOME</Text>
       <CheckConnection />
