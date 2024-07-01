@@ -18,6 +18,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import CheckConnection from "../../../components/checkConnection";
 import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 import AwesomeAlert from 'react-native-awesome-alerts';
+import Constants from 'expo-constants';
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -28,6 +29,8 @@ const LoginScreen = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const appVersion = Constants.expoConfig?.version || Constants.manifest2?.version || 'Version not found';
+
 
   const [fontsLoaded] = useFonts({
     "Poppins-Regular": require("../../../assets/font/Poppins-Regular.ttf"),
@@ -159,6 +162,7 @@ const LoginScreen = () => {
         )}
       </TouchableOpacity>
       <Text style={styles.welcomeText}>WELCOME</Text>
+      <Text>App Version: {appVersion}</Text>
       <CheckConnection />
 
       <Modal
