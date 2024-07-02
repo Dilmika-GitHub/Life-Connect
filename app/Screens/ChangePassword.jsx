@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; // Make sure to install this or use any icon library you prefer
-import { Link } from "expo-router";
+import Icon from 'react-native-vector-icons/Ionicons'; 
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { useFocusEffect } from '@react-navigation/native';
 
