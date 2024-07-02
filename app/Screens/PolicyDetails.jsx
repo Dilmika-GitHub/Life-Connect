@@ -1,7 +1,17 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import { View, ScrollView, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { lockToAllOrientations, lockToPortrait } from './OrientationLock';
+import { useIsFocused } from '@react-navigation/native';
 
 const PolicyDetails = ({ navigation }) => {
+  const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isFocused) {
+            lockToAllOrientations();
+        }
+    }, [isFocused]);
+
   const navigateToLapsedScreen = () => {
     navigation.navigate('Lapsed');
   };

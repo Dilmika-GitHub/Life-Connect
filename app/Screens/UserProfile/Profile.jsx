@@ -1,107 +1,245 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import React, { useEffect, useState, useCallback  } from 'react';
+import { View, Text, StyleSheet, Image, ActivityIndicator, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/native';
+import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
+import { CommonActions } from '@react-navigation/native';
+import route from 'color-convert/route';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
-const { width, height } = Dimensions.get("window"); // Get screen dimensions
+const Profile = ({ navigation }) => {
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [categoryType, setCategoryType] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
 
-const Profile = () => {
+  const handleErrorResponse = (error) => {
+    if (error.response.status === 401) {
+      console.log(error.response.status);
+      setShowAlert(true);
+    }
+  };
+
+  const handleConfirm = () => {
+    setShowAlert(false);
+    navigation.navigate('Login');
+  };
+
+  const fetchUserData = async () => {
+    try {
+      const token = await AsyncStorage.getItem("accessToken");
+      const email = await AsyncStorage.getItem("email");
+      const categoryType = await AsyncStorage.getItem("categoryType");
+      setCategoryType(categoryType);
+
+      const response = await axios.get(BASE_URL+ENDPOINTS.PROFILE_DETAILS,{
+          headers:{
+            Authorization: `Bearer ${token}`
+          },
+          params: {
+            email: email,
+            catType: categoryType
+          }
+        });
+      setUserData(response.data);
+      if (categoryType === "Ag") {
+        await AsyncStorage.setItem("agencyCode", response.data?.agent_code);
+      }
+      if (categoryType === "Or") {
+        await AsyncStorage.setItem("agencyCode", response.data?.orgnizer_code);
+        
+      } else {
+        
+      }
+      console.log("called");
+    } catch (error) {
+      handleErrorResponse(error);
+      console.error('Error fetching user data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserData();
+    }, [])
+  );
+
+  const navigateToPasswordChange = () => {
+    navigation.navigate("ChangePassword");
+  };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#FEA58F" />;
+  }
+
   return (
     <View style={styles.container}>
-      {/* Top section with a simple color background */}
+      {/* Top section border */}
       <View style={[styles.section, styles.topSection]}></View>
 
-      {/* Bottom section containing user information */}
+      {/* Bottom section border */}
       <View style={[styles.section, styles.bottomSection]}>
-        {/* Information box with user details */}
+        {/* Grey color square text */}
         <View style={styles.greySquare}>
           <View style={styles.row}>
-            <Text style={styles.titleText}>Agent Code:</Text>
-            <Text style={styles.normalText}>123456</Text>
+            {categoryType === "Ag" ? (
+              <>
+                <Text style={styles.titleText}>Agent Code:</Text>
+                <Text style={styles.normalText}>
+                  {userData?.agent_code || "N/A"}
+                </Text>
+              </>
+            ) : categoryType === "Or" ? (
+              <>
+                <Text style={styles.titleText}>Organizer Code:</Text>
+                <Text style={styles.normalText}>
+                  {userData?.orgnizer_code || "N/A"}
+                </Text>
+              </>
+            ) : null}
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>NIC No:</Text>
-            <Text style={styles.normalText}>987654321V</Text>
+            <Text style={styles.normalText}>{userData?.idnum || "N/A"}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>E-mail:</Text>
-            <Text style={styles.normalText}>michalsmitch12@gmail.com</Text>
+            <Text style={styles.normalText}>{userData?.email?.trim() || "N/A"}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>Mobile No:</Text>
-            <Text style={styles.normalText}>077 123 4567</Text>
+            <Text style={styles.normalText}>
+              {userData?.phmob?.trim() || "N/A"}
+            </Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.titleText}>Home Phone No:</Text>
+            <Text style={styles.normalText}>
+              {userData?.phres?.trim() || "N/A"}
+            </Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.titleText}>Date of Birth:</Text>
+            <Text style={styles.normalText}>{userData?.dob || "N/A"}</Text>
+          </View>
+
+          {categoryType === "Or" ? (
+            <>
+              <View style={styles.row}>
+                <Text style={styles.titleText}>Organizer Team Code:</Text>
+                <Text style={styles.normalText}>
+                  {userData?.or_team_code || "N/A"}
+                </Text>
+              </View>
+            </>
+          ) : null}
+
+          <View style={styles.row}>
+            <Text
+              style={styles.changePasswordText}
+              onPress={navigateToPasswordChange}
+            >
+              Change Password
+            </Text>
           </View>
         </View>
       </View>
 
-      {/* Circular profile image */}
+      {/* Profile Image */}
       <View style={styles.imageContainer}>
-        <Image 
-          source={require('../../../components/user.jpg')} 
+        <Image
+          source={require("../../../components/user.jpg")}
           style={styles.roundImage}
-          resizeMode="cover" 
+          resizeMode="cover"
         />
-        <Text style={styles.imageText}>Michel Smith</Text>
+        <Text style={styles.imageText}>
+          {userData?.intial?.trim()} {userData?.name?.trim()}
+        </Text>
+     
       </View>
+      <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Session Expired"
+        message="Please Log Again!"
+        closeOnTouchOutside={false}
+        closeOnHardwareBackPress={false}
+        showConfirmButton={true}
+        confirmText="OK"
+        confirmButtonColor="#FF7758"
+        onConfirmPressed={handleConfirm}
+      />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
+    flexDirection: "column",
   },
   section: {
-    width: '100%',
+    width: "100%",
   },
   topSection: {
-    flex: 1, 
-    backgroundColor: '#FEA58F'
+    flex: 1,
+    backgroundColor: "#FEA58F",
   },
   bottomSection: {
-    flex: 5, 
-    backgroundColor: 'white'
+    flex: 5,
+    backgroundColor: "white",
   },
   imageContainer: {
-    position: 'absolute',
-    left: wp('50%'),  // Center horizontally
-    top: hp('16%'),   // Position vertically
-    transform: [{ translateX: -wp('25%') }, { translateY: -hp('12%') }]  // Adjust to center the image
+    position: "absolute",
+    left: "50%",
+    top: "16%",
+    transform: [{ translateX: -100 }, { translateY: -100 }],
   },
   roundImage: {
-    width: wp('50%'),
-    height: wp('50%'),
-    borderRadius: wp('25%'),  // Circular image
+    width: 200,
+    height: 200,
+    borderRadius: 100,
   },
   imageText: {
-    marginTop: hp('1.5%'),
-    textAlign: 'center',
-    fontSize: wp('4%'),
-    fontWeight: 'bold',
-    color: 'black'
+    marginTop: 10,
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "black",
   },
   greySquare: {
-    width: wp('80%'),
-    height: hp('25%'),
+    width: 320,
     backgroundColor: 'lightgrey',
+<<<<<<< HEAD
     marginTop: hp('24%'),
     alignSelf: 'center',
+=======
+    marginTop: 150,
+    alignSelf: "center",
+>>>>>>> a7e970f598cdb88ccb0c93474353ba096b8dd02d
     borderRadius: 10,
-    padding: wp('2.5%'),
+    padding: 10,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: hp('2%'),
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
   },
   titleText: {
-    fontSize: wp('4%'),
+    fontSize: 16,
     color: 'black',
-    minWidth: wp('25%'),
+    minWidth: 100,
   },
   normalText: {
-    fontSize: wp('4%'),
-    color: 'grey'
+    fontSize: 16,
+    color: "grey",
+  },
+  changePasswordText: {
+    fontSize: 16,
+    color: "blue",
   },
 });
 

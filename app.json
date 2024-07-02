@@ -4,7 +4,7 @@
     "slug": "xProject",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "xProject-scheme",
+    "scheme": "xproject-scheme",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -16,8 +16,7 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.sanduni99.xProject"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
@@ -40,7 +39,6 @@
       "eas": {
         "projectId": "ef59b0f6-9515-4522-9efb-66baf9a98f5b"
       }
-    },
-    "owner": "sanduni99"
+    }
   }
 }

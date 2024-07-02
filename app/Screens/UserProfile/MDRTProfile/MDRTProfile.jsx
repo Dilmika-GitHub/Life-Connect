@@ -1,8 +1,137 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/native';
+import { BASE_URL, ENDPOINTS } from "../../../services/apiConfig";
+import AwesomeAlert from 'react-native-awesome-alerts';
 
-export default function MDRTProfile() {
+const MDRTProfile = ({ navigation }) => {
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [categoryType, setCategoryType] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [agencyCode, setAgencyCode] = useState(null);
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(false);
+
+  const handleErrorResponse = (error) => {
+    if (error.response.status === 401) {
+      console.log(error.response.status);
+      setShowAlert(true);
+    }
+  };
+
+  const handleConfirm = () => {
+    setShowAlert(false);
+    navigation.navigate('Login');
+  };
+
+  const getAgencyCode = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken'); 
+      const email = await AsyncStorage.getItem('email'); 
+      const categoryType = await AsyncStorage.getItem('categoryType');
+      setCategoryType(categoryType);
+
+      const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        params: {
+          email: email,
+          catType: categoryType
+        }
+      });
+
+      setAgencyCode(response.data);
+
+      if (categoryType === "Ag") {
+        await AsyncStorage.setItem("agencyCode", response.data?.agent_code);
+      } else if (categoryType === "Or") {
+        await AsyncStorage.setItem("agencyCode", response.data?.orgnizer_code);
+      }
+
+      console.log("called", await AsyncStorage.getItem('agencyCode'));
+    } catch (error) {
+      handleErrorResponse(error);
+      console.error('Error Getting Agency Code:', error.response?.status);
+      throw error;
+    }
+  };
+
+  const fetchMdrtPersonalData = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      const agencyCode = await AsyncStorage.getItem('agencyCode');
+      const categoryType = await AsyncStorage.getItem('categoryType');
+      const year = new Date().getFullYear();
+
+      const response = await axios.get(BASE_URL + ENDPOINTS.MDRT_PROFILE, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        params: {
+          p_agency_1: agencyCode,
+          p_agency_2: '0',
+          p_cat: categoryType,
+          p_year: year
+        }
+      });
+
+      setData(response.data);
+    } catch (error) {
+      handleErrorResponse(error);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          await getAgencyCode();
+          await fetchMdrtPersonalData();
+        } catch (error) {
+          setError(true);
+          setLoading(false);
+        }
+      };
+
+      fetchData();
+    }, [])
+  );
+
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#FEA58F" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.loader}>
+        <Text style={styles.errorText}>Failed to load data.</Text>
+        <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Session Expired"
+        message="Please Log Again!"
+        closeOnTouchOutside={false}
+        closeOnHardwareBackPress={false}
+        showConfirmButton={true}
+        confirmText="OK"
+        confirmButtonColor="#FF7758"
+        onConfirmPressed={handleConfirm}
+      />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       {/* Top section border */}
@@ -10,69 +139,83 @@ export default function MDRTProfile() {
 
       {/* Bottom section border */}
       <View style={[styles.section, styles.bottomSection]}>
-        {/* Scrollable Grey color square text */}
-        <ScrollView style={styles.greySquareScroll}>
-          <View style={styles.greySquare}>
-            <View style={styles.row}>
-              <Text style={styles.titleText}>Agent Code</Text>
-              <Text style={styles.normalText}>904126</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.titleText}>Target</Text>
-              <Text style={styles.normalText}>1,456,856.00</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.titleText}>No OF Policies:</Text>
-              <Text style={styles.normalText}>26</Text>
-            </View>
-            <View style={styles.specialRow}>
-              <Text style={styles.titleText}>MDRT Ranking</Text>
-              <Text style={styles.normalText}>23</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.titleText}>Need more</Text>
-              <Text style={styles.normalText}>achieved</Text>
-            </View>
-            <View style={styles.specialRow}>
-              <Text style={styles.titleText}>TOT Ranking</Text>
-              <Text style={styles.normalText}>--</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.titleText}>Need more</Text>
-              <Text style={styles.normalText}>1,214,456.00</Text>
-            </View>
-            <View style={styles.specialRow}>
-              <Text style={styles.titleText}>COT Ranking</Text>
-              <Text style={styles.normalText}>--</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.titleText}>Need more</Text>
-              <Text style={styles.normalText}>3,456,568.00</Text>
-            </View>
-            <View style={styles.specialRow}>
-              <Text style={styles.titleText}>HOF Ranking</Text>
-              <Text style={styles.normalText}>--</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.titleText}>Need more</Text>
-              <Text style={styles.normalText}>9,156,788.00</Text>
-            </View>
+        {/* Grey color square text */}
+        <View style={styles.greySquare}>
+          <View style={styles.row}>
+            <Text style={styles.titleText}>Agent Code</Text>
+            <Text style={styles.normalText}>{data.consider_agency}</Text>
           </View>
-        </ScrollView>
+          <View style={styles.specialRow}>
+            <Text style={styles.titleText}>MDRT Target</Text>
+            <Text style={styles.normalText}>{data.mdrt_target ? "Rs. " + new Intl.NumberFormat().format(data.mdrt_target) : "N/A"}</Text>
+          </View>
+          <View style={styles.specialRow}>
+            <Text style={styles.titleText}>MDRT Target Status</Text>
+            {data.mdrt_achievment === 'Achieved' ? (
+              <Text style={styles.greenText}>{"Achieved"}</Text>
+            ) : data.mdrt_achievment === 'Not_achieved' ? (
+              <Text style={styles.redText}>{"Not Achieved"}</Text>
+            ) : null}
+          </View>
+          <View style={styles.specialRow}>
+            <Text style={styles.titleText}>MDRT Ranking</Text>
+            <Text style={styles.normalText}>{data.mdrt_rank || "N/A"}</Text>
+          </View>
+          {data.mdrt_achievment === 'Not_achieved' ? (
+            <>
+              <View style={styles.specialRow}>
+                <Text style={styles.titleText}>Need more</Text>
+                <Text style={styles.normalText}>{data.mdrt_balance_due ? "Rs. " + new Intl.NumberFormat().format(data.mdrt_balance_due) : "N/A"}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.titleText}>Need more as Percentage</Text>
+                <Text style={styles.normalText}>{data.mdrt_bal_due_prec + '%' || "N/A"}</Text>
+              </View>
+            </>
+          ) : null}
+          <View style={styles.row}>
+            <Text style={styles.titleText}>First Year Premium</Text>
+            <Text style={styles.normalText}>{data.fyp ? "Rs. " + new Intl.NumberFormat().format(data.fyp) : "N/A"}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.titleText}>No of Policies</Text>
+            <Text style={styles.normalText}>{data.nop || "N/A"}</Text>
+          </View>
+          <View style={styles.specialRow}>
+            <Text style={styles.titleText}>TOT Ranking</Text>
+            <Text style={styles.normalText}>{data.tot_rank || "N/A"}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.titleText}>Need more</Text>
+            <Text style={styles.normalText}>{data.tot_balance_due ? "Rs. " + new Intl.NumberFormat().format(data.tot_balance_due) : "N/A"}</Text>
+          </View>
+          <View style={styles.specialRow}>
+            <Text style={styles.titleText}>COT Ranking</Text>
+            <Text style={styles.normalText}>{data.cot_rank || "N/A"}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.titleText}>Need more</Text>
+            <Text style={styles.normalText}>{data.cot_balance_due ? "Rs. " + new Intl.NumberFormat().format(data.cot_balance_due) : "N/A" || "N/A"}</Text>
+          </View>
+          <View style={styles.specialRow}>
+            <Text style={styles.titleText}>Is Life Member</Text>
+            <Text style={styles.greenText}>{data.life_member || "N/A"}</Text>
+          </View>
+        </View>
       </View>
 
       {/* Profile Image */}
       <View style={styles.imageContainer}>
-        <Image 
-          source={require('../../../../components/user.jpg')} 
+        <Image
+          source={require("../../../../components/user.jpg")}
           style={styles.roundImage}
-          resizeMode="cover" 
+          resizeMode="cover"
         />
-        <Text style={styles.imageText}>Michel Smith</Text>
+        <Text style={styles.imageText}>{data.agent_name?.replace(/\s+/g, '')}</Text>
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -83,31 +226,32 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   topSection: {
-    flex: 1, 
-    backgroundColor: '#FEA58F'
+    flex: 1,
+    backgroundColor: '#FEA58F',
   },
   bottomSection: {
-    flex: 5, 
-    backgroundColor: 'white'
+    flex: 5,
+    backgroundColor: 'white',
   },
   imageContainer: {
     position: 'absolute',
-    left: wp('50%'),
-    top: hp('10%'), // Adjusted top to make more space
-    transform: [{ translateX: -wp('25%') }, { translateY: -hp('10%') }]
+    left: '50%',
+    top: '16%',
+    transform: [{ translateX: -100 }, { translateY: -100 }],
   },
   roundImage: {
-    width: wp('50%'),
-    height: wp('50%'),
-    borderRadius: wp('25%'),
-    borderWidth: 3,
-    borderColor: 'gold'
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    borderWidth: 3, // Border width for the gold color
+    borderColor: 'gold', // Gold color for the border
   },
   imageText: {
-    marginTop: hp('1%'),
+    marginTop: 10,
     textAlign: 'center',
-    fontSize: wp('4%'),
+    fontSize: 16,
     fontWeight: 'bold',
+<<<<<<< HEAD
     color: 'black'
   },
   greySquareScroll: {
@@ -115,30 +259,54 @@ const styles = StyleSheet.create({
     height: hp('55%'), // This sets the scrollable area's height
     marginTop: hp('20%'),
     alignSelf: 'center',
+=======
+    color: 'black',
+>>>>>>> a7e970f598cdb88ccb0c93474353ba096b8dd02d
   },
   greySquare: {
-    width: '100%',
+    width: 350,
     backgroundColor: 'lightgrey',
+    marginTop: 150,
+    alignSelf: 'center',
     borderRadius: 10,
-    padding: wp('2.5%'),
+    padding: 10,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: hp('2%'),
+    marginBottom: 10,
   },
   specialRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: hp('1%'),
+    marginBottom: 5,
   },
   titleText: {
-    fontSize: wp('4%'),
+    fontSize: 16,
     color: 'black',
-    minWidth: wp('25%'),
+    minWidth: 100,
   },
   normalText: {
-    fontSize: wp('4%'),
-    color: 'grey'
+    fontSize: 16,
+    color: 'grey',
+  },
+  greenText: {
+    fontSize: 16,
+    color: 'green',
+  },
+  redText: {
+    fontSize: 16,
+    color: 'red',
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 18,
+    color: 'red',
   },
 });
+
+export default MDRTProfile;
