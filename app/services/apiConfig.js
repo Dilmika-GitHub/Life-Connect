@@ -11,7 +11,8 @@ const ENDPOINTS = {
   TOTRANK: "/Mdrt/GetTOTRankMDRT",
   COTRANK: "/Mdrt/GetCOTRankMDRT",
   AGENT_PROFILE: "/Account/GetAgentProfile",
-  PERSONAL_MDRT: "/Mdrt/GetPersonalMDRT"
+  PERSONAL_MDRT: "/Mdrt/GetPersonalMDRT",
+  LIFE_MEMBER_MDRT: "/Mdrt/GetLifeMemberMDRT"
 };
 
 export { BASE_URL, ENDPOINTS };

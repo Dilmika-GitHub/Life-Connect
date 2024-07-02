@@ -209,6 +209,8 @@ const WinnersScreen = () => {
         return ENDPOINTS.TOTRANK;
       case 'COT Ranking':
         return ENDPOINTS.COTRANK;
+      case 'Life Members':
+        return ENDPOINTS.LIFE_MEMBER_MDRT;
       default:
         return ENDPOINTS.ISLANDRANK;
     }
@@ -235,7 +237,7 @@ const WinnersScreen = () => {
         </TouchableOpacity>
         {showDropdown && (
           <View style={styles.dropdownOptions}>
-            {['Island Ranking', 'Branch Ranking', 'Regional Ranking', 'COT Ranking', 'TOT Ranking'].map(rank => (
+            {['Island Ranking', 'Branch Ranking', 'Regional Ranking', 'COT Ranking', 'TOT Ranking', 'Life Members'].map(rank => (
               <TouchableOpacity key={rank} onPress={() => handleSelectionChange(rank)}>
                 <Text style={styles.optionText}>{rank}</Text>
               </TouchableOpacity>
@@ -296,6 +298,9 @@ const WinnersScreen = () => {
         break;
       case 'TOT Ranking':
         userRank = personalMdrt.tot_rank ? `${personalMdrt.tot_rank}` : 'No TOT Rank';
+        break;
+      case 'Life Members':
+        userRank = personalMdrt.Life_Members ? `${personalMdrt.Life_Members}` : 'You Are Not a Life Member';
         break;
       default:
         userRank = `National Rank: ${personalMdrt.mdrt_rank}`;
