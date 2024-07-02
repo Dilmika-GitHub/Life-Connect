@@ -3,18 +3,10 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, Image, 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import AwesomeAlert from 'react-native-awesome-alerts';
+import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
 
-const BASE_URL = 'http://203.115.11.236:10155/SalesTrackAppAPI/api/v1';
 
-const ENDPOINTS = {
-  ISLANDRANK: "/Mdrt/GetIslandRankMDRT",
-  BRANCHRANK: "/Mdrt/GetBranchRankMDRT",
-  TEAMRANK: "/Mdrt/GetRegionalRankMDRT",
-  TOTRANK: "/Mdrt/GetTOTRankMDRT",
-  COTRANK: "/Mdrt/GetCOTRankMDRT",
-  AGENT_PROFILE: "/Account/GetAgentProfile",
-  PERSONAL_MDRT: "/Mdrt/GetPersonalMDRT"
-};
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -26,11 +18,29 @@ const WinnersScreen = () => {
   const [selectedValue, setSelectedValue] = useState('Island Ranking');
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showAlert, setShowAlert] = useState(false);
   const navigation = useNavigation();
+
+  const handleErrorResponse = (error) => {
+    if (error.response.status === 401) {
+      console.log(error.response.status);
+      setShowAlert(true);
+    }
+  };
+
+  const handleConfirm = () => {
+    setShowAlert(false);
+    navigation.navigate('Login');
+  };
 
   useEffect(() => {
     fetchWinnersData('Island Ranking');
     fetchAgentProfile();
+    const timer = setTimeout(() => {
+      setShowAlert(true);
+    }, 60000); // Show alert after one minute (60000 milliseconds)
+
+    return () => clearTimeout(timer); // Clear timeout if the component is unmounted
   }, []);
 
   const fetchAgentProfile = async () => {
@@ -68,6 +78,7 @@ const WinnersScreen = () => {
       const code = data.agent_code || data.orgnizer_code;
       fetchPersonalMdrt(code, catType);
     } catch (error) {
+      handleErrorResponse(error);
       console.error('Error fetching agent profile:', error.message);
     }
   };
@@ -98,6 +109,7 @@ const WinnersScreen = () => {
       console.log('Personal MDRT data:', data);
       setPersonalMdrt(data);
     } catch (error) {
+      handleErrorResponse(error);
       console.error('Error fetching personal MDRT data:', error.message);
     } finally {
       setLoading(false);
@@ -139,6 +151,7 @@ const WinnersScreen = () => {
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
       setBranchRegionalData(formattedData);
     } catch (error) {
+      handleErrorResponse(error);
       console.error(`Error fetching ${rankingType} data:`, error.message);
     }
   };
@@ -179,6 +192,7 @@ const WinnersScreen = () => {
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
       setWinnersData(formattedData);
     } catch (error) {
+      handleErrorResponse(error);
       console.error('Error fetching data:', error.message);
     }
   };
@@ -256,6 +270,7 @@ const WinnersScreen = () => {
             </Text>
           )}
         </View>
+        
       </View>
     );
   };
@@ -341,6 +356,7 @@ const WinnersScreen = () => {
       <View style={{ alignItems: 'center' }}>
         {renderUser()}
       </View>
+     
     </View>
   );
 };
