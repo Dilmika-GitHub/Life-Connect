@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, Image, BackHandler, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
-
-
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -36,12 +34,33 @@ const WinnersScreen = () => {
   useEffect(() => {
     fetchWinnersData('Island Ranking');
     fetchAgentProfile();
-    const timer = setTimeout(() => {
-      setShowAlert(true);
-    }, 60000); // Show alert after one minute (60000 milliseconds)
-
-    return () => clearTimeout(timer); // Clear timeout if the component is unmounted
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      let timer;
+
+      const onFocus = () => {
+        clearTimeout(timer);
+        setShowAlert(false);
+      };
+
+      const onBlur = () => {
+        timer = setTimeout(() => {
+          setShowAlert(true);
+        }, 60000); // Show alert after one minute (60000 milliseconds)
+      };
+
+      navigation.addListener('focus', onFocus);
+      navigation.addListener('blur', onBlur);
+
+      return () => {
+        clearTimeout(timer);
+        navigation.removeListener('focus', onFocus);
+        navigation.removeListener('blur', onBlur);
+      };
+    }, [navigation])
+  );
 
   const fetchAgentProfile = async () => {
     try {
@@ -51,29 +70,29 @@ const WinnersScreen = () => {
       if (!token || !email || !catType) {
         throw new Error('No token, email, or category type found');
       }
-  
+
       const url = `${BASE_URL}${ENDPOINTS.AGENT_PROFILE}?email=${email}&catType=${catType}`;
       console.log(`Fetching agent profile data from: ${url}`);
-  
+
       const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-  
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
-  
+
       const data = await response.json();
       console.log('Full agent profile data response:', data);
-  
+
       if (!data || (!data.agent_code && !data.orgnizer_code)) {
         throw new Error("Agent code or Organizer code not found in profile data.");
       }
-  
+
       setAgentProfile(data);
       const code = data.agent_code || data.orgnizer_code;
       fetchPersonalMdrt(code, catType);
@@ -89,22 +108,22 @@ const WinnersScreen = () => {
       if (!token || !code || !catType) {
         throw new Error('No token, code, or category type found');
       }
-  
+
       const url = `${BASE_URL}${ENDPOINTS.PERSONAL_MDRT}?p_agency_1=${code}&p_agency_2=0&p_cat=${catType}&p_year=${new Date().getFullYear()}`;
       console.log(`Fetching personal MDRT data from: ${url}`);
-  
+
       const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-  
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
-  
+
       const data = await response.json();
       console.log('Personal MDRT data:', data);
       setPersonalMdrt(data);
@@ -127,7 +146,7 @@ const WinnersScreen = () => {
       const endpoint = getEndpoint(rankingType);
       const url = `${BASE_URL}${endpoint}?p_agency_1=${code}&p_agency_2=0&p_cat=${catType}&p_year=${currentYear}`;
       console.log(`Fetching ${rankingType} data from: ${url}`);
-      
+
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -361,7 +380,18 @@ const WinnersScreen = () => {
       <View style={{ alignItems: 'center' }}>
         {renderUser()}
       </View>
-     
+      <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Session Expired"
+        message="Please Log Again!"
+        closeOnTouchOutside={false}
+        closeOnHardwareBackPress={false}
+        showConfirmButton={true}
+        confirmText="OK"
+        confirmButtonColor="#FF7758"
+        onConfirmPressed={handleConfirm}
+      />
     </View>
   );
 };
