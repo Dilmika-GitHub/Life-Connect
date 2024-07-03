@@ -6,6 +6,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
 import { Bar1, Bar2 } from "../../components/Chart";
+import Top3 from "../../components/Top3";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -268,11 +269,11 @@ const WinnersScreen = () => {
   const renderItem = ({ item, index }) => {
     const target = parseInt(item.achievedTarget.replace(/,/g, '')) || 0;
     const achieved = target >= 6000000;
-
+    
     return (
       <View style={[styles.itemContainer, index < 3 && styles.highlightedItem, achieved && index >= 3 && styles.achievedBeyondTopThree]}>
         <View style={styles.iconContainer}>
-          <Icon name="user-circle" size={50} color={index < 3 ? '#FFD700' : '#C0C0C0'} />
+          <Icon name="user-circle" size={50} color={index < 3 ? '#A29D9C' : '#C0C0C0'} />
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.name}>{item.name}</Text>
@@ -289,7 +290,11 @@ const WinnersScreen = () => {
             </Text>
           )}
         </View>
-        
+        {index < 3 && (
+          <View style={styles.svgContainer}>
+            <Top3 />
+          </View>
+        )}
       </View>
     );
   };
@@ -430,6 +435,15 @@ const styles = StyleSheet.create({
   },
   highlightedItem: {
     backgroundColor: '#FFD70020',
+  },
+  svgContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+    position: 'absolute',
+    top: '50%', // Adjust this to align SVG vertically centered
+    right: -2, // Adjust this to set the distance from the right edge
+    transform: [{ translateY: -20.5 }],
   },
   iconContainer: {
     justifyContent: 'center',
