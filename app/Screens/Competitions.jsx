@@ -38,12 +38,13 @@ const WinnersScreen = () => {
   useEffect(() => {
     fetchWinnersData('Island Ranking');
     fetchAgentProfile();
+
     const timer = setTimeout(() => {
       if (winnersData.length === 0 && !errorMessage) {
         setErrorMessage('No data available for the selected ranking.');
       }
       setShowAlert(true);
-    }, 60000); // Show alert after one minute (60000 milliseconds)
+    }, 300000); // Show alert after 5 minutes (300000 milliseconds)
 
     return () => clearTimeout(timer); // Clear timeout if the component is unmounted
   }, []);
@@ -262,7 +263,7 @@ const WinnersScreen = () => {
         )}
       </View>
     );
-};
+  };
 
   const renderItem = ({ item, index }) => {
     const target = parseInt(item.achievedTarget.replace(/,/g, '')) || 0;
@@ -369,6 +370,7 @@ const WinnersScreen = () => {
       </View>
     );
   }
+
   return (
     <View style={styles.container}>
       {renderDropdown()}
@@ -378,24 +380,6 @@ const WinnersScreen = () => {
         </View>
       ) : (
         <>
-          {/* <View style={[styles.barContainer, { marginTop: 60 }]}>
-            {topThreeWinners.length > 0 && (
-              <Bar1
-                profilePic={renderProfilePic(topThreeWinners[0])}
-                name={topThreeWinners[0].name}
-                achievedTarget={topThreeWinners[0].achievedTarget}
-              />
-            )}
-            <View style={{ marginTop: -150, alignItems: 'center' }}>
-              {topThreeWinners.length > 1 && (
-                <Bar2
-                  profilePic={renderProfilePic(topThreeWinners[1])}
-                  name={topThreeWinners[1].name}
-                  achievedTarget={topThreeWinners[1].achievedTarget}
-                />
-              )}
-            </View> 
-          </View>*/}
           <FlatList
             data={selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking' ? BranchRegionalData : winnersData}
             renderItem={renderItem}
@@ -534,22 +518,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     paddingVertical: 5,
-  },
-  barContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  bar: {
-    height: 20,
-    backgroundColor: 'blue',
-    borderRadius: 5,
-  },
-  placeText: {
-    marginBottom: 5,
-  },
-  targetText: {
-    marginTop: 5,
   },
   loader: {
     flex: 1,
