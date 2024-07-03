@@ -28,9 +28,9 @@ const Profile = ({ navigation }) => {
 
   const fetchUserData = async () => {
     try {
-      const token = await AsyncStorage.getItem('accessToken'); 
-      const email = await AsyncStorage.getItem('email'); 
-      const categoryType = await AsyncStorage.getItem('categoryType');
+      const token = await AsyncStorage.getItem("accessToken");
+      const email = await AsyncStorage.getItem("email");
+      const categoryType = await AsyncStorage.getItem("categoryType");
       setCategoryType(categoryType);
 
       const response = await axios.get(BASE_URL+ENDPOINTS.PROFILE_DETAILS,{
@@ -68,7 +68,7 @@ const Profile = ({ navigation }) => {
   );
 
   const navigateToPasswordChange = () => {
-    navigation.navigate('ChangePassword');
+    navigation.navigate("ChangePassword");
   };
 
   if (loading) {
@@ -125,18 +125,18 @@ const Profile = ({ navigation }) => {
             <Text style={styles.titleText}>Date of Birth:</Text>
             <Text style={styles.normalText}>{userData?.dob || "N/A"}</Text>
           </View>
-          
-            {categoryType === "Or" ? (
-              <>
+
+          {categoryType === "Or" ? (
+            <>
               <View style={styles.row}>
                 <Text style={styles.titleText}>Organizer Team Code:</Text>
                 <Text style={styles.normalText}>
                   {userData?.or_team_code || "N/A"}
                 </Text>
-                </View>
-              </>
-            ) : null}
-          
+              </View>
+            </>
+          ) : null}
+
           <View style={styles.row}>
             <Text
               style={styles.changePasswordText}
@@ -179,23 +179,23 @@ const Profile = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
+    flexDirection: "column",
   },
   section: {
-    width: '100%',
+    width: "100%",
   },
   topSection: {
     flex: 1,
-    backgroundColor: '#FEA58F',
+    backgroundColor: "#FEA58F",
   },
   bottomSection: {
     flex: 5,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   imageContainer: {
-    position: 'absolute',
-    left: '50%',
-    top: '16%',
+    position: "absolute",
+    left: "50%",
+    top: "16%",
     transform: [{ translateX: -100 }, { translateY: -100 }],
   },
   roundImage: {
@@ -205,22 +205,22 @@ const styles = StyleSheet.create({
   },
   imageText: {
     marginTop: 10,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 16,
-    fontWeight: 'bold',
-    color: 'black',
+    fontWeight: "bold",
+    color: "black",
   },
   greySquare: {
     width: 320,
     backgroundColor: 'lightgrey',
     marginTop: 150,
-    alignSelf: 'center',
+    alignSelf: "center",
     borderRadius: 10,
     padding: 10,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 10,
   },
   titleText: {
@@ -230,11 +230,11 @@ const styles = StyleSheet.create({
   },
   normalText: {
     fontSize: 16,
-    color: 'grey',
+    color: "grey",
   },
   changePasswordText: {
     fontSize: 16,
-    color: 'blue',
+    color: "blue",
   },
 });
 
