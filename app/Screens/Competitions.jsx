@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
+import { Bar1, Bar2 } from "../../components/Chart";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -16,13 +17,16 @@ const WinnersScreen = () => {
   const [selectedValue, setSelectedValue] = useState('Island Ranking');
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const navigation = useNavigation();
 
   const handleErrorResponse = (error) => {
-    if (error.response.status === 401) {
+    if (error.response && error.response.status === 401) {
       console.log(error.response.status);
       setShowAlert(true);
+    } else {
+      setErrorMessage('Failed to fetch data. Please try again later.');
     }
   };
 
@@ -34,33 +38,15 @@ const WinnersScreen = () => {
   useEffect(() => {
     fetchWinnersData('Island Ranking');
     fetchAgentProfile();
+    const timer = setTimeout(() => {
+      if (winnersData.length === 0 && !errorMessage) {
+        setErrorMessage('No data available for the selected ranking.');
+      }
+      setShowAlert(true);
+    }, 60000); // Show alert after one minute (60000 milliseconds)
+
+    return () => clearTimeout(timer); // Clear timeout if the component is unmounted
   }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      let timer;
-
-      const onFocus = () => {
-        clearTimeout(timer);
-        setShowAlert(false);
-      };
-
-      const onBlur = () => {
-        timer = setTimeout(() => {
-          setShowAlert(true);
-        }, 60000); // Show alert after one minute (60000 milliseconds)
-      };
-
-      navigation.addListener('focus', onFocus);
-      navigation.addListener('blur', onBlur);
-
-      return () => {
-        clearTimeout(timer);
-        navigation.removeListener('focus', onFocus);
-        navigation.removeListener('blur', onBlur);
-      };
-    }, [navigation])
-  );
 
   const fetchAgentProfile = async () => {
     try {
@@ -126,6 +112,10 @@ const WinnersScreen = () => {
 
       const data = await response.json();
       console.log('Personal MDRT data:', data);
+      if (data.length === 0) {
+        setErrorMessage('No personal MDRT data available.');
+        return;
+      }
       setPersonalMdrt(data);
     } catch (error) {
       handleErrorResponse(error);
@@ -146,7 +136,7 @@ const WinnersScreen = () => {
       const endpoint = getEndpoint(rankingType);
       const url = `${BASE_URL}${endpoint}?p_agency_1=${code}&p_agency_2=0&p_cat=${catType}&p_year=${currentYear}`;
       console.log(`Fetching ${rankingType} data from: ${url}`);
-
+      
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -160,6 +150,10 @@ const WinnersScreen = () => {
       }
 
       const data = await response.json();
+      if (data.length === 0) {
+        setErrorMessage(`No data available for ${rankingType}.`);
+        return;
+      }
       const formattedData = data.map(item => ({
         name: item.agent_name.trim(),
         achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
@@ -202,6 +196,10 @@ const WinnersScreen = () => {
       }
 
       const data = await response.json();
+      if (data.length === 0) {
+        setErrorMessage(`No winners data available for ${rankingType}.`);
+        return;
+      }
       const formattedData = data.map(item => ({
         name: item.agent_name.trim(),
         achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
@@ -228,8 +226,6 @@ const WinnersScreen = () => {
         return ENDPOINTS.TOTRANK;
       case 'COT Ranking':
         return ENDPOINTS.COTRANK;
-      case 'Life Members':
-        return ENDPOINTS.LIFE_MEMBER_MDRT;
       default:
         return ENDPOINTS.ISLANDRANK;
     }
@@ -238,6 +234,7 @@ const WinnersScreen = () => {
   const handleSelectionChange = (val) => {
     setSelectedValue(val);
     setShowDropdown(false);
+    setErrorMessage('');  // Clear previous errors
     if (val === 'Branch Ranking' || val === 'Regional Ranking') {
       const code = agentProfile?.agent_code || agentProfile?.orgnizer_code;
       const catType = agentProfile?.stid;
@@ -256,7 +253,7 @@ const WinnersScreen = () => {
         </TouchableOpacity>
         {showDropdown && (
           <View style={styles.dropdownOptions}>
-            {['Island Ranking', 'Branch Ranking', 'Regional Ranking', 'COT Ranking', 'TOT Ranking', 'Life Members'].map(rank => (
+            {['Island Ranking', 'Branch Ranking', 'Regional Ranking', 'COT Ranking', 'TOT Ranking'].map(rank => (
               <TouchableOpacity key={rank} onPress={() => handleSelectionChange(rank)}>
                 <Text style={styles.optionText}>{rank}</Text>
               </TouchableOpacity>
@@ -272,7 +269,7 @@ const WinnersScreen = () => {
     const achieved = target >= 6000000;
 
     return (
-      <View style={[styles.itemContainer, index < 3 && styles.highlightedItem]}>
+      <View style={[styles.itemContainer, index < 3 && styles.highlightedItem, achieved && index >= 3 && styles.achievedBeyondTopThree]}>
         <View style={styles.iconContainer}>
           <Icon name="user-circle" size={50} color={index < 3 ? '#FFD700' : '#C0C0C0'} />
         </View>
@@ -318,9 +315,6 @@ const WinnersScreen = () => {
       case 'TOT Ranking':
         userRank = personalMdrt.tot_rank ? `${personalMdrt.tot_rank}` : 'No TOT Rank';
         break;
-      case 'Life Members':
-        userRank = personalMdrt.Life_Members ? `${personalMdrt.Life_Members}` : 'You Are Not a Life Member';
-        break;
       default:
         userRank = `National Rank: ${personalMdrt.mdrt_rank}`;
         break;
@@ -345,6 +339,14 @@ const WinnersScreen = () => {
     );
   };
 
+  const renderProfilePic = (winner) => {
+    if (winner.profilePic) {
+      return <Image source={winner.profilePic} style={styles.profilePic} />;
+    } else {
+      return <Icon name="user-circle" size={26} color="#FF5733" style={{ marginRight: 10 }} />;
+    }
+  };
+  
   const topThreeWinners = winnersData.slice(0, 3);
 
   useFocusEffect(
@@ -368,9 +370,35 @@ const WinnersScreen = () => {
     );
   }
 
+  if (errorMessage) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{errorMessage}</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       {renderDropdown()}
+      <View style={[styles.barContainer, { marginTop: 60 }]}>
+        {topThreeWinners.length > 0 && (
+          <Bar1
+            profilePic={renderProfilePic(topThreeWinners[0])}
+            name={topThreeWinners[0].name}
+            achievedTarget={topThreeWinners[0].achievedTarget}
+          />
+        )}
+        <View style={{ marginTop: -150, alignItems: 'center' }}>
+          {topThreeWinners.length > 1 && (
+            <Bar2
+              profilePic={renderProfilePic(topThreeWinners[1])}
+              name={topThreeWinners[1].name}
+              achievedTarget={topThreeWinners[1].achievedTarget}
+            />
+          )}
+        </View>
+      </View>
       <FlatList
         data={selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking' ? BranchRegionalData : winnersData}
         renderItem={renderItem}
@@ -528,6 +556,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 18,
+    color: 'red',
+  },
+  achievedBeyondTopThree: {
+    backgroundColor: '#d4edda', // A greenish background color, change as per your UI theme
   },
 });
 
