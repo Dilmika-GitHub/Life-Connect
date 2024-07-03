@@ -39,15 +39,6 @@ const WinnersScreen = () => {
   useEffect(() => {
     fetchWinnersData('Island Ranking');
     fetchAgentProfile();
-
-    const timer = setTimeout(() => {
-      if (winnersData.length === 0 && !errorMessage) {
-        setErrorMessage('No data available for the selected ranking.');
-      }
-      setShowAlert(true);
-    }, 300000); // Show alert after 5 minutes (300000 milliseconds)
-
-    return () => clearTimeout(timer); // Clear timeout if the component is unmounted
   }, []);
 
   const fetchAgentProfile = async () => {
