@@ -234,7 +234,7 @@ const WinnersScreen = () => {
   const handleSelectionChange = (val) => {
     setSelectedValue(val);
     setShowDropdown(false);
-    setErrorMessage('');  // Clear previous errors
+    setErrorMessage('');  
     if (val === 'Branch Ranking' || val === 'Regional Ranking') {
       const code = agentProfile?.agent_code || agentProfile?.orgnizer_code;
       const catType = agentProfile?.stid;
@@ -369,56 +369,6 @@ const WinnersScreen = () => {
       </View>
     );
   }
-
-  // return (
-  //   <View style={styles.container}>
-  //     {renderDropdown()}
-  //     {errorMessage && (
-  //       <View style={styles.errorContainer}>
-  //         <Text style={styles.errorText}>{errorMessage}</Text>
-  //       </View>
-  //     )}
-  //     <View style={[styles.barContainer, { marginTop: 60 }]}>
-  //       {topThreeWinners.length > 0 && (
-  //         <Bar1
-  //           profilePic={renderProfilePic(topThreeWinners[0])}
-  //           name={topThreeWinners[0].name}
-  //           achievedTarget={topThreeWinners[0].achievedTarget}
-  //         />
-  //       )}
-  //       <View style={{ marginTop: -150, alignItems: 'center' }}>
-  //         {topThreeWinners.length > 1 && (
-  //           <Bar2
-  //             profilePic={renderProfilePic(topThreeWinners[1])}
-  //             name={topThreeWinners[1].name}
-  //             achievedTarget={topThreeWinners[1].achievedTarget}
-  //           />
-  //         )}
-  //       </View>
-  //     </View>
-  //     <FlatList
-  //       data={selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking' ? BranchRegionalData : winnersData}
-  //       renderItem={renderItem}
-  //       keyExtractor={item => item.name}
-  //       contentContainerStyle={styles.flatListContainer}
-  //     />
-  //     <View style={{ alignItems: 'center' }}>
-  //       {renderUser()}
-  //     </View>
-  //     <AwesomeAlert
-  //       show={showAlert}
-  //       showProgress={false}
-  //       title="Session Expired"
-  //       message="Please Log Again!"
-  //       closeOnTouchOutside={false}
-  //       closeOnHardwareBackPress={false}
-  //       showConfirmButton={true}
-  //       confirmText="OK"
-  //       confirmButtonColor="#FF7758"
-  //       onConfirmPressed={handleConfirm}
-  //     />
-  //   </View>
-  // );
   return (
     <View style={styles.container}>
       {renderDropdown()}
@@ -428,7 +378,7 @@ const WinnersScreen = () => {
         </View>
       ) : (
         <>
-          <View style={[styles.barContainer, { marginTop: 60 }]}>
+          {/* <View style={[styles.barContainer, { marginTop: 60 }]}>
             {topThreeWinners.length > 0 && (
               <Bar1
                 profilePic={renderProfilePic(topThreeWinners[0])}
@@ -444,8 +394,8 @@ const WinnersScreen = () => {
                   achievedTarget={topThreeWinners[1].achievedTarget}
                 />
               )}
-            </View>
-          </View>
+            </View> 
+          </View>*/}
           <FlatList
             data={selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking' ? BranchRegionalData : winnersData}
             renderItem={renderItem}
