@@ -10,6 +10,7 @@ const screenWidth = Dimensions.get('window').width;
 
 const WinnersScreen = () => {
   const [winnersData, setWinnersData] = useState([]);
+  const [isLifeMember, setIsLifeMember] = useState(false);
   const [BranchRegionalData, setBranchRegionalData] = useState([]);
   const [agentProfile, setAgentProfile] = useState(null);
   const [personalMdrt, setPersonalMdrt] = useState(null);
@@ -19,10 +20,14 @@ const WinnersScreen = () => {
   const [showAlert, setShowAlert] = useState(false);
   const navigation = useNavigation();
 
+  const currentYear = new Date().getFullYear();
+
   const handleErrorResponse = (error) => {
-    if (error.response.status === 401) {
+    if (error.response && error.response.status === 401) {
       console.log(error.response.status);
       setShowAlert(true);
+    } else {
+      console.error('An error occurred:', error.message);
     }
   };
 
@@ -35,6 +40,14 @@ const WinnersScreen = () => {
     fetchWinnersData('Island Ranking');
     fetchAgentProfile();
   }, []);
+
+  useEffect(() => {
+    if (selectedValue === 'Life Members') {
+      checkIfUserIsLifeMember();
+    } else {
+      fetchWinnersData(selectedValue);
+    }
+  }, [selectedValue]);
 
   useFocusEffect(
     useCallback(() => {
@@ -174,6 +187,51 @@ const WinnersScreen = () => {
       console.error(`Error fetching ${rankingType} data:`, error.message);
     }
   };
+
+  const fetchLifeMemberDetails = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        throw new Error('No token found');
+      }
+  
+      const url = `${BASE_URL}${ENDPOINTS.LIFE_MEMBER_MDRT}?p_year=${currentYear}`;
+      console.log(`Fetching life member details from: ${url}`);
+  
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+  
+      const data = await response.json();
+      console.log('Life member data:', data)
+      return data;
+    } catch (error) {
+      handleErrorResponse(error);
+      console.error('Error fetching life member details:', error.message);
+    }
+  };
+  
+  const checkIfUserIsLifeMember = async () => {
+    const lifeMembers = await fetchLifeMemberDetails();
+    if (lifeMembers) {
+      const userOrganizerCode = agentProfile?.orgnizer_code;
+      console.log('User organizer code:', userOrganizerCode);
+      const isLifeMember = lifeMembers.some(member => 
+        member.agency_code_1 === userOrganizerCode || member.agency_code_2 === userOrganizerCode
+      );
+      console.log('Is life member:', isLifeMember);
+      setIsLifeMember(isLifeMember);
+    }
+  };
+  
 
   const fetchWinnersData = async (rankingType) => {
     try {
@@ -319,7 +377,7 @@ const WinnersScreen = () => {
         userRank = personalMdrt.tot_rank ? `${personalMdrt.tot_rank}` : 'No TOT Rank';
         break;
       case 'Life Members':
-        userRank = personalMdrt.Life_Members ? `${personalMdrt.Life_Members}` : 'You Are Not a Life Member';
+        userRank = isLifeMember ? 'You are a Life Member' : 'You are not a Life Member';
         break;
       default:
         userRank = `National Rank: ${personalMdrt.mdrt_rank}`;
