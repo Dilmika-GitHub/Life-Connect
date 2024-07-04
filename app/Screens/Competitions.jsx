@@ -6,7 +6,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
 import { Bar1, Bar2 } from "../../components/Chart";
-import Top3 from "../../components/Top3";
+import { FirstPlaceSvg, SecondPlaceSvg, ThirdPlaceSvg } from "../../components/Top3";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -20,7 +20,6 @@ const WinnersScreen = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const [showAlert, setShowAlert] = useState(false);
   const navigation = useNavigation();
 
   const currentYear = new Date().getFullYear();
@@ -42,14 +41,6 @@ const WinnersScreen = () => {
   useEffect(() => {
     fetchAgentProfile();
     fetchWinnersData('Island Ranking');
-    const timer = setTimeout(() => {
-      if (winnersData.length === 0 && !errorMessage) {
-        setErrorMessage('No data available for the selected ranking.');
-      }
-      setShowAlert(true);
-    }, 300000); // Show alert after 5 minutes (300000 milliseconds)
-
-    return () => clearTimeout(timer); // Clear timeout if the component is unmounted
   }, []);
 
   useEffect(() => {
@@ -63,7 +54,7 @@ const WinnersScreen = () => {
       fetchWinnersData(selectedValue);
     }
   }, [selectedValue, agentProfile]);
-
+  
 
   const fetchAgentProfile = async () => {
     try {
@@ -152,7 +143,7 @@ const WinnersScreen = () => {
       const endpoint = getEndpoint(rankingType);
       const url = `${BASE_URL}${endpoint}?p_agency_1=${code}&p_agency_2=0&p_cat=${catType}&p_year=${currentYear}`;
       console.log(`Fetching ${rankingType} data from: ${url}`);
-      
+
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -174,7 +165,9 @@ const WinnersScreen = () => {
         name: item.agent_name.trim(),
         achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
         NOP: item.nop.toString(),
-        rank: rankingType === 'Branch Ranking' ? item.branch_rank : item.region_rank
+        rank: rankingType === 'Branch Ranking' ? item.branch_rank : item.region_rank,
+        achievement: item.achievment,       
+        balanceDue: item.balanceDue
       }));
       console.log(`${rankingType} data:`, data);
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
@@ -185,7 +178,8 @@ const WinnersScreen = () => {
     }
   };
 
-  const fetchLifeMemberDetails = async () => {
+  
+  const checkIfUserIsLifeMember = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
       if (!token) {
@@ -208,26 +202,43 @@ const WinnersScreen = () => {
       }
   
       const data = await response.json();
-      console.log('Life member data:', data)
-      return data;
+      console.log('Life member data:', data);
+  
+      const userOrganizerCode = agentProfile?.orgnizer_code;
+      console.log('User organizer code:', userOrganizerCode);
+  
+      const isLifeMember = data.some(member => 
+        member.agency_code_1 === userOrganizerCode || member.agency_code_2 === userOrganizerCode
+      );
+  
+      console.log('Is life member:', isLifeMember);
+      setIsLifeMember(isLifeMember);
+  
+      if (data.length === 0) {
+        setErrorMessage('No life member data available.');
+        return;
+      }
+  
+      const formattedData = data.map(item => ({
+        name: item.agent_name.trim(),
+        achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
+        NOP: item.nop.toString(),
+        rank: item.national_rank,
+        achievement: item.achievment,       
+        balanceDue: item.balanceDue 
+      }));
+  
+      formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
+      setWinnersData(formattedData);
+  
     } catch (error) {
       handleErrorResponse(error);
       console.error('Error fetching life member details:', error.message);
+    } finally {
+      setLoading(false);
     }
   };
   
-  const checkIfUserIsLifeMember = async () => {
-    const lifeMembers = await fetchLifeMemberDetails();
-    if (lifeMembers) {
-      const userOrganizerCode = agentProfile?.orgnizer_code;
-      console.log('User organizer code:', userOrganizerCode);
-      const isLifeMember = lifeMembers.some(member => 
-        member.agency_code_1 === userOrganizerCode || member.agency_code_2 === userOrganizerCode
-      );
-      console.log('Is life member:', isLifeMember);
-      setIsLifeMember(isLifeMember);
-    }
-  };
 
   const fetchWinnersData = async (rankingType) => {
     try {
@@ -262,7 +273,9 @@ const WinnersScreen = () => {
         name: item.agent_name.trim(),
         achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
         NOP: item.nop.toString(),
-        rank: item.national_rank
+        rank: item.national_rank,
+        achievement: item.achievment,       
+        balanceDue: item.balanceDue
       }));
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
       setWinnersData(formattedData);
@@ -306,7 +319,7 @@ const WinnersScreen = () => {
         </TouchableOpacity>
         {showDropdown && (
           <View style={styles.dropdownOptions}>
-            {['Island Ranking', 'Branch Ranking', 'Regional Ranking', 'COT Ranking', 'TOT Ranking', 'Life Members'].map(rank => (
+            {['Island Ranking', 'Regional Ranking', 'Branch Ranking', 'COT Ranking', 'TOT Ranking', 'Life Members'].map(rank => (
               <TouchableOpacity key={rank} onPress={() => handleSelectionChange(rank)}>
                 <Text style={styles.optionText}>{rank}</Text>
               </TouchableOpacity>
@@ -319,10 +332,10 @@ const WinnersScreen = () => {
 
   const renderItem = ({ item, index }) => {
     const target = parseInt(item.achievedTarget.replace(/,/g, '')) || 0;
-    const achieved = target >= 6000000;
     
+
     return (
-      <View style={[styles.itemContainer, index < 3 && styles.highlightedItem, achieved && index >= 3 && styles.achievedBeyondTopThree]}>
+      <View style={[styles.itemContainer, index < 3 && styles.highlightedItem, item.achievement === 'Achieved' && index >= 3 && styles.achievedBeyondTopThree]}>
         <View style={styles.iconContainer}>
           <Icon name="user-circle" size={50} color={index < 3 ? '#A29D9C' : '#C0C0C0'} />
         </View>
@@ -333,22 +346,33 @@ const WinnersScreen = () => {
           <Text style={styles.place}>
             {selectedValue === 'Branch Ranking' ? `Branch Rank: ${item.rank}` : selectedValue === 'Regional Ranking' ? `Regional Rank: ${item.rank}` : `National Rank: ${item.rank}`}
           </Text>
-          {achieved ? (
+          {item.achievement === 'Achieved' ? (
             <Text style={[styles.achievedText, styles.achievedTextGreen]}>ACHIEVED</Text>
           ) : (
             <Text style={[styles.achievedText, styles.achievedTextGray]}>
-              Needs: {(6000000 - target).toLocaleString('en-US')}
+              Needs: {item.balanceDue.toLocaleString('en-US')}
             </Text>
           )}
         </View>
-        {index < 3 && (
+        {index == 0 && (
           <View style={styles.svgContainer}>
-            <Top3 />
+            <FirstPlaceSvg />
+          </View>
+        )}
+        {index === 1 && (
+          <View style={styles.svgContainer}>
+            <SecondPlaceSvg />
+          </View>
+        )}
+        {index === 2 && (
+          <View style={styles.svgContainer}>
+            <ThirdPlaceSvg />
           </View>
         )}
       </View>
     );
   };
+  
 
   const renderUser = () => {
     if (!personalMdrt) {
@@ -356,6 +380,7 @@ const WinnersScreen = () => {
     }
 
     let userRank = '';
+    let showUserRank = true;
     switch (selectedValue) {
       case 'Island Ranking':
         userRank = `${personalMdrt.mdrt_rank}`;
@@ -373,8 +398,9 @@ const WinnersScreen = () => {
         userRank = personalMdrt.tot_rank ? `${personalMdrt.tot_rank}` : 'No TOT Rank';
         break;
       case 'Life Members':
-          userRank = isLifeMember ? 'You are a Life Member' : 'You are not a Life Member';
-          break;
+        showUserRank = false;
+        userRank = isLifeMember ? 'You are a Life Member' : 'You are not a Life Member';
+        break;
       default:
         userRank = `National Rank: ${personalMdrt.mdrt_rank}`;
         break;
@@ -390,11 +416,22 @@ const WinnersScreen = () => {
           />
         </View>
         <View style={styles.textContainer}>
-          <Text style={styles.uname}>Your place: {userRank}</Text>
-          <Text style={styles.salesAmount}>
-            Sales amount: {personalMdrt.fyp ? Number(personalMdrt.fyp).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
-          </Text>
-        </View>
+        {showUserRank ? (
+          <>
+            <Text style={styles.uname}>Your place: {userRank}</Text>
+            <Text style={styles.salesAmount}>
+              Sales amount: {personalMdrt.fyp ? Number(personalMdrt.fyp).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+            </Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.uname}>{userRank}</Text>
+            <Text style={styles.salesAmount}>
+              Sales amount: {personalMdrt.fyp ? Number(personalMdrt.fyp).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+            </Text>
+          </>
+        )}
+      </View>
       </View>
     );
   };
@@ -406,7 +443,7 @@ const WinnersScreen = () => {
       return <Icon name="user-circle" size={26} color="#FF5733" style={{ marginRight: 10 }} />;
     }
   };
-  
+
   const topThreeWinners = winnersData.slice(0, 3);
 
   useFocusEffect(
@@ -450,18 +487,7 @@ const WinnersScreen = () => {
       <View style={{ alignItems: 'center' }}>
         {renderUser()}
       </View>
-      <AwesomeAlert
-        show={showAlert}
-        showProgress={false}
-        title="Session Expired"
-        message="Please Log Again!"
-        closeOnTouchOutside={false}
-        closeOnHardwareBackPress={false}
-        showConfirmButton={true}
-        confirmText="OK"
-        confirmButtonColor="#FF7758"
-        onConfirmPressed={handleConfirm}
-      />
+      
     </View>
   );
 };
@@ -495,8 +521,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 10,
     position: 'absolute',
-    top: '50%', // Adjust this to align SVG vertically centered
-    right: -2, // Adjust this to set the distance from the right edge
+    top: '50%', 
+    right: -2, 
     transform: [{ translateY: -20.5 }],
   },
   iconContainer: {
