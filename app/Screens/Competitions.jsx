@@ -6,12 +6,14 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
 import { Bar1, Bar2 } from "../../components/Chart";
+import Top3 from "../../components/Top3";
 
 const screenWidth = Dimensions.get('window').width;
 
 const WinnersScreen = () => {
   const [winnersData, setWinnersData] = useState([]);
-  const [BranchRegionalData, setBranchRegionalData] = useState([]);
+  const [branchRegionalData, setBranchRegionalData] = useState([]);
+  const [isLifeMember, setIsLifeMember] = useState(false);
   const [agentProfile, setAgentProfile] = useState(null);
   const [personalMdrt, setPersonalMdrt] = useState(null);
   const [selectedValue, setSelectedValue] = useState('Island Ranking');
@@ -20,6 +22,8 @@ const WinnersScreen = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const navigation = useNavigation();
+
+  const currentYear = new Date().getFullYear();
 
   const handleErrorResponse = (error) => {
     if (error.response && error.response.status === 401) {
@@ -36,9 +40,8 @@ const WinnersScreen = () => {
   };
 
   useEffect(() => {
-    fetchWinnersData('Island Ranking');
     fetchAgentProfile();
-
+    fetchWinnersData('Island Ranking');
     const timer = setTimeout(() => {
       if (winnersData.length === 0 && !errorMessage) {
         setErrorMessage('No data available for the selected ranking.');
@@ -48,6 +51,19 @@ const WinnersScreen = () => {
 
     return () => clearTimeout(timer); // Clear timeout if the component is unmounted
   }, []);
+
+  useEffect(() => {
+    if (selectedValue === 'Life Members') {
+      checkIfUserIsLifeMember();
+    } else if (selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking') {
+      const code = agentProfile?.agent_code || agentProfile?.orgnizer_code;
+      const catType = agentProfile?.stid;
+      fetchBranchRegionalRankMdrt(selectedValue, code, catType);
+    } else {
+      fetchWinnersData(selectedValue);
+    }
+  }, [selectedValue, agentProfile]);
+
 
   const fetchAgentProfile = async () => {
     try {
@@ -96,7 +112,7 @@ const WinnersScreen = () => {
         throw new Error('No token, code, or category type found');
       }
 
-      const url = `${BASE_URL}${ENDPOINTS.PERSONAL_MDRT}?p_agency_1=${code}&p_agency_2=0&p_cat=${catType}&p_year=${new Date().getFullYear()}`;
+      const url = `${BASE_URL}${ENDPOINTS.PERSONAL_MDRT}?p_agency_1=${code}&p_agency_2=0&p_cat=${catType}&p_year=${currentYear}`;
       console.log(`Fetching personal MDRT data from: ${url}`);
 
       const response = await fetch(url, {
@@ -133,7 +149,6 @@ const WinnersScreen = () => {
         throw new Error('No token, code, or category type found');
       }
 
-      const currentYear = new Date().getFullYear();
       const endpoint = getEndpoint(rankingType);
       const url = `${BASE_URL}${endpoint}?p_agency_1=${code}&p_agency_2=0&p_cat=${catType}&p_year=${currentYear}`;
       console.log(`Fetching ${rankingType} data from: ${url}`);
@@ -170,6 +185,50 @@ const WinnersScreen = () => {
     }
   };
 
+  const fetchLifeMemberDetails = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        throw new Error('No token found');
+      }
+  
+      const url = `${BASE_URL}${ENDPOINTS.LIFE_MEMBER_MDRT}?p_year=${currentYear}`;
+      console.log(`Fetching life member details from: ${url}`);
+  
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+  
+      const data = await response.json();
+      console.log('Life member data:', data)
+      return data;
+    } catch (error) {
+      handleErrorResponse(error);
+      console.error('Error fetching life member details:', error.message);
+    }
+  };
+  
+  const checkIfUserIsLifeMember = async () => {
+    const lifeMembers = await fetchLifeMemberDetails();
+    if (lifeMembers) {
+      const userOrganizerCode = agentProfile?.orgnizer_code;
+      console.log('User organizer code:', userOrganizerCode);
+      const isLifeMember = lifeMembers.some(member => 
+        member.agency_code_1 === userOrganizerCode || member.agency_code_2 === userOrganizerCode
+      );
+      console.log('Is life member:', isLifeMember);
+      setIsLifeMember(isLifeMember);
+    }
+  };
+
   const fetchWinnersData = async (rankingType) => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
@@ -177,10 +236,8 @@ const WinnersScreen = () => {
         throw new Error('No token found');
       }
 
-      const currentYear = new Date().getFullYear();
       const endpoint = getEndpoint(rankingType);
       const url = `${BASE_URL}${endpoint}?p_year=${currentYear}`;
-      const itemWidth = screenWidth * 0.97;
 
       console.log(`Fetching data from: ${url}`);
 
@@ -227,6 +284,8 @@ const WinnersScreen = () => {
         return ENDPOINTS.TOTRANK;
       case 'COT Ranking':
         return ENDPOINTS.COTRANK;
+      case 'Life Members':
+          return ENDPOINTS.LIFE_MEMBER_MDRT;
       default:
         return ENDPOINTS.ISLANDRANK;
     }
@@ -236,13 +295,6 @@ const WinnersScreen = () => {
     setSelectedValue(val);
     setShowDropdown(false);
     setErrorMessage('');  
-    if (val === 'Branch Ranking' || val === 'Regional Ranking') {
-      const code = agentProfile?.agent_code || agentProfile?.orgnizer_code;
-      const catType = agentProfile?.stid;
-      fetchBranchRegionalRankMdrt(val, code, catType);
-    } else {
-      fetchWinnersData(val);
-    }
   };
 
   const renderDropdown = () => {
@@ -254,7 +306,7 @@ const WinnersScreen = () => {
         </TouchableOpacity>
         {showDropdown && (
           <View style={styles.dropdownOptions}>
-            {['Island Ranking', 'Branch Ranking', 'Regional Ranking', 'COT Ranking', 'TOT Ranking'].map(rank => (
+            {['Island Ranking', 'Branch Ranking', 'Regional Ranking', 'COT Ranking', 'TOT Ranking', 'Life Members'].map(rank => (
               <TouchableOpacity key={rank} onPress={() => handleSelectionChange(rank)}>
                 <Text style={styles.optionText}>{rank}</Text>
               </TouchableOpacity>
@@ -268,11 +320,11 @@ const WinnersScreen = () => {
   const renderItem = ({ item, index }) => {
     const target = parseInt(item.achievedTarget.replace(/,/g, '')) || 0;
     const achieved = target >= 6000000;
-
+    
     return (
       <View style={[styles.itemContainer, index < 3 && styles.highlightedItem, achieved && index >= 3 && styles.achievedBeyondTopThree]}>
         <View style={styles.iconContainer}>
-          <Icon name="user-circle" size={50} color={index < 3 ? '#FFD700' : '#C0C0C0'} />
+          <Icon name="user-circle" size={50} color={index < 3 ? '#A29D9C' : '#C0C0C0'} />
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.name}>{item.name}</Text>
@@ -289,7 +341,11 @@ const WinnersScreen = () => {
             </Text>
           )}
         </View>
-        
+        {index < 3 && (
+          <View style={styles.svgContainer}>
+            <Top3 />
+          </View>
+        )}
       </View>
     );
   };
@@ -316,6 +372,9 @@ const WinnersScreen = () => {
       case 'TOT Ranking':
         userRank = personalMdrt.tot_rank ? `${personalMdrt.tot_rank}` : 'No TOT Rank';
         break;
+      case 'Life Members':
+          userRank = isLifeMember ? 'You are a Life Member' : 'You are not a Life Member';
+          break;
       default:
         userRank = `National Rank: ${personalMdrt.mdrt_rank}`;
         break;
@@ -381,7 +440,7 @@ const WinnersScreen = () => {
       ) : (
         <>
           <FlatList
-            data={selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking' ? BranchRegionalData : winnersData}
+            data={selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking' ? branchRegionalData : winnersData}
             renderItem={renderItem}
             keyExtractor={item => item.name}
             contentContainerStyle={styles.flatListContainer}
@@ -430,6 +489,15 @@ const styles = StyleSheet.create({
   },
   highlightedItem: {
     backgroundColor: '#FFD70020',
+  },
+  svgContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+    position: 'absolute',
+    top: '50%', // Adjust this to align SVG vertically centered
+    right: -2, // Adjust this to set the distance from the right edge
+    transform: [{ translateY: -20.5 }],
   },
   iconContainer: {
     justifyContent: 'center',
