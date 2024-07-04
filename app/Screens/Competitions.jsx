@@ -63,7 +63,7 @@ const WinnersScreen = () => {
       fetchWinnersData(selectedValue);
     }
   }, [selectedValue, agentProfile]);
-
+  
 
   const fetchAgentProfile = async () => {
     try {
@@ -152,7 +152,7 @@ const WinnersScreen = () => {
       const endpoint = getEndpoint(rankingType);
       const url = `${BASE_URL}${endpoint}?p_agency_1=${code}&p_agency_2=0&p_cat=${catType}&p_year=${currentYear}`;
       console.log(`Fetching ${rankingType} data from: ${url}`);
-      
+
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -191,6 +191,37 @@ const WinnersScreen = () => {
       if (!token) {
         throw new Error('No token found');
       }
+
+      const url = `${BASE_URL}${ENDPOINTS.LIFE_MEMBER_MDRT}?p_year=${currentYear}`;
+      console.log(`Fetching life member details from: ${url}`);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('Life member data:', data)
+      return data;
+    } catch (error) {
+      handleErrorResponse(error);
+      console.error('Error fetching life member details:', error.message);
+    }
+  };
+
+  const checkIfUserIsLifeMember = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        throw new Error('No token found');
+      }
   
       const url = `${BASE_URL}${ENDPOINTS.LIFE_MEMBER_MDRT}?p_year=${currentYear}`;
       console.log(`Fetching life member details from: ${url}`);
@@ -208,26 +239,41 @@ const WinnersScreen = () => {
       }
   
       const data = await response.json();
-      console.log('Life member data:', data)
-      return data;
+      console.log('Life member data:', data);
+  
+      const userOrganizerCode = agentProfile?.orgnizer_code;
+      console.log('User organizer code:', userOrganizerCode);
+  
+      const isLifeMember = data.some(member => 
+        member.agency_code_1 === userOrganizerCode || member.agency_code_2 === userOrganizerCode
+      );
+  
+      console.log('Is life member:', isLifeMember);
+      setIsLifeMember(isLifeMember);
+  
+      if (data.length === 0) {
+        setErrorMessage('No life member data available.');
+        return;
+      }
+  
+      const formattedData = data.map(item => ({
+        name: item.agent_name.trim(),
+        achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
+        NOP: item.nop.toString(),
+        rank: item.national_rank
+      }));
+  
+      formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
+      setWinnersData(formattedData);
+  
     } catch (error) {
       handleErrorResponse(error);
       console.error('Error fetching life member details:', error.message);
+    } finally {
+      setLoading(false);
     }
   };
   
-  const checkIfUserIsLifeMember = async () => {
-    const lifeMembers = await fetchLifeMemberDetails();
-    if (lifeMembers) {
-      const userOrganizerCode = agentProfile?.orgnizer_code;
-      console.log('User organizer code:', userOrganizerCode);
-      const isLifeMember = lifeMembers.some(member => 
-        member.agency_code_1 === userOrganizerCode || member.agency_code_2 === userOrganizerCode
-      );
-      console.log('Is life member:', isLifeMember);
-      setIsLifeMember(isLifeMember);
-    }
-  };
 
   const fetchWinnersData = async (rankingType) => {
     try {
@@ -320,7 +366,7 @@ const WinnersScreen = () => {
   const renderItem = ({ item, index }) => {
     const target = parseInt(item.achievedTarget.replace(/,/g, '')) || 0;
     const achieved = target >= 6000000;
-    
+
     return (
       <View style={[styles.itemContainer, index < 3 && styles.highlightedItem, achieved && index >= 3 && styles.achievedBeyondTopThree]}>
         <View style={styles.iconContainer}>
@@ -406,7 +452,7 @@ const WinnersScreen = () => {
       return <Icon name="user-circle" size={26} color="#FF5733" style={{ marginRight: 10 }} />;
     }
   };
-  
+
   const topThreeWinners = winnersData.slice(0, 3);
 
   useFocusEffect(
