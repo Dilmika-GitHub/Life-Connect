@@ -6,7 +6,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
 import { Bar1, Bar2 } from "../../components/Chart";
-import Top3 from "../../components/Top3";
+import { FirstPlaceSvg, SecondPlaceSvg, ThirdPlaceSvg } from "../../components/Top3";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -393,9 +393,19 @@ const WinnersScreen = () => {
             </Text>
           )}
         </View>
-        {index < 3 && (
+        {index == 0 && (
           <View style={styles.svgContainer}>
-            <Top3 />
+            <FirstPlaceSvg />
+          </View>
+        )}
+        {index === 1 && (
+          <View style={styles.svgContainer}>
+            <SecondPlaceSvg />
+          </View>
+        )}
+        {index === 2 && (
+          <View style={styles.svgContainer}>
+            <ThirdPlaceSvg />
           </View>
         )}
       </View>
@@ -561,8 +571,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 10,
     position: 'absolute',
-    top: '50%', // Adjust this to align SVG vertically centered
-    right: -2, // Adjust this to set the distance from the right edge
+    top: '50%', 
+    right: -2, 
     transform: [{ translateY: -20.5 }],
   },
   iconContainer: {
