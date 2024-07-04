@@ -20,7 +20,6 @@ const WinnersScreen = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const [showAlert, setShowAlert] = useState(false);
   const navigation = useNavigation();
 
   const currentYear = new Date().getFullYear();
@@ -42,14 +41,6 @@ const WinnersScreen = () => {
   useEffect(() => {
     fetchAgentProfile();
     fetchWinnersData('Island Ranking');
-    const timer = setTimeout(() => {
-      if (winnersData.length === 0 && !errorMessage) {
-        setErrorMessage('No data available for the selected ranking.');
-      }
-      setShowAlert(true);
-    }, 300000); // Show alert after 5 minutes (300000 milliseconds)
-
-    return () => clearTimeout(timer); // Clear timeout if the component is unmounted
   }, []);
 
   useEffect(() => {
@@ -187,37 +178,7 @@ const WinnersScreen = () => {
     }
   };
 
-  const fetchLifeMemberDetails = async () => {
-    try {
-      const token = await AsyncStorage.getItem('accessToken');
-      if (!token) {
-        throw new Error('No token found');
-      }
-
-      const url = `${BASE_URL}${ENDPOINTS.LIFE_MEMBER_MDRT}?p_year=${currentYear}`;
-      console.log(`Fetching life member details from: ${url}`);
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-      }
-
-      const data = await response.json();
-      console.log('Life member data:', data)
-      return data;
-    } catch (error) {
-      handleErrorResponse(error);
-      console.error('Error fetching life member details:', error.message);
-    }
-  };
-
+  
   const checkIfUserIsLifeMember = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
@@ -526,18 +487,7 @@ const WinnersScreen = () => {
       <View style={{ alignItems: 'center' }}>
         {renderUser()}
       </View>
-      <AwesomeAlert
-        show={showAlert}
-        showProgress={false}
-        title="Session Expired"
-        message="Please Log Again!"
-        closeOnTouchOutside={false}
-        closeOnHardwareBackPress={false}
-        showConfirmButton={true}
-        confirmText="OK"
-        confirmButtonColor="#FF7758"
-        onConfirmPressed={handleConfirm}
-      />
+      
     </View>
   );
 };
