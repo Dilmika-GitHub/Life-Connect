@@ -1,121 +1,313 @@
-import React, { useState, useEffect } from 'react';
-import { lockToPortrait, lockToAllOrientations } from "./OrientationLock";
-import { useIsFocused, useFocusEffect, useNavigation } from '@react-navigation/native';
-import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity, Image, BackHandler } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { SelectList } from 'react-native-dropdown-select-list';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, Image, BackHandler, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import AwesomeAlert from 'react-native-awesome-alerts';
+import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
 import { Bar1, Bar2 } from "../../components/Chart";
+import { FirstPlaceSvg, SecondPlaceSvg, ThirdPlaceSvg } from "../../components/Top3";
 
-const Competitions = () => {
-  const navigation = useNavigation();
-  const winnersData = [
-    { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
-    { name: 'Tara', achievedTarget: '14,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
-    { name: 'Pascal', achievedTarget: '13,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
-    { name: 'Pascal', achievedTarget: '9,412,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/img1.jpg') },
-    { name: 'Michel', achievedTarget: '8,000,000.00', NOP: '3', profilePic: require('../../components/user.jpg') },
-    { name: 'Devin', achievedTarget: '200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
-    { name: 'Edward', achievedTarget: '6,200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
-    { name: 'Shen', achievedTarget: '100,000.00', NOP: '1', profilePic: require('../../assets/MDRTImages/img4.jpg') },
-    { name: 'Wilson', achievedTarget: '800,000.00', NOP: '1', profilePic: require('../../assets/MDRTImages/win3.jpg') },
-    { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img5.jpg') },
-    { name: 'Dias', achievedTarget: '25,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
-    { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
-  ];
+const screenWidth = Dimensions.get('window').width;
 
-  winnersData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, ''))- parseInt(a.achievedTarget.replace(/,/g, '')));
-
-  const limitedWinnersData = winnersData.slice(0, 500);
-  
-  const firstPlace = limitedWinnersData[0];
-  const secondPlace = limitedWinnersData[1];
-  const thirdPlace = limitedWinnersData[2];
-
-  const user = { name: 'Michel', achievedTarget: '8,000,000.00' };
-  const userPlace = limitedWinnersData.findIndex(item => item.name === user.name) + 1;
-  const userItem = { ...user, place: userPlace };
-  limitedWinnersData.push(userItem);
+const WinnersScreen = () => {
+  const [winnersData, setWinnersData] = useState([]);
+  const [branchRegionalData, setBranchRegionalData] = useState([]);
+  const [isLifeMember, setIsLifeMember] = useState(false);
+  const [agentProfile, setAgentProfile] = useState(null);
+  const [personalMdrt, setPersonalMdrt] = useState(null);
   const [selectedValue, setSelectedValue] = useState('Island Ranking');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigation = useNavigation();
+
+  const currentYear = new Date().getFullYear();
+
+  const handleErrorResponse = (error) => {
+    if (error.response && error.response.status === 401) {
+      console.log(error.response.status);
+      setShowAlert(true);
+    } else {
+      setErrorMessage('No data available');
+    }
+  };
+
+  const handleConfirm = () => {
+    setShowAlert(false);
+    navigation.navigate('Login');
+  };
 
   useEffect(() => {
-    // Initialize the selected data based on the default selected value
-    handleSelectionChange(selectedValue);
+    fetchAgentProfile();
+    fetchWinnersData('Island Ranking');
   }, []);
+
+  useEffect(() => {
+    if (selectedValue === 'Life Members') {
+      checkIfUserIsLifeMember();
+    } else if (selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking') {
+      const code = agentProfile?.agent_code || agentProfile?.orgnizer_code;
+      const catType = agentProfile?.stid;
+      fetchBranchRegionalRankMdrt(selectedValue, code, catType);
+    } else {
+      fetchWinnersData(selectedValue);
+    }
+  }, [selectedValue, agentProfile]);
+  
+
+  const fetchAgentProfile = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      const email = await AsyncStorage.getItem('email');
+      const catType = await AsyncStorage.getItem('categoryType');
+      if (!token || !email || !catType) {
+        throw new Error('No token, email, or category type found');
+      }
+
+      const url = `${BASE_URL}${ENDPOINTS.AGENT_PROFILE}?email=${email}&catType=${catType}`;
+      console.log(`Fetching agent profile data from: ${url}`);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('Full agent profile data response:', data);
+
+      if (!data || (!data.agent_code && !data.orgnizer_code)) {
+        throw new Error("Agent code or Organizer code not found in profile data.");
+      }
+
+      setAgentProfile(data);
+      const code = data.agent_code || data.orgnizer_code;
+      fetchPersonalMdrt(code, catType);
+    } catch (error) {
+      handleErrorResponse(error);
+      console.error('Error fetching agent profile:', error.message);
+    }
+  };
+
+  const fetchPersonalMdrt = async (code, catType) => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token || !code || !catType) {
+        throw new Error('No token, code, or category type found');
+      }
+
+      const url = `${BASE_URL}${ENDPOINTS.PERSONAL_MDRT}?p_agency_1=${code}&p_agency_2=0&p_cat=${catType}&p_year=${currentYear}`;
+      console.log(`Fetching personal MDRT data from: ${url}`);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('Personal MDRT data:', data);
+      if (data.length === 0) {
+        setErrorMessage('No personal MDRT data available.');
+        return;
+      }
+      setPersonalMdrt(data);
+    } catch (error) {
+      handleErrorResponse(error);
+      console.error('Error fetching personal MDRT data:', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchBranchRegionalRankMdrt = async (rankingType, code, catType) => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token || !code || !catType) {
+        throw new Error('No token, code, or category type found');
+      }
+
+      const endpoint = getEndpoint(rankingType);
+      const url = `${BASE_URL}${endpoint}?p_agency_1=${code}&p_agency_2=0&p_cat=${catType}&p_year=${currentYear}`;
+      console.log(`Fetching ${rankingType} data from: ${url}`);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+
+      const data = await response.json();
+      if (data.length === 0) {
+        setErrorMessage(`No data available for ${rankingType}.`);
+        return;
+      }
+      const formattedData = data.map(item => ({
+        name: item.agent_name.trim(),
+        achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
+        NOP: item.nop.toString(),
+        rank: rankingType === 'Branch Ranking' ? item.branch_rank : item.region_rank,
+        achievement: item.achievment,       
+        balanceDue: item.balanceDue
+      }));
+      console.log(`${rankingType} data:`, data);
+      formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
+      setBranchRegionalData(formattedData);
+    } catch (error) {
+      handleErrorResponse(error);
+      console.error(`Error fetching ${rankingType} data:`, error.message);
+    }
+  };
+
+  
+  const checkIfUserIsLifeMember = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        throw new Error('No token found');
+      }
+  
+      const url = `${BASE_URL}${ENDPOINTS.LIFE_MEMBER_MDRT}?p_year=${currentYear}`;
+      console.log(`Fetching life member details from: ${url}`);
+  
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+  
+      const data = await response.json();
+      console.log('Life member data:', data);
+  
+      const userOrganizerCode = agentProfile?.orgnizer_code;
+      console.log('User organizer code:', userOrganizerCode);
+  
+      const isLifeMember = data.some(member => 
+        member.agency_code_1 === userOrganizerCode || member.agency_code_2 === userOrganizerCode
+      );
+  
+      console.log('Is life member:', isLifeMember);
+      setIsLifeMember(isLifeMember);
+  
+      if (data.length === 0) {
+        setErrorMessage('No life member data available.');
+        return;
+      }
+  
+      const formattedData = data.map(item => ({
+        name: item.agent_name.trim(),
+        achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
+        NOP: item.nop.toString(),
+        rank: item.national_rank,
+        achievement: item.achievment,       
+        balanceDue: item.balanceDue 
+      }));
+  
+      formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
+      setWinnersData(formattedData);
+  
+    } catch (error) {
+      handleErrorResponse(error);
+      console.error('Error fetching life member details:', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
+  const fetchWinnersData = async (rankingType) => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+      const endpoint = getEndpoint(rankingType);
+      const url = `${BASE_URL}${endpoint}?p_year=${currentYear}`;
+
+      console.log(`Fetching data from: ${url}`);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+
+      const data = await response.json();
+      if (data.length === 0) {
+        setErrorMessage(`No winners data available for ${rankingType}.`);
+        return;
+      }
+      const formattedData = data.map(item => ({
+        name: item.agent_name.trim(),
+        achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
+        NOP: item.nop.toString(),
+        rank: item.national_rank,
+        achievement: item.achievment,       
+        balanceDue: item.balanceDue
+      }));
+      formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
+      setWinnersData(formattedData);
+    } catch (error) {
+      handleErrorResponse(error);
+      console.error('Error fetching data:', error.message);
+    }
+  };
+
+  const getEndpoint = (rankingType) => {
+    switch (rankingType) {
+      case 'Island Ranking':
+        return ENDPOINTS.ISLANDRANK;
+      case 'Branch Ranking':
+        return ENDPOINTS.BRANCHRANK;
+      case 'Regional Ranking':
+        return ENDPOINTS.TEAMRANK;
+      case 'TOT Ranking':
+        return ENDPOINTS.TOTRANK;
+      case 'COT Ranking':
+        return ENDPOINTS.COTRANK;
+      case 'Life Members':
+          return ENDPOINTS.LIFE_MEMBER_MDRT;
+      default:
+        return ENDPOINTS.ISLANDRANK;
+    }
+  };
 
   const handleSelectionChange = (val) => {
     setSelectedValue(val);
     setShowDropdown(false);
-    // Update the selected data based on the selected option
-    switch (val) {
-      case 'Island Ranking':
-        setSelectedData(winnersData);
-        break;
-      case 'Regional Ranking':
-        // Replace with your hard-coded regional ranking data
-        setSelectedData([
-          { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
-          { name: 'Tara', achievedTarget: '14,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
-          { name: 'Pascal', achievedTarget: '13,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
-          { name: 'Pascal', achievedTarget: '9,412,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/img1.jpg') },
-          { name: 'Michel', achievedTarget: '8,000,000.00', NOP: '3', profilePic: require('../../components/user.jpg') },
-          { name: 'Devin', achievedTarget: '200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
-          { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img5.jpg') },
-          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
-          { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
-        ]);
-        break;
-      case 'Branch Ranking':
-        // Replace with your hard-coded branch ranking data
-        setSelectedData([
-          { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
-          { name: 'Tara', achievedTarget: '14,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
-          { name: 'Pascal', achievedTarget: '13,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
-          { name: 'Michel', achievedTarget: '8,000,000.00', NOP: '3', profilePic: require('../../components/user.jpg') },
-          { name: 'Edward', achievedTarget: '6,200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
-          { name: 'Devin', achievedTarget: '200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
-          { name: 'Jenny', achievedTarget: '37,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img5.jpg') },
-          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
-          { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
-        ]);
-        break;
-      case 'Team Ranking':
-        // Replace with your hard-coded team ranking data
-        setSelectedData([
-          { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
-          { name: 'Tara', achievedTarget: '14,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
-          { name: 'Pascal', achievedTarget: '13,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
-          { name: 'Michel', achievedTarget: '8,000,000.00', NOP: '3', profilePic: require('../../components/user.jpg') },
-          { name: 'Devin', achievedTarget: '200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
-          { name: 'Dias', achievedTarget: '25,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
-          { name: 'Lionel', achievedTarget: '17,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img2.jpg') },
-        ]);
-        break;
-      case 'TOT Ranking':
-          // Replace with your hard-coded team ranking data
-        setSelectedData([
-          { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
-          { name: 'Tara', achievedTarget: '14,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
-          { name: 'Pascal', achievedTarget: '13,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
-          { name: 'Pascal', achievedTarget: '9,412,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/img1.jpg') },
-          { name: 'Edward', achievedTarget: '6,200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
-        ]);
-          break; 
-        case 'COT Ranking':
-            // Replace with your hard-coded team ranking data
-          setSelectedData([
-            { name: 'Clifford', achievedTarget: '15,652,125.00', NOP: '7', profilePic: require('../../assets/MDRTImages/winner1.jpg') },
-            { name: 'Tara', achievedTarget: '14,252,241.00', NOP: '8', profilePic: require('../../assets/MDRTImages/win2.jpg') },
-            { name: 'Pascal', achievedTarget: '13,562,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/win3.jpg') },
-            { name: 'Pascal', achievedTarget: '9,412,324.00', NOP: '5', profilePic: require('../../assets/MDRTImages/img1.jpg') },
-            { name: 'Edward', achievedTarget: '6,200,000.00', NOP: '2', profilePic: require('../../assets/MDRTImages/img3.jpg') },
-          ]);
-            break;  
-      default:
-        setSelectedData(limitedWinnersData);
-        break;
-    }
+    setErrorMessage('');  
   };
 
   const renderDropdown = () => {
@@ -127,98 +319,133 @@ const Competitions = () => {
         </TouchableOpacity>
         {showDropdown && (
           <View style={styles.dropdownOptions}>
-            <TouchableOpacity onPress={() => handleSelectionChange('Island Ranking')}>
-              <Text style={styles.optionText}>Island Ranking</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectionChange('Regional Ranking')}>
-              <Text style={styles.optionText}>Regional Ranking</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectionChange('Branch Ranking')}>
-              <Text style={styles.optionText}>Branch Ranking</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectionChange('COT Ranking')}>
-              <Text style={styles.optionText}>COT Ranking</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectionChange('TOT Ranking')}>
-              <Text style={styles.optionText}>TOT Ranking</Text>
-            </TouchableOpacity>
-            {/* Add more options as needed */}
+            {['Island Ranking', 'Regional Ranking', 'Branch Ranking', 'COT Ranking', 'TOT Ranking', 'Life Members'].map(rank => (
+              <TouchableOpacity key={rank} onPress={() => handleSelectionChange(rank)}>
+                <Text style={styles.optionText}>{rank}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
         )}
       </View>
     );
   };
 
-  useEffect
+  const renderItem = ({ item, index }) => {
+    const target = parseInt(item.achievedTarget.replace(/,/g, '')) || 0;
+    
+
+    return (
+      <View style={[styles.itemContainer, index < 3 && styles.highlightedItem, item.achievement === 'Achieved' && index >= 3 && styles.achievedBeyondTopThree]}>
+        <View style={styles.iconContainer}>
+          <Icon name="user-circle" size={50} color={index < 3 ? '#A29D9C' : '#C0C0C0'} />
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.achievedTarget}>Achieved Target: {item.achievedTarget}</Text>
+          <Text style={styles.nop}>NOP: {item.NOP}</Text>
+          <Text style={styles.place}>
+            {selectedValue === 'Branch Ranking' ? `Branch Rank: ${item.rank}` : selectedValue === 'Regional Ranking' ? `Regional Rank: ${item.rank}` : `National Rank: ${item.rank}`}
+          </Text>
+          {item.achievement === 'Achieved' ? (
+            <Text style={[styles.achievedText, styles.achievedTextGreen]}>ACHIEVED</Text>
+          ) : (
+            <Text style={[styles.achievedText, styles.achievedTextGray]}>
+              Needs: {item.balanceDue.toLocaleString('en-US')}
+            </Text>
+          )}
+        </View>
+        {index == 0 && (
+          <View style={styles.svgContainer}>
+            <FirstPlaceSvg />
+          </View>
+        )}
+        {index === 1 && (
+          <View style={styles.svgContainer}>
+            <SecondPlaceSvg />
+          </View>
+        )}
+        {index === 2 && (
+          <View style={styles.svgContainer}>
+            <ThirdPlaceSvg />
+          </View>
+        )}
+      </View>
+    );
+  };
   
+
+  const renderUser = () => {
+    if (!personalMdrt) {
+      return null;
+    }
+
+    let userRank = '';
+    let showUserRank = true;
+    switch (selectedValue) {
+      case 'Island Ranking':
+        userRank = `${personalMdrt.mdrt_rank}`;
+        break;
+      case 'Branch Ranking':
+        userRank = personalMdrt.branch_rank ? `${personalMdrt.branch_rank}` : 'No Branch Rank';
+        break;
+      case 'Regional Ranking':
+        userRank = personalMdrt.region_rank ? `${personalMdrt.region_rank}` : 'No Regional Rank';
+        break;
+      case 'COT Ranking':
+        userRank = personalMdrt.cot_rank ? `${personalMdrt.cot_rank}` : 'No COT Rank';
+        break;
+      case 'TOT Ranking':
+        userRank = personalMdrt.tot_rank ? `${personalMdrt.tot_rank}` : 'No TOT Rank';
+        break;
+      case 'Life Members':
+        showUserRank = false;
+        userRank = isLifeMember ? 'You are a Life Member' : 'You are not a Life Member';
+        break;
+      default:
+        userRank = `National Rank: ${personalMdrt.mdrt_rank}`;
+        break;
+    }
+
+    return (
+      <View style={[styles.itemContainer, styles.highlightedItem, { width: screenWidth * 0.97 }]}>
+        <View style={styles.iconContainer}>
+          <Image 
+            source={require('../../components/user.jpg')} 
+            style={styles.profilePicLarge}
+            resizeMode="cover" 
+          />
+        </View>
+        <View style={styles.textContainer}>
+        {showUserRank ? (
+          <>
+            <Text style={styles.uname}>Your place: {userRank}</Text>
+            <Text style={styles.salesAmount}>
+              Sales amount: {personalMdrt.fyp ? Number(personalMdrt.fyp).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+            </Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.uname}>{userRank}</Text>
+            <Text style={styles.salesAmount}>
+              Sales amount: {personalMdrt.fyp ? Number(personalMdrt.fyp).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+            </Text>
+          </>
+        )}
+      </View>
+      </View>
+    );
+  };
 
   const renderProfilePic = (winner) => {
     if (winner.profilePic) {
-      // Return the profile picture fetched from the URL
-      return <Image source={{ uri: winner.profilePic }} style={styles.profilePic} />;
+      return <Image source={winner.profilePic} style={styles.profilePic} />;
     } else {
-      // Return the default profile picture icon
       return <Icon name="user-circle" size={26} color="#FF5733" style={{ marginRight: 10 }} />;
     }
   };
 
-  const formatNumber = (number) => {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
-  
-  const renderItem = ({ item }) => (
-    <View>
-      <View style={[styles.itemContainer, { width: 370 }]}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Image 
-              source={item.profilePic} 
-              style={[styles.roundImageforList, { width: 58, height: 58, marginRight:10 }]} 
-              resizeMode="cover" 
-            />
-            <View>
-              <Text style={[styles.itemName, { color: '#333' }]}>{item.name}</Text>
-              <Text style={[styles.itemNOP, { color: '#5e5b5b' }]}>NOP: {item.NOP}</Text>
-            </View>
-          </View>
-          <Text style={[styles.itemTarget, { color: 'black', fontWeight: 'bold', marginTop: -15 }]}>{item.achievedTarget}</Text>
-        </View>
-        {parseInt(item.achievedTarget.replace(/,/g, '')) >= 6000000  ? (
-          <Text style={[styles.achievedText, styles.achievedTextGreen, {fontSize: 14}]}>Achieved</Text>
-        ) : (
-          <Text style={[styles.itemTarget, { color: 'black', marginTop: -20, fontSize:14, }]}>
-            Need: {formatNumber(6000000 - parseInt(item.achievedTarget.replace(/,/g, '')))}
-          </Text>
-        )}
-      </View>
-      {/* Horizontal line */}
-      {/* <View style={styles.horizontalLine} /> */}
-    </View>
-  );
+  const topThreeWinners = winnersData.slice(0, 3);
 
-  const renderUser = () => (
-    <View style={[styles.itemContainer, styles.userContainer, { width: itemWidth }]}>
-      <View style={{ alignItems: 'center' }}>
-        <View style={[styles.imageContainer, { left: '30%', marginTop: 93 }]}> 
-          <Image 
-            source={require('../../components/user.jpg')} 
-            style={[styles.roundImage, { width: 68, height: 68 }]} 
-            resizeMode="cover" 
-          />
-        </View>
-      </View>
-      <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: 'black' }]}>Sales amount</Text>
-      <Text style={[styles.itemTarget, styles.userAchievedTarget, { color: 'black' }]}>
-        {userItem.achievedTarget}
-      </Text>
-      <View style={{ alignItems: 'center', marginTop: -38 }}>
-        <Text style={[styles.userPlace, { fontSize: 16 }]}>Your Place</Text>
-        <Text style={[styles.userPlace, { fontSize: 16, marginTop: 5 }]}>{userItem.place}</Text>
-      </View>
-    </View>
-  );
-
-  //hardware back button function
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
@@ -232,301 +459,178 @@ const Competitions = () => {
     }, [navigation])
   );
 
-  const screenWidth = Dimensions.get('window').width;
-  const itemWidth = screenWidth * 0.97; 
-  const [showPicker, setShowPicker] = useState(false);
-  const [selectedData, setSelectedData] = useState(limitedWinnersData); 
-  const filteredSelectedData = selectedData.slice(3);
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
-  const data = [
-    { key: '1', value: 'Island Ranking' },
-    { key: '2', value: 'Regional Ranking' },
-    { key: '3', value: 'Branch Ranking' },
-    { key: '4', value: 'Team Ranking' },
-    { key: '5', value: 'COT Ranking' },
-    { key: '6', value: 'TOT Ranking' },
-  ];
-  
-  const Bardata = {
-    labels: [
-      `${firstPlace.name}`,
-      `${secondPlace.name}`,
-      `${thirdPlace.name}`
-    ],
-    datasets: [
-      {
-        data: [30, 40, 20]
-      }
-    ]
-  };
-
-  const graphStyle = StyleSheet.create({
-    container: {
-      marginVertical: 8,
-      borderRadius: 16,
-    },
-    barStyle: {
-      marginVertical: 8,
-      borderRadius: 16,
-    },
-  });
-
-  const chartConfig = {
-    backgroundGradientFrom: '#ffffff',
-    backgroundGradientTo: '#ffffff',
-    decimalPlaces: 0, 
-    color: (opacity = 1) => `rgba(247, 70, 57, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    barPercentage: 1.5, 
-    yAxisMinimumValue: 0, 
-    groupWidth: 0,
-    verticalLabelRotation: 0,
-    formatYLabel: (label) => {
-      if (label) {
-        const parts = label.split('\n');
-        return parts[0]; 
-      }
-      return '';
-    },
-    
-  };
-  const isFocused = useIsFocused();
-
-    useEffect(() => {
-        if (isFocused) {
-            lockToPortrait();
-        }
-    }, [isFocused]);
-  
   return (
     <View style={styles.container}>
-    {renderDropdown()}
-    <View style={[styles.barContainer, { marginTop: 60 }, ]}>
-    <Bar1
-          profilePic={renderProfilePic(firstPlace)}
-          name={firstPlace.name}
-          achievedTarget={firstPlace.achievedTarget}
-    />
-    <View style={{ marginTop: -150, alignItems: 'center' }}>
-    <Bar2
-          profilePic={renderProfilePic(secondPlace)}
-          name={secondPlace.name}
-          achievedTarget={secondPlace.achievedTarget}
-    />
-      <Text style={styles.nameText}>{firstPlace.name}</Text>
-      <Text style={styles.valueText}>{firstPlace.achievedTarget}</Text>
-      <Text style={{ marginLeft: 10, marginTop: -40, fontSize:12, marginBottom: 10 }}>NOP:{firstPlace.NOP}</Text>
-      <Text style={styles.secWinnerNameText}>{secondPlace.name}</Text>
-      <Text style={styles.secWinnerValueText}>{secondPlace.achievedTarget}</Text>
-      <Text style={{ marginLeft: -230, marginTop: -15, fontSize:12, marginBottom: 10 }}>NOP:{secondPlace.NOP}</Text>
-      <Text style={styles.thirdWinnerNameText}>{thirdPlace.name}</Text>
-      <Text style={styles.WinnerValueText}>{thirdPlace.achievedTarget}</Text>
-      <Text style={{ marginLeft: 230, marginTop: -18, fontSize:12, marginBottom: 10 }}>NOP:{thirdPlace.NOP}</Text>
-    </View>
-  </View>
-      <FlatList
-      data={filteredSelectedData}
-      renderItem={renderItem}
-      keyExtractor={(item, index) => index.toString()}
-      contentContainerStyle={styles.flatListContainer}
-      ItemSeparatorComponent={() => <View style={{ height: 3 }} />} // Add space between items
-    />
+      {renderDropdown()}
+      {errorMessage ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        </View>
+      ) : (
+        <>
+          <FlatList
+            data={selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking' ? branchRegionalData : winnersData}
+            renderItem={renderItem}
+            keyExtractor={item => item.name}
+            contentContainerStyle={styles.flatListContainer}
+          />
+        </>
+      )}
       <View style={{ alignItems: 'center' }}>
         {renderUser()}
       </View>
+      
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#f5f5f5', 
-  },
-  achievedItem: {
-    backgroundColor: '#DCD7D6', 
-  },
-  heading: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
+    backgroundColor: '#f5f5f5',
   },
   flatListContainer: {
-    flexGrow: 1, 
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 10,
+    paddingBottom: 100,
   },
   itemContainer: {
+    flexDirection: 'row',
     padding: 10,
-    backgroundColor: '#e8e6e3', 
-    borderRadius: 15,
-    borderWidth: 0,
-    borderColor: '#ddd',
+    marginVertical: 5,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 10,
+    elevation: 3,
   },
-  itemName: {
+  highlightedItem: {
+    backgroundColor: '#FFD70020',
+  },
+  svgContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+    position: 'absolute',
+    top: '50%', 
+    right: -2, 
+    transform: [{ translateY: -20.5 }],
+  },
+  iconContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  textContainer: {
+    justifyContent: 'center',
+  },
+  centeredTextContainer: {
+    alignItems: 'center',
+  },
+  name: {
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
-  itemTarget: {
+  uname: {
     fontSize: 16,
-    textAlign: 'right',
+    fontWeight: 'bold',
+    textAlign: 'left',
+    marginLeft: 30,
+  },
+  achievedTarget: {
+    fontSize: 14,
+    color: 'gray',
+  },
+  salesAmount: {
+    fontSize: 14,
+    color: 'gray',
+    marginLeft: 30,
+    marginTop: 10,
+  },
+  nop: {
+    fontSize: 14,
+    color: 'gray',
   },
   achievedText: {
-    fontSize: 14,
-    color: 'green',
-    fontWeight: 'bold',
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    padding: 10,
-    marginRight: 15,
-  },
-  barContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  bar: {
-    height: 20, 
-    backgroundColor: 'blue', 
-    borderRadius: 5, 
-  },
-  placeText: {
-    marginBottom: 5,
-  },
-  targetText: {
     marginTop: 5,
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  achievedTextGreen: {
+    color: 'green',
+  },
+  achievedTextGray: {
+    color: 'gray',
+  },
+  profilePic: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  profilePicLarge: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
   },
   dropdownContainer: {
-    width: 130,
-    alignSelf: 'left',
+    width: 170,
     marginBottom: 20,
-    marginLeft: 0,
     backgroundColor: '#e8e6e3',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 5,
     paddingHorizontal: 8,
     paddingVertical: 10,
-  },
-  dropdownText: {
-    fontSize: 12,
-    color: '#333',
-  },
-  optionText: {
-    fontSize: 12,
-    color: '#333',
-    paddingVertical: 5,
-  },
-  selectedValue: {
-    fontSize: 12, 
-    color: '#333',
-  },
-  nameText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: -100, 
-    textAlign: 'center', 
-  },
-  valueText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#75500b',
-    marginTop: 10, 
-    textAlign: 'center', 
-    marginBottom: 50,
-  },
-  secWinnerNameText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: -58, 
-    marginLeft: -230,
-  },
-  secWinnerValueText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#75500b',
-    marginTop: 0, 
-    marginBottom: 20, 
-    marginLeft: -230,
-  },
-  thirdWinnerNameText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: -65, 
-    marginLeft: 230, 
-  },
-  WinnerValueText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#75500b',
-    marginTop: 0, 
-    marginLeft: 230, 
-    marginBottom: 20, 
-  },
-  profilePic: {
-    width: 26,
-    height: 26,
-    marginRight: 10,
-  },
-  userContainer: {
-    backgroundColor: '#d4d1cf', 
-    borderColor: '#a8adba', 
-    marginTop: 8,
-    height:85,
-  },
-  userName: {
-    fontWeight: 'bold',
-    color: '#333', 
-  },
-  userAchievedTarget: {
-    color: 'black',
-  },
-  userPlace: {
-    color: 'black', 
-  },
-  imageContainer: {
-    position: 'absolute',
-    left: '50%',
-    top: '16%', 
-    transform: [{ translateX: -100 }, { translateY: -100 }]
-  },
-  roundImage: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    borderWidth: 3, 
-    borderColor: '#7facf5'
-  },
-  roundImageforList: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-  },
-  horizontalLine: {
-    borderBottomColor: '#877c7b',
-    borderBottomWidth: 1,
-    marginVertical: 0,
+    alignSelf: 'flex-start',
   },
   dropdownTouchable: {
     flexDirection: 'row',
-  },
-  dropdownIcon: {
-    marginTop: -2,
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   dropdownText: {
-    fontSize: 12,
+    fontSize: 16,
     color: '#333',
-    marginRight: 5, 
+  },
+  dropdownIcon: {
+    marginLeft: 10,
+  },
+  dropdownOptions: {
+    marginTop: 10,
+  },
+  optionText: {
+    fontSize: 16,
+    color: '#333',
+    paddingVertical: 5,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 50,
+    marginBottom: 360,
+  },
+  errorText: {
+    fontSize: 18,
+    color: 'red',
+  },
+  achievedBeyondTopThree: {
+    backgroundColor: '#d4edda', // A greenish background color, change as per your UI theme
   },
 });
 
-export default Competitions
-
-
-
-
-
+export default WinnersScreen;

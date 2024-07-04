@@ -8,6 +8,7 @@ import {
   Dimensions,
   Modal,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Waves, Waves2, Waves3 } from "../../../components/Waves";
@@ -17,6 +18,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import CheckConnection from "../../../components/checkConnection";
 import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 import AwesomeAlert from 'react-native-awesome-alerts';
+import Constants from 'expo-constants';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const LoginScreen = () => {
@@ -26,9 +28,10 @@ const LoginScreen = () => {
   const [hasSavedCredentials, setHasSavedCredentials] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); 
   const router = useRouter();
-  const [newCredentials, setNewCredentials] = useState(null); // To store new credentials
-  const [passwordVisible, setPasswordVisible] = useState(false);
+  const appVersion = Constants.expoConfig?.version || Constants.manifest2?.version || 'Version not found';
 
   const [fontsLoaded] = useFonts({
     "Poppins-Regular": require("../../../assets/font/Poppins-Regular.ttf"),
@@ -61,6 +64,7 @@ const LoginScreen = () => {
 
   // Handle login
   const handleLogin = async () => {
+    setLoading(true);
     console.log(username)
     console.log(password)
 
@@ -105,10 +109,12 @@ const LoginScreen = () => {
       } else {
         setAlertMessage(`${jsonResponse.error || 'Unknown error'}`);
         setShowAlert(true);
+        setLoading(false);
       }
     } catch (error) {
       setAlertMessage(`Error: ${error.message}`);
       setShowAlert(true);
+      setLoading(false);
     }
   };
   
@@ -153,23 +159,28 @@ const LoginScreen = () => {
         onChangeText={(text) => setUsername(text)}
         value={username}
       />
-      <View style={styles.inputContainer}>
-      <TextInput
-        style={styles.passwordInput}
-        placeholder="Password"
-        onChangeText={(text) => setPassword(text)}
-        value={password}
-        secureTextEntry={!passwordVisible}
-      />
-      <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
-        <Icon name={passwordVisible ? "eye" : "eye-off"} size={20} color="#000" />
-      </TouchableOpacity>
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Password"
+          onChangeText={(text) => setPassword(text)}
+          value={password}
+          secureTextEntry={!showPassword} // Use showPassword state
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Icon name={showPassword ? "eye" : "eye-off"} size={24} color="black" />
+        </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>Login</Text>
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
+        {loading ? (
+          <ActivityIndicator size="small" color="#0000ff" /> // Loading spinner
+        ) : (
+          <Text style={styles.loginButtonText}>Login</Text>
+        )}
       </TouchableOpacity>
       <Text style={styles.welcomeText}>WELCOME</Text>
+      <Text style={styles.versionText}>V: {appVersion}</Text>
       <CheckConnection />
 
       <Modal
@@ -239,6 +250,10 @@ const styles = StyleSheet.create({
     color: "black",
     fontFamily: "poppins",
   },
+  versionText:{
+    bottom: -280,
+    right:160,
+  },
   input: {
     height: hp('5%'),
     borderColor: "#8b8b8b99",
@@ -284,6 +299,21 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: "#8b8b8b99",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    width: wp("80%"),
+    borderWidth: 2,
+    marginBottom: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    height: hp('5%'),
+    fontSize: wp("4.5%"),
   },
   loginButton: {
     width: wp('33%'),

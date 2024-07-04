@@ -1,13 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, ActivityIndicator } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
+import React, { useEffect, useState, useCallback  } from 'react';
+import { View, Text, StyleSheet, Image, ActivityIndicator, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/native';
 import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
+import { CommonActions } from '@react-navigation/native';
+import route from 'color-convert/route';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const Profile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [categoryType, setCategoryType] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
+
+  const handleErrorResponse = (error) => {
+    if (error.response.status === 401) {
+      console.log(error.response.status);
+      setShowAlert(true);
+    }
+  };
+
+  const handleConfirm = () => {
+    setShowAlert(false);
+    navigation.navigate('Login');
+  };
 
   const fetchUserData = async () => {
     try {
@@ -16,35 +33,46 @@ const Profile = ({ navigation }) => {
       const categoryType = await AsyncStorage.getItem("categoryType");
       setCategoryType(categoryType);
 
-      console.log(token);
-
-      const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: {
-          email: email,
-          catType: categoryType,
-        },
-      });
+      const response = await axios.get(BASE_URL+ENDPOINTS.PROFILE_DETAILS,{
+          headers:{
+            Authorization: `Bearer ${token}`
+          },
+          params: {
+            email: email,
+            catType: categoryType
+          }
+        });
       setUserData(response.data);
+      if (categoryType === "Ag") {
+        await AsyncStorage.setItem("agencyCode", response.data?.agent_code);
+      }
+      if (categoryType === "Or") {
+        await AsyncStorage.setItem("agencyCode", response.data?.orgnizer_code);
+        
+      } else {
+        
+      }
+      console.log("called");
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      handleErrorResponse(error);
+      console.error('Error fetching user data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserData();
+    }, [])
+  );
 
   const navigateToPasswordChange = () => {
     navigation.navigate("ChangePassword");
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size="large" color="#FEA58F" />;
   }
 
   return (
@@ -79,7 +107,7 @@ const Profile = ({ navigation }) => {
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>E-mail:</Text>
-            <Text style={styles.normalText}>{userData?.email || "N/A"}</Text>
+            <Text style={styles.normalText}>{userData?.email?.trim() || "N/A"}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>Mobile No:</Text>
@@ -130,7 +158,20 @@ const Profile = ({ navigation }) => {
         <Text style={styles.imageText}>
           {userData?.intial?.trim()} {userData?.name?.trim()}
         </Text>
+     
       </View>
+      <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Session Expired"
+        message="Please Log Again!"
+        closeOnTouchOutside={false}
+        closeOnHardwareBackPress={false}
+        showConfirmButton={true}
+        confirmText="OK"
+        confirmButtonColor="#FF7758"
+        onConfirmPressed={handleConfirm}
+      />
     </View>
   );
 };
@@ -171,8 +212,7 @@ const styles = StyleSheet.create({
   },
   greySquare: {
     width: 320,
-    height: 155,
-    backgroundColor: "lightgrey",
+    backgroundColor: 'lightgrey',
     marginTop: 150,
     alignSelf: "center",
     borderRadius: 10,
@@ -185,8 +225,8 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: 16,
-    color: "black",
-    minWidth: 100, // Ensure alignment
+    color: 'black',
+    minWidth: 100,
   },
   normalText: {
     fontSize: 16,
