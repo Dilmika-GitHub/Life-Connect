@@ -332,39 +332,46 @@ const WinnersScreen = () => {
 
   const renderItem = ({ item, index }) => {
     const target = parseInt(item.achievedTarget.replace(/,/g, '')) || 0;
-    
-
+  
     return (
-      <View style={[styles.itemContainer, index < 3 && styles.highlightedItem, item.achievement === 'Achieved' && index >= 3 && styles.achievedBeyondTopThree]}>
+      <View style={[
+        styles.itemContainer, 
+        selectedValue !== 'Life Members' && index < 3 && styles.highlightedItem,
+        selectedValue !== 'Life Members' && item.achievement === 'Achieved' && index >= 3 && styles.achievedBeyondTopThree
+      ]}>
         <View style={styles.iconContainer}>
           <Icon name="user-circle" size={50} color={index < 3 ? '#A29D9C' : '#C0C0C0'} />
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.achievedTarget}>Achieved Target: {item.achievedTarget}</Text>
-          <Text style={styles.nop}>NOP: {item.NOP}</Text>
-          <Text style={styles.place}>
-            {selectedValue === 'Branch Ranking' ? `Branch Rank: ${item.rank}` : selectedValue === 'Regional Ranking' ? `Regional Rank: ${item.rank}` : `National Rank: ${item.rank}`}
-          </Text>
-          {item.achievement === 'Achieved' ? (
-            <Text style={[styles.achievedText, styles.achievedTextGreen]}>ACHIEVED</Text>
-          ) : (
-            <Text style={[styles.achievedText, styles.achievedTextGray]}>
-              Needs: {item.balanceDue.toLocaleString('en-US')}
-            </Text>
+          {selectedValue !== 'Life Members' && (
+            <>
+              <Text style={styles.achievedTarget}>Achieved Target: {item.achievedTarget}</Text>
+              <Text style={styles.nop}>NOP: {item.NOP}</Text>
+              <Text style={styles.place}>
+                {selectedValue === 'Branch Ranking' ? `Branch Rank: ${item.rank}` : selectedValue === 'Regional Ranking' ? `Regional Rank: ${item.rank}` : `National Rank: ${item.rank}`}
+              </Text>
+              {item.achievement === 'Achieved' ? (
+                <Text style={[styles.achievedText, styles.achievedTextGreen]}>ACHIEVED</Text>
+              ) : (
+                <Text style={[styles.achievedText, styles.achievedTextGray]}>
+                  Needs: {item.balanceDue.toLocaleString('en-US')}
+                </Text>
+              )}
+            </>
           )}
         </View>
-        {index == 0 && (
+        {selectedValue !== 'Life Members' && index == 0 && (
           <View style={styles.svgContainer}>
             <FirstPlaceSvg />
           </View>
         )}
-        {index === 1 && (
+        {selectedValue !== 'Life Members' && index === 1 && (
           <View style={styles.svgContainer}>
             <SecondPlaceSvg />
           </View>
         )}
-        {index === 2 && (
+        {selectedValue !== 'Life Members' && index === 2 && (
           <View style={styles.svgContainer}>
             <ThirdPlaceSvg />
           </View>
