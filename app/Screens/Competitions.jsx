@@ -402,6 +402,7 @@ const WinnersScreen = () => {
     }
 
     let userRank = '';
+    let showUserRank = true;
     switch (selectedValue) {
       case 'Island Ranking':
         userRank = `${personalMdrt.mdrt_rank}`;
@@ -419,8 +420,9 @@ const WinnersScreen = () => {
         userRank = personalMdrt.tot_rank ? `${personalMdrt.tot_rank}` : 'No TOT Rank';
         break;
       case 'Life Members':
-          userRank = isLifeMember ? 'You are a Life Member' : 'You are not a Life Member';
-          break;
+        showUserRank = false;
+        userRank = isLifeMember ? 'You are a Life Member' : 'You are not a Life Member';
+        break;
       default:
         userRank = `National Rank: ${personalMdrt.mdrt_rank}`;
         break;
@@ -436,11 +438,22 @@ const WinnersScreen = () => {
           />
         </View>
         <View style={styles.textContainer}>
-          <Text style={styles.uname}>Your place: {userRank}</Text>
-          <Text style={styles.salesAmount}>
-            Sales amount: {personalMdrt.fyp ? Number(personalMdrt.fyp).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
-          </Text>
-        </View>
+        {showUserRank ? (
+          <>
+            <Text style={styles.uname}>Your place: {userRank}</Text>
+            <Text style={styles.salesAmount}>
+              Sales amount: {personalMdrt.fyp ? Number(personalMdrt.fyp).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+            </Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.uname}>{userRank}</Text>
+            <Text style={styles.salesAmount}>
+              Sales amount: {personalMdrt.fyp ? Number(personalMdrt.fyp).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+            </Text>
+          </>
+        )}
+      </View>
       </View>
     );
   };
