@@ -174,7 +174,9 @@ const WinnersScreen = () => {
         name: item.agent_name.trim(),
         achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
         NOP: item.nop.toString(),
-        rank: rankingType === 'Branch Ranking' ? item.branch_rank : item.region_rank
+        rank: rankingType === 'Branch Ranking' ? item.branch_rank : item.region_rank,
+        achievement: item.achievment,       
+        balanceDue: item.balanceDue
       }));
       console.log(`${rankingType} data:`, data);
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
@@ -260,7 +262,9 @@ const WinnersScreen = () => {
         name: item.agent_name.trim(),
         achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
         NOP: item.nop.toString(),
-        rank: item.national_rank
+        rank: item.national_rank,
+        achievement: item.achievment,       
+        balanceDue: item.balanceDue 
       }));
   
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
@@ -308,7 +312,9 @@ const WinnersScreen = () => {
         name: item.agent_name.trim(),
         achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
         NOP: item.nop.toString(),
-        rank: item.national_rank
+        rank: item.national_rank,
+        achievement: item.achievment,       
+        balanceDue: item.balanceDue
       }));
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
       setWinnersData(formattedData);
@@ -365,10 +371,10 @@ const WinnersScreen = () => {
 
   const renderItem = ({ item, index }) => {
     const target = parseInt(item.achievedTarget.replace(/,/g, '')) || 0;
-    const achieved = target >= 6000000;
+    
 
     return (
-      <View style={[styles.itemContainer, index < 3 && styles.highlightedItem, achieved && index >= 3 && styles.achievedBeyondTopThree]}>
+      <View style={[styles.itemContainer, index < 3 && styles.highlightedItem, item.achievement === 'Achieved' && index >= 3 && styles.achievedBeyondTopThree]}>
         <View style={styles.iconContainer}>
           <Icon name="user-circle" size={50} color={index < 3 ? '#A29D9C' : '#C0C0C0'} />
         </View>
@@ -379,11 +385,11 @@ const WinnersScreen = () => {
           <Text style={styles.place}>
             {selectedValue === 'Branch Ranking' ? `Branch Rank: ${item.rank}` : selectedValue === 'Regional Ranking' ? `Regional Rank: ${item.rank}` : `National Rank: ${item.rank}`}
           </Text>
-          {achieved ? (
+          {item.achievement === 'Achieved' ? (
             <Text style={[styles.achievedText, styles.achievedTextGreen]}>ACHIEVED</Text>
           ) : (
             <Text style={[styles.achievedText, styles.achievedTextGray]}>
-              Needs: {(6000000 - target).toLocaleString('en-US')}
+              Needs: {item.balanceDue.toLocaleString('en-US')}
             </Text>
           )}
         </View>
@@ -395,6 +401,7 @@ const WinnersScreen = () => {
       </View>
     );
   };
+  
 
   const renderUser = () => {
     if (!personalMdrt) {
