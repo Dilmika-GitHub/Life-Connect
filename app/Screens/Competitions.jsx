@@ -5,7 +5,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
-import { Bar1, Bar2 } from "../../components/Chart";
 import { FirstPlaceSvg, SecondPlaceSvg, ThirdPlaceSvg } from "../../components/Top3";
 
 const screenWidth = Dimensions.get('window').width;
@@ -26,9 +25,11 @@ const WinnersScreen = () => {
   const currentYear = new Date().getFullYear();
 
   const handleErrorResponse = (error) => {
-    if (error.response.status === 401) {
+    if (error.response && error.response.status === 401) {
       console.log(error.response.status);
       setShowAlert(true);
+    } else {
+      setErrorMessage('No data available');
     }
   };
 
@@ -46,14 +47,14 @@ const WinnersScreen = () => {
     if (selectedValue === 'Life Members') {
       checkIfUserIsLifeMember();
     } else if (selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking') {
-      const code = agentProfile?.agent_code || agentProfile?.orgnizer_code;
+      const code1 = agentProfile?.agent_code || agentProfile?.orgnizer_code;
+      const code2 = agentProfile?.newagt || 0;
       const catType = agentProfile?.stid;
-      fetchBranchRegionalRankMdrt(selectedValue, code, catType);
+      fetchBranchRegionalRankMdrt(selectedValue, code1, code2, catType);
     } else {
       fetchWinnersData(selectedValue);
     }
   }, [selectedValue, agentProfile]);
-  
 
   const fetchAgentProfile = async () => {
     try {
@@ -80,29 +81,30 @@ const WinnersScreen = () => {
       }
 
       const data = await response.json();
-      
+      console.log('Full agent profile data response:', data);
 
       if (!data || (!data.agent_code && !data.orgnizer_code)) {
         throw new Error("Agent code or Organizer code not found in profile data.");
       }
 
       setAgentProfile(data);
-      const code = data.agent_code || data.orgnizer_code;
-      fetchPersonalMdrt(code, catType);
+      const code1 = data.agent_code || data.orgnizer_code;
+      const code2 = data.newagt || 0;
+      fetchPersonalMdrt(code1, code2, catType);
     } catch (error) {
       handleErrorResponse(error);
       console.error('Error fetching agent profile:', error.message);
     }
   };
 
-  const fetchPersonalMdrt = async (code, catType) => {
+  const fetchPersonalMdrt = async (code1, code2, catType) => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      if (!token || !code || !catType) {
+      if (!token || !code1 || !catType) {
         throw new Error('No token, code, or category type found');
       }
 
-      const url = `${BASE_URL}${ENDPOINTS.PERSONAL_MDRT}?p_agency_1=${code}&p_agency_2=0&p_cat=${catType}&p_year=${currentYear}`;
+      const url = `${BASE_URL}${ENDPOINTS.PERSONAL_MDRT}?p_agency_1=${code1}&p_agency_2=${code2}&p_cat=${catType}&p_year=${currentYear}`;
       console.log(`Fetching personal MDRT data from: ${url}`);
 
       const response = await fetch(url, {
@@ -118,11 +120,13 @@ const WinnersScreen = () => {
       }
 
       const data = await response.json();
-      
-      if (data.length === 0) {
+      console.log('Personal MDRT data:', data);
+
+      if (!data || data.length === 0) {
         setErrorMessage('No personal MDRT data available.');
         return;
       }
+
       setPersonalMdrt(data);
     } catch (error) {
       handleErrorResponse(error);
@@ -132,16 +136,17 @@ const WinnersScreen = () => {
     }
   };
 
-  const fetchBranchRegionalRankMdrt = async (rankingType, code, catType) => {
+  const fetchBranchRegionalRankMdrt = async (rankingType, code1, code2, catType) => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      if (!token || !code || !catType) {
+      if (!token || !code1 || !catType) {
         throw new Error('No token, code, or category type found');
       }
 
-      const endpoint = getEndpoint(rankingType);
-      const url = `${BASE_URL}${endpoint}?p_agency_1=${code}&p_agency_2=0&p_cat=${catType}&p_year=${currentYear}`;
-      
+      const endpoint = rankingType === 'Branch Ranking' ? 'GetBranchRankMDRT' : 'GetRegionalRankMDRT';
+      const url = `http://203.115.11.236:10155/SalesTrackAppAPI/api/v1/Mdrt/${endpoint}?p_agency_1=${code1}&p_agency_2=${code2}&p_cat=${catType}&p_year=${currentYear}`;
+
+      console.log(`Fetching ${rankingType} data from: ${url}`);
 
       const response = await fetch(url, {
         method: 'GET',
@@ -156,19 +161,23 @@ const WinnersScreen = () => {
       }
 
       const data = await response.json();
-      if (data.length === 0) {
+      console.log(`${rankingType} data:`, data);
+
+      if (!data || data.length === 0) {
         setErrorMessage(`No data available for ${rankingType}.`);
+        setBranchRegionalData([]);
         return;
       }
+
       const formattedData = data.map(item => ({
         name: item.agent_name.trim(),
         achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
         NOP: item.nop.toString(),
         rank: rankingType === 'Branch Ranking' ? item.branch_rank : item.region_rank,
-        achievement: item.achievment,       
+        achievement: item.achievment,
         balanceDue: item.balanceDue
       }));
-      
+
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
       setBranchRegionalData(formattedData);
     } catch (error) {
@@ -176,68 +185,6 @@ const WinnersScreen = () => {
       console.error(`Error fetching ${rankingType} data:`, error.message);
     }
   };
-
-  
-  const checkIfUserIsLifeMember = async () => {
-    try {
-      const token = await AsyncStorage.getItem('accessToken');
-      if (!token) {
-        throw new Error('No token found');
-      }
-  
-      const url = `${BASE_URL}${ENDPOINTS.LIFE_MEMBER_MDRT}?p_year=${currentYear}`;
-      console.log(`Fetching life member details from: ${url}`);
-  
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-  
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-      }
-  
-      const data = await response.json();
-      
-  
-      const userOrganizerCode = agentProfile?.orgnizer_code;
-      console.log('User organizer code:', userOrganizerCode);
-  
-      const isLifeMember = data.some(member => 
-        member.agency_code_1 === userOrganizerCode || member.agency_code_2 === userOrganizerCode
-      );
-  
-      console.log('Is life member:', isLifeMember);
-      setIsLifeMember(isLifeMember);
-  
-      if (data.length === 0) {
-        setErrorMessage('No life member data available.');
-        return;
-      }
-  
-      const formattedData = data.map(item => ({
-        name: item.agent_name.trim(),
-        achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
-        NOP: item.nop.toString(),
-        rank: item.national_rank,
-        achievement: item.achievment,       
-        balanceDue: item.balanceDue 
-      }));
-  
-      formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
-      setWinnersData(formattedData);
-  
-    } catch (error) {
-      handleErrorResponse(error);
-      console.error('Error fetching life member details:', error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
 
   const fetchWinnersData = async (rankingType) => {
     try {
@@ -264,18 +211,23 @@ const WinnersScreen = () => {
       }
 
       const data = await response.json();
-      if (data.length === 0) {
+      console.log(`${rankingType} data:`, data);
+
+      if (!data || data.length === 0) {
         setErrorMessage(`No winners data available for ${rankingType}.`);
+        setWinnersData([]);
         return;
       }
+
       const formattedData = data.map(item => ({
         name: item.agent_name.trim(),
         achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
         NOP: item.nop.toString(),
         rank: item.national_rank,
-        achievement: item.achievment,       
+        achievement: item.achievment,
         balanceDue: item.balanceDue
       }));
+
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
       setWinnersData(formattedData);
     } catch (error) {
@@ -297,7 +249,7 @@ const WinnersScreen = () => {
       case 'COT Ranking':
         return ENDPOINTS.COTRANK;
       case 'Life Members':
-          return ENDPOINTS.LIFE_MEMBER_MDRT;
+        return ENDPOINTS.LIFE_MEMBER_MDRT;
       default:
         return ENDPOINTS.ISLANDRANK;
     }
@@ -306,7 +258,76 @@ const WinnersScreen = () => {
   const handleSelectionChange = (val) => {
     setSelectedValue(val);
     setShowDropdown(false);
-    setErrorMessage('');  
+    setErrorMessage('');
+    if (val === 'Branch Ranking' || val === 'Regional Ranking') {
+      const code1 = agentProfile?.agent_code || agentProfile?.orgnizer_code;
+      const code2 = agentProfile?.newagt || 0;
+      const catType = agentProfile?.stid;
+      fetchBranchRegionalRankMdrt(val, code1, code2, catType);
+    } else if (val === 'Life Members') {
+      checkIfUserIsLifeMember();
+    } else {
+      fetchWinnersData(val);
+    }
+  };
+
+  const checkIfUserIsLifeMember = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+      const url = `${BASE_URL}${ENDPOINTS.LIFE_MEMBER_MDRT}?p_year=${currentYear}`;
+      console.log(`Fetching life member details from: ${url}`);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('Life member data:', data);
+
+      const userOrganizerCode = agentProfile?.orgnizer_code;
+
+      const isLifeMember = data.some(member =>
+        member.agency_code_1 === userOrganizerCode || member.agency_code_2 === userOrganizerCode
+      );
+
+      setIsLifeMember(isLifeMember);
+
+      if (!data || data.length === 0) {
+        setErrorMessage('No life member data available.');
+        setWinnersData([]);
+        return;
+      }
+
+      const formattedData = data.map(item => ({
+        name: item.agent_name.trim(),
+        achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
+        NOP: item.nop.toString(),
+        rank: item.national_rank,
+        achievement: item.achievment,
+        balanceDue: item.balanceDue
+      }));
+
+      formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
+      setWinnersData(formattedData);
+
+    } catch (error) {
+      handleErrorResponse(error);
+      console.error('Error fetching life member details:', error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderDropdown = () => {
@@ -318,7 +339,7 @@ const WinnersScreen = () => {
         </TouchableOpacity>
         {showDropdown && (
           <View style={styles.dropdownOptions}>
-            {['Island Ranking', 'Regional Ranking', 'Branch Ranking', 'COT Ranking', 'TOT Ranking', 'Life Members'].map(rank => (
+            {['Island Ranking', 'Branch Ranking', 'Regional Ranking', 'COT Ranking', 'TOT Ranking', 'Life Members'].map(rank => (
               <TouchableOpacity key={rank} onPress={() => handleSelectionChange(rank)}>
                 <Text style={styles.optionText}>{rank}</Text>
               </TouchableOpacity>
@@ -326,27 +347,27 @@ const WinnersScreen = () => {
           </View>
         )}
         <AwesomeAlert
-        show={showAlert}
-        showProgress={false}
-        title="Session Expired"
-        message="Please Log Again!"
-        closeOnTouchOutside={false}
-        closeOnHardwareBackPress={false}
-        showConfirmButton={true}
-        confirmText="OK"
-        confirmButtonColor="#FF7758"
-        onConfirmPressed={handleConfirm}
-      />
+          show={showAlert}
+          showProgress={false}
+          title="Session Expired"
+          message="Please Log Again!"
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={false}
+          showConfirmButton={true}
+          confirmText="OK"
+          confirmButtonColor="#FF7758"
+          onConfirmPressed={handleConfirm}
+        />
       </View>
     );
   };
 
   const renderItem = ({ item, index }) => {
     const target = parseInt(item.achievedTarget.replace(/,/g, '')) || 0;
-  
+
     return (
       <View style={[
-        styles.itemContainer, 
+        styles.itemContainer,
         selectedValue !== 'Life Members' && index < 3 && styles.highlightedItem,
         selectedValue !== 'Life Members' && item.achievement === 'Achieved' && index >= 3 && styles.achievedBeyondTopThree
       ]}>
@@ -372,7 +393,7 @@ const WinnersScreen = () => {
             </>
           )}
         </View>
-        {selectedValue !== 'Life Members' && index == 0 && (
+        {selectedValue !== 'Life Members' && index === 0 && (
           <View style={styles.svgContainer}>
             <FirstPlaceSvg />
           </View>
@@ -387,22 +408,9 @@ const WinnersScreen = () => {
             <ThirdPlaceSvg />
           </View>
         )}
-        <AwesomeAlert
-        show={showAlert}
-        showProgress={false}
-        title="Session Expired"
-        message="Please Log Again!"
-        closeOnTouchOutside={false}
-        closeOnHardwareBackPress={false}
-        showConfirmButton={true}
-        confirmText="OK"
-        confirmButtonColor="#FF7758"
-        onConfirmPressed={handleConfirm}
-      />
       </View>
     );
   };
-  
 
   const renderUser = () => {
     if (!personalMdrt) {
@@ -478,16 +486,6 @@ const WinnersScreen = () => {
     );
   };
 
-  const renderProfilePic = (winner) => {
-    if (winner.profilePic) {
-      return <Image source={winner.profilePic} style={styles.profilePic} />;
-    } else {
-      return <Icon name="user-circle" size={26} color="#FF5733" style={{ marginRight: 10 }} />;
-    }
-  };
-
-  const topThreeWinners = winnersData.slice(0, 3);
-
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
@@ -529,7 +527,6 @@ const WinnersScreen = () => {
       <View style={{ alignItems: 'center' }}>
         {renderUser()}
       </View>
-      
     </View>
   );
 };
