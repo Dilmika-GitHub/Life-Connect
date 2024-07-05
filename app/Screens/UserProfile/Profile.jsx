@@ -44,10 +44,12 @@ const Profile = ({ navigation }) => {
         });
       setUserData(response.data);
       if (categoryType === "Ag") {
-        await AsyncStorage.setItem("agencyCode", response.data?.agent_code);
+        await AsyncStorage.setItem("agencyCode1", response.data?.agent_code);
+        await AsyncStorage.setItem("agencyCode2", response.data?.newagt);
       }
       if (categoryType === "Or") {
-        await AsyncStorage.setItem("agencyCode", response.data?.orgnizer_code);
+        await AsyncStorage.setItem("agencyCode1", response.data?.orgnizer_code);
+        await AsyncStorage.setItem("agencyCode2", response.data?.newagt);
         
       } else {
         
