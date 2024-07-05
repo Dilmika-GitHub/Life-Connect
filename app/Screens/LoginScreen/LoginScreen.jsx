@@ -91,6 +91,7 @@ const LoginScreen = () => {
         await AsyncStorage.setItem("categoryType", jsonResponse.cattype);
         await AsyncStorage.setItem("email", jsonResponse.email);
 
+
         if(jsonResponse.firstAttempt === "Y"){
           router.push("/Screens/LoginScreen/ChangeDefaultPassword")
         }
@@ -111,6 +112,16 @@ const LoginScreen = () => {
               setShowSavePasswordPopup(true);
               setNewCredentials ({username, password});
             }
+
+        if (!hasSavedCredentials) {
+          setShowSavePasswordPopup(true);
+        } else {
+          if(jsonResponse.firstAttempt === "Y"){
+            router.push("/Screens/LoginScreen/ChangeDefaultPassword")
+          }
+          else{
+              router.push("/Screens/HomePage/Home");
+
           }
           else {
             setShowSavePasswordPopup(true);

@@ -27,6 +27,11 @@ const MDRTProfile = ({ navigation }) => {
     navigation.navigate('Login');
   };
 
+  const formatConsiderAgencyCode = (code) => {
+    const paddedCode = code.padStart(6, '0');
+    return `L24${paddedCode}`;
+  };
+
   const getAgencyCode = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken'); 
@@ -125,7 +130,7 @@ const MDRTProfile = ({ navigation }) => {
   if (error) {
     return (
       <View style={styles.loader}>
-        <Text style={styles.errorText}>Failed to load data.</Text>
+        <Text style={styles.errorText}>Not Applicable</Text>
         <AwesomeAlert
         show={showAlert}
         showProgress={false}
@@ -152,8 +157,8 @@ const MDRTProfile = ({ navigation }) => {
         {/* Grey color square text */}
         <View style={styles.greySquare}>
           <View style={styles.row}>
-            <Text style={styles.titleText}>Agent Code</Text>
-            <Text style={styles.normalText}>{data.consider_agency}</Text>
+            <Text style={styles.titleText}>Consider Agency Code</Text>
+            <Text style={styles.normalText}>{formatConsiderAgencyCode(data.consider_agency)}</Text>
           </View>
           <View style={styles.specialRow}>
             <Text style={styles.titleText}>MDRT Target</Text>
