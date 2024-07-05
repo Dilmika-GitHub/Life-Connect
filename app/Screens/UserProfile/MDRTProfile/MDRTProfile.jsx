@@ -47,9 +47,15 @@ const MDRTProfile = ({ navigation }) => {
       setAgencyCode(response.data);
 
       if (categoryType === "Ag") {
-        await AsyncStorage.setItem("agencyCode", response.data?.agent_code);
-      } else if (categoryType === "Or") {
-        await AsyncStorage.setItem("agencyCode", response.data?.orgnizer_code);
+        await AsyncStorage.setItem("agencyCode1", response.data?.agent_code);
+        await AsyncStorage.setItem("agencyCode2", response.data?.newagt);
+      }
+      if (categoryType === "Or") {
+        await AsyncStorage.setItem("agencyCode1", response.data?.orgnizer_code);
+        await AsyncStorage.setItem("agencyCode2", response.data?.newagt);
+        
+      } else {
+        
       }
 
       console.log("called", await AsyncStorage.getItem('agencyCode'));
@@ -63,7 +69,11 @@ const MDRTProfile = ({ navigation }) => {
   const fetchMdrtPersonalData = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      const agencyCode = await AsyncStorage.getItem('agencyCode');
+      const agencyCode1 = await AsyncStorage.getItem('agencyCode1');
+      console.log("ag1:", agencyCode1);
+      let agencyCode2 = await AsyncStorage.getItem("agencyCode2");
+      agencyCode2 = agencyCode2 === null ? 0 : agencyCode2;
+      console.log("ag2:",agencyCode2);
       const categoryType = await AsyncStorage.getItem('categoryType');
       const year = new Date().getFullYear();
 
@@ -72,8 +82,8 @@ const MDRTProfile = ({ navigation }) => {
           Authorization: `Bearer ${token}`
         },
         params: {
-          p_agency_1: agencyCode,
-          p_agency_2: '0',
+          p_agency_1: agencyCode1,
+          p_agency_2: agencyCode2,
           p_cat: categoryType,
           p_year: year
         }
