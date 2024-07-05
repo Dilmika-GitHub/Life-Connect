@@ -26,6 +26,11 @@ const Profile = ({ navigation }) => {
     navigation.navigate('Login');
   };
 
+  const formatAgencyCode = (code) => {
+    const paddedCode = code.padStart(6, '0');
+    return `L24${paddedCode}`;
+  };
+
   const fetchUserData = async () => {
     try {
       const token = await AsyncStorage.getItem("accessToken");
@@ -89,16 +94,16 @@ const Profile = ({ navigation }) => {
           <View style={styles.row}>
             {categoryType === "Ag" ? (
               <>
-                <Text style={styles.titleText}>Agent Code:</Text>
+                <Text style={styles.titleText}>Personal Agency Code:</Text>
                 <Text style={styles.normalText}>
-                  {userData?.agent_code || "N/A"}
+                  {formatAgencyCode(userData?.agent_code) || "N/A"}
                 </Text>
               </>
             ) : categoryType === "Or" ? (
               <>
-                <Text style={styles.titleText}>Organizer Code:</Text>
+                <Text style={styles.titleText}>Personal Agency Code:</Text>
                 <Text style={styles.normalText}>
-                  {userData?.orgnizer_code || "N/A"}
+                  {formatAgencyCode(userData?.orgnizer_code) || "N/A"}
                 </Text>
               </>
             ) : null}
@@ -131,7 +136,7 @@ const Profile = ({ navigation }) => {
           {categoryType === "Or" ? (
             <>
               <View style={styles.row}>
-                <Text style={styles.titleText}>Organizer Team Code:</Text>
+                <Text style={styles.titleText}>Organizer Team Leader Code:</Text>
                 <Text style={styles.normalText}>
                   {userData?.or_team_code || "N/A"}
                 </Text>
