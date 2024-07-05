@@ -30,6 +30,7 @@ const LoginScreen = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false); 
+  const [newCredentials, setNewCredentials] = useState(null);
   const router = useRouter();
   const appVersion = Constants.expoConfig?.version || Constants.manifest2?.version || 'Version not found';
 
@@ -38,29 +39,29 @@ const LoginScreen = () => {
   });
 
   const togglePasswordVisibility = () => {
-    setPasswordVisible(!passwordVisible);
+    setShowPassword(!showPassword);
   };
 
   // Check if credentials are saved
-  // useEffect(() => {
-  //   const checkStoredCredentials = async () => {
-  //     const storedUsername = await AsyncStorage.getItem("username");
-  //     const storedPassword = await AsyncStorage.getItem("password");
-  //     const loggedBefore = await AsyncStorage.getItem('loggedBefore');
-  //     if (storedUsername && storedPassword) {
-  //       setUsername(storedUsername);
-  //       setPassword(storedPassword);
-  //       setHasSavedCredentials(true);
-  //     } else {
-  //       setHasSavedCredentials(false);
-  //     }
-  //     if (!loggedBefore) {
-  //       await AsyncStorage.setItem('loggedBefore', 'true');
-  //     }
-  //   };
+  useEffect(() => {
+    const checkStoredCredentials = async () => {
+      const storedUsername = await AsyncStorage.getItem("username");
+      const storedPassword = await AsyncStorage.getItem("password");
+      const loggedBefore = await AsyncStorage.getItem('loggedBefore');
+      if (storedUsername && storedPassword) {
+        setUsername(storedUsername);
+        setPassword(storedPassword);
+        setHasSavedCredentials(true);
+      } else {
+        setHasSavedCredentials(false);
+      }
+      if (!loggedBefore) {
+        await AsyncStorage.setItem('loggedBefore', 'true');
+      }
+    };
 
-  //   checkStoredCredentials();
-  // }, []);
+    checkStoredCredentials();
+  }, []);
 
   // Handle login
   const handleLogin = async () => {
@@ -94,12 +95,35 @@ const LoginScreen = () => {
           router.push("/Screens/LoginScreen/ChangeDefaultPassword")
         }
         else{
-          if(jsonResponse.cattype === "Ag"){
-            router.push("/Screens/HomePage/Home");
+          if(hasSavedCredentials) {
+            const storedUsername = await AsyncStorage.getItem("username");
+            const storedPassword = await AsyncStorage.getItem("password");
+
+            if(username === storedUsername && password === storedPassword) {
+              if(jsonResponse.cattype === "Ag"){
+                router.push("/Screens/HomePage/Home");
+              }
+              else {
+                router.push("/Screens/LoginScreen/AccountTypeSelection");
+              }
+            }
+            else {
+              setShowSavePasswordPopup(true);
+              setNewCredentials ({username, password});
+            }
           }
-          else{
-            router.push("/Screens/LoginScreen/AccountTypeSelection");
-          }  
+          else {
+            setShowSavePasswordPopup(true);
+              setNewCredentials ({username, password});
+          }
+
+
+          // if(jsonResponse.cattype === "Ag"){
+          //   router.push("/Screens/HomePage/Home");
+          // }
+          // else{
+          //   router.push("/Screens/LoginScreen/AccountTypeSelection");
+          // }  
         }
         
         // if (!hasSavedCredentials) {
@@ -132,31 +156,31 @@ const LoginScreen = () => {
   
 
   // Save password
-  // const handleSavePassword = async (save) => {
-  //   const loggedBefore = await AsyncStorage.getItem('loggedBefore');
+  const handleSavePassword = async (save) => {
+    const loggedBefore = await AsyncStorage.getItem('loggedBefore');
 
-  //   if (save && newCredentials) {
-  //     await clearStoredCredentials();
-  //     await AsyncStorage.setItem("username", newCredentials.username);
-  //     await AsyncStorage.setItem("password", newCredentials.password);
-  //   }
+    if (save && newCredentials) {
+      await clearStoredCredentials();
+      await AsyncStorage.setItem("username", newCredentials.username);
+      await AsyncStorage.setItem("password", newCredentials.password);
+    }
     
-  //   setShowSavePasswordPopup(false);
-  //   setNewCredentials(null);
+    setShowSavePasswordPopup(false);
+    setNewCredentials(null);
 
-  //   if (loggedBefore) {
-  //     router.push("/Screens/HomePage/Home");
-  //   } else {
-  //     await AsyncStorage.setItem('loggedBefore', 'true');
-  //     router.push("/Screens/HomePage/Home"); // For the first login
-  //   }
-  // };
+    if (loggedBefore) {
+      router.push("/Screens/HomePage/Home");
+    } else {
+      await AsyncStorage.setItem('loggedBefore', 'true');
+      router.push("/Screens/HomePage/Home"); // For the first login
+    }
+  };
 
   // Clear stored credentials
-  // const clearStoredCredentials = async () => {
-  //   await AsyncStorage.removeItem("username");
-  //   await AsyncStorage.removeItem("password");
-  // };
+  const clearStoredCredentials = async () => {
+    await AsyncStorage.removeItem("username");
+    await AsyncStorage.removeItem("password");
+  };
 
   return (
     <View style={styles.container}>
@@ -195,7 +219,7 @@ const LoginScreen = () => {
       <Text style={styles.versionText}>V: {appVersion}</Text>
       <CheckConnection />
 
-      {/* <Modal
+      <Modal
         visible={showSavePasswordPopup}
         transparent
         animationType="slide"
@@ -220,7 +244,7 @@ const LoginScreen = () => {
             </View>
           </View>
         </View>
-      </Modal> */}
+      </Modal>
       <AwesomeAlert
         show={showAlert}
         showProgress={false}

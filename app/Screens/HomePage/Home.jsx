@@ -92,7 +92,7 @@ const CustomDrawerContent = ({ navigation }) => {
   const handleConfirmLogout = async () => {
     setLogoutConfirmationVisible(false);
 
-    await AsyncStorage.clear(); //uncomment if you want to clear credentials when login out
+    // await AsyncStorage.clear(); //uncomment if you want to clear credentials when login out
 
     // Reset the navigation stack and navigate to the Login screen
     navigation.dispatch(
