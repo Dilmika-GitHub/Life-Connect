@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons'; // Make sure to install t
 import { Link } from "expo-router";
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { useFocusEffect } from '@react-navigation/native';
+import { useRouter } from "expo-router";
 
 const ChangeDefaultPassword = ({navigation}) => {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -13,6 +14,7 @@ const ChangeDefaultPassword = ({navigation}) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const router = useRouter();
 
   const toggleCurrentPasswordVisibility = () => {
     setCurrentPasswordVisible(!currentPasswordVisible);
@@ -33,7 +35,8 @@ const ChangeDefaultPassword = ({navigation}) => {
     setShowAlert(true);
   };
 
-  const hideAlert = () => {
+  const handleAlert = () => {
+    router.push("/Screens/LoginScreen/LoginScreen")
     setShowAlert(false);
   };
 
@@ -114,7 +117,7 @@ const ChangeDefaultPassword = ({navigation}) => {
         showConfirmButton={true}
         confirmText="OK"
         confirmButtonColor="#FF7758"
-        onConfirmPressed={hideAlert}
+        onConfirmPressed={handleAlert}
       />
     </View>
   );
