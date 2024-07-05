@@ -20,16 +20,15 @@ const WinnersScreen = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
   const navigation = useNavigation();
 
   const currentYear = new Date().getFullYear();
 
   const handleErrorResponse = (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response.status === 401) {
       console.log(error.response.status);
       setShowAlert(true);
-    } else {
-      setErrorMessage('No data available');
     }
   };
 
@@ -81,7 +80,7 @@ const WinnersScreen = () => {
       }
 
       const data = await response.json();
-      console.log('Full agent profile data response:', data);
+      
 
       if (!data || (!data.agent_code && !data.orgnizer_code)) {
         throw new Error("Agent code or Organizer code not found in profile data.");
@@ -119,7 +118,7 @@ const WinnersScreen = () => {
       }
 
       const data = await response.json();
-      console.log('Personal MDRT data:', data);
+      
       if (data.length === 0) {
         setErrorMessage('No personal MDRT data available.');
         return;
@@ -142,7 +141,7 @@ const WinnersScreen = () => {
 
       const endpoint = getEndpoint(rankingType);
       const url = `${BASE_URL}${endpoint}?p_agency_1=${code}&p_agency_2=0&p_cat=${catType}&p_year=${currentYear}`;
-      console.log(`Fetching ${rankingType} data from: ${url}`);
+      
 
       const response = await fetch(url, {
         method: 'GET',
@@ -169,7 +168,7 @@ const WinnersScreen = () => {
         achievement: item.achievment,       
         balanceDue: item.balanceDue
       }));
-      console.log(`${rankingType} data:`, data);
+      
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
       setBranchRegionalData(formattedData);
     } catch (error) {
@@ -202,7 +201,7 @@ const WinnersScreen = () => {
       }
   
       const data = await response.json();
-      console.log('Life member data:', data);
+      
   
       const userOrganizerCode = agentProfile?.orgnizer_code;
       console.log('User organizer code:', userOrganizerCode);
@@ -326,6 +325,18 @@ const WinnersScreen = () => {
             ))}
           </View>
         )}
+        <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Session Expired"
+        message="Please Log Again!"
+        closeOnTouchOutside={false}
+        closeOnHardwareBackPress={false}
+        showConfirmButton={true}
+        confirmText="OK"
+        confirmButtonColor="#FF7758"
+        onConfirmPressed={handleConfirm}
+      />
       </View>
     );
   };
@@ -369,6 +380,18 @@ const WinnersScreen = () => {
             <ThirdPlaceSvg />
           </View>
         )}
+        <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Session Expired"
+        message="Please Log Again!"
+        closeOnTouchOutside={false}
+        closeOnHardwareBackPress={false}
+        showConfirmButton={true}
+        confirmText="OK"
+        confirmButtonColor="#FF7758"
+        onConfirmPressed={handleConfirm}
+      />
       </View>
     );
   };
@@ -432,6 +455,18 @@ const WinnersScreen = () => {
           </>
         )}
       </View>
+      <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Session Expired"
+        message="Please Log Again!"
+        closeOnTouchOutside={false}
+        closeOnHardwareBackPress={false}
+        showConfirmButton={true}
+        confirmText="OK"
+        confirmButtonColor="#FF7758"
+        onConfirmPressed={handleConfirm}
+      />
       </View>
     );
   };
@@ -447,7 +482,7 @@ const WinnersScreen = () => {
   const topThreeWinners = winnersData.slice(0, 3);
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       const onBackPress = () => {
         navigation.navigate('MDRT');
         return true;
