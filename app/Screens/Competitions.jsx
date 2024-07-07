@@ -296,7 +296,7 @@ const WinnersScreen = () => {
       const data = await response.json();
       console.log('Life member data:', data);
 
-      const userOrganizerCode = agentProfile?.orgnizer_code;
+      const userOrganizerCode = agentProfile?.orgnizer_code || agentProfile?.agent_code;
 
       const isLifeMember = data.some(member =>
         member.agency_code_1 === userOrganizerCode || member.agency_code_2 === userOrganizerCode
