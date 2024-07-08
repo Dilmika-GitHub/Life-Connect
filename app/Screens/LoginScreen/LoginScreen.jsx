@@ -101,12 +101,7 @@ const LoginScreen = () => {
             const storedPassword = await AsyncStorage.getItem("password");
 
             if(username === storedUsername && password === storedPassword) {
-              if(jsonResponse.cattype === "Ag"){
                 router.push("/Screens/HomePage/Home");
-              }
-              else {
-                router.push("/Screens/LoginScreen/AccountTypeSelection");
-              }
             }
             else {
               setShowSavePasswordPopup(true);
@@ -117,33 +112,7 @@ const LoginScreen = () => {
             setShowSavePasswordPopup(true);
               setNewCredentials ({username, password});
           }
-        
-
-
-          // if(jsonResponse.cattype === "Ag"){
-          //   router.push("/Screens/HomePage/Home");
-          // }
-          // else{
-          //   router.push("/Screens/LoginScreen/AccountTypeSelection");
-          // }  
         }
-        
-        // if (!hasSavedCredentials) {
-        //   setShowSavePasswordPopup(true);
-        // } else {
-        //   if(jsonResponse.firstAttempt === "Y"){
-        //     router.push("/Screens/LoginScreen/ChangeDefaultPassword")
-        //   }
-        //   else{
-        //     if(jsonResponse.cattype === "Ag"){
-        //       router.push("/Screens/HomePage/Home");
-        //     }
-        //     else{
-        //       router.push("/Screens/LoginScreen/AccountTypeSelection");
-        //     }  
-        //   }
-          
-        // }
       } else {
         setAlertMessage(`${jsonResponse.error || 'Unknown error'}`);
         setShowAlert(true);
@@ -212,7 +181,7 @@ const LoginScreen = () => {
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
         {loading ? (
-          <ActivityIndicator size="small" color="#0000ff" /> // Loading spinner
+          <ActivityIndicator size="small" color="#FEA58F" /> // Loading spinner
         ) : (
           <Text style={styles.loginButtonText}>Login</Text>
         )}
