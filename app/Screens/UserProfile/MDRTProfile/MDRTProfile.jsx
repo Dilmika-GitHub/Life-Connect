@@ -52,11 +52,11 @@ const MDRTProfile = ({ navigation }) => {
       setAgencyCode(response.data);
 
       if (categoryType === "Ag") {
-        await AsyncStorage.setItem("agencyCode1", response.data?.agent_code);
+        await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
         await AsyncStorage.setItem("agencyCode2", response.data?.newagt);
       }
       if (categoryType === "Or") {
-        await AsyncStorage.setItem("agencyCode1", response.data?.orgnizer_code);
+        await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
         await AsyncStorage.setItem("agencyCode2", response.data?.newagt);
         
       } else {

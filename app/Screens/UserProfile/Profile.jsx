@@ -49,11 +49,11 @@ const Profile = ({ navigation }) => {
         });
       setUserData(response.data);
       if (categoryType === "Ag") {
-        await AsyncStorage.setItem("agencyCode1", response.data?.agent_code);
+        await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
         await AsyncStorage.setItem("agencyCode2", response.data?.newagt);
       }
       if (categoryType === "Or") {
-        await AsyncStorage.setItem("agencyCode1", response.data?.orgnizer_code);
+        await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
         await AsyncStorage.setItem("agencyCode2", response.data?.newagt);
         
       } else {
@@ -96,14 +96,14 @@ const Profile = ({ navigation }) => {
               <>
                 <Text style={styles.titleText}>Personal Agency Code:</Text>
                 <Text style={styles.normalText}>
-                  {formatAgencyCode(userData?.agent_code) || "N/A"}
+                  {formatAgencyCode(userData?.personal_agency_code) || "N/A"}
                 </Text>
               </>
             ) : categoryType === "Or" ? (
               <>
                 <Text style={styles.titleText}>Personal Agency Code:</Text>
                 <Text style={styles.normalText}>
-                  {formatAgencyCode(userData?.orgnizer_code) || "N/A"}
+                  {formatAgencyCode(userData?.personal_agency_code) || "N/A"}
                 </Text>
               </>
             ) : null}
