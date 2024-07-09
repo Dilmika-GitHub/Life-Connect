@@ -92,21 +92,10 @@ const Profile = ({ navigation }) => {
         {/* Grey color square text */}
         <View style={styles.greySquare}>
           <View style={styles.row}>
-            {categoryType === "Ag" ? (
-              <>
                 <Text style={styles.titleText}>Personal Agency Code:</Text>
                 <Text style={styles.normalText}>
                   {formatAgencyCode(userData?.personal_agency_code) || "N/A"}
                 </Text>
-              </>
-            ) : categoryType === "Or" ? (
-              <>
-                <Text style={styles.titleText}>Personal Agency Code:</Text>
-                <Text style={styles.normalText}>
-                  {formatAgencyCode(userData?.personal_agency_code) || "N/A"}
-                </Text>
-              </>
-            ) : null}
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>NIC No:</Text>
