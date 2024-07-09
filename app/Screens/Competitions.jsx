@@ -47,7 +47,7 @@ const WinnersScreen = () => {
     if (selectedValue === 'Life Members') {
       checkIfUserIsLifeMember();
     } else if (selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking') {
-      const code1 = agentProfile?.agent_code || agentProfile?.orgnizer_code;
+      const code1 = agentProfile?.personal_agency_code;  //changed
       const code2 = agentProfile?.newagt || 0;
       const catType = agentProfile?.stid;
       fetchBranchRegionalRankMdrt(selectedValue, code1, code2, catType);
@@ -83,12 +83,12 @@ const WinnersScreen = () => {
       const data = await response.json();
       console.log('Full agent profile data response:', data);
 
-      if (!data || (!data.agent_code && !data.orgnizer_code)) {
+      if (!data || (!data.personal_agency_code)) {  //changed
         throw new Error("Agent code or Organizer code not found in profile data.");
       }
 
       setAgentProfile(data);
-      const code1 = data.agent_code || data.orgnizer_code;
+      const code1 = data.personal_agency_code;  //changed
       const code2 = data.newagt || 0;
       fetchPersonalMdrt(code1, code2, catType);
     } catch (error) {
@@ -144,7 +144,7 @@ const WinnersScreen = () => {
       }
 
       const endpoint = rankingType === 'Branch Ranking' ? 'GetBranchRankMDRT' : 'GetRegionalRankMDRT';
-      const url = `http://203.115.11.236:10155/SalesTrackAppAPI/api/v1/Mdrt/${endpoint}?p_agency_1=${code1}&p_agency_2=${code2}&p_cat=${catType}&p_year=${currentYear}`;
+      const url = `${BASE_URL}/Mdrt/${endpoint}?p_agency_1=${code1}&p_agency_2=${code2}&p_cat=${catType}&p_year=${currentYear}`;
 
       console.log(`Fetching ${rankingType} data from: ${url}`);
 
@@ -260,7 +260,7 @@ const WinnersScreen = () => {
     setShowDropdown(false);
     setErrorMessage('');
     if (val === 'Branch Ranking' || val === 'Regional Ranking') {
-      const code1 = agentProfile?.agent_code || agentProfile?.orgnizer_code;
+      const code1 = agentProfile?.personal_agency_code; //changed
       const code2 = agentProfile?.newagt || 0;
       const catType = agentProfile?.stid;
       fetchBranchRegionalRankMdrt(val, code1, code2, catType);
@@ -296,7 +296,7 @@ const WinnersScreen = () => {
       const data = await response.json();
       console.log('Life member data:', data);
 
-      const userOrganizerCode = agentProfile?.orgnizer_code || agentProfile?.agent_code;
+      const userOrganizerCode = agentProfile?.personal_agency_code; //changed
 
       const isLifeMember = data.some(member =>
         member.agency_code_1 === userOrganizerCode || member.agency_code_2 === userOrganizerCode
