@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, Image, BackHandler, ActivityIndicator } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, Image, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AwesomeAlert from 'react-native-awesome-alerts';
@@ -18,18 +19,18 @@ const WinnersScreen = () => {
   const [selectedValue, setSelectedValue] = useState('Island Ranking');
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [error, setError] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const navigation = useNavigation();
 
   const currentYear = new Date().getFullYear();
 
   const handleErrorResponse = (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response?.status === 401) {
       console.log(error.response.status);
       setShowAlert(true);
     } else {
-      setErrorMessage('No data available');
+      setError(true);
     }
   };
 
@@ -37,24 +38,6 @@ const WinnersScreen = () => {
     setShowAlert(false);
     navigation.navigate('Login');
   };
-
-  useEffect(() => {
-    fetchAgentProfile();
-    fetchWinnersData('Island Ranking');
-  }, []);
-
-  useEffect(() => {
-    if (selectedValue === 'Life Members') {
-      checkIfUserIsLifeMember();
-    } else if (selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking') {
-      const code1 = agentProfile?.personal_agency_code;  //changed
-      const code2 = agentProfile?.newagt || 0;
-      const catType = agentProfile?.stid;
-      fetchBranchRegionalRankMdrt(selectedValue, code1, code2, catType);
-    } else {
-      fetchWinnersData(selectedValue);
-    }
-  }, [selectedValue, agentProfile]);
 
   const fetchAgentProfile = async () => {
     try {
@@ -65,111 +48,47 @@ const WinnersScreen = () => {
         throw new Error('No token, email, or category type found');
       }
 
-      const url = `${BASE_URL}${ENDPOINTS.AGENT_PROFILE}?email=${email}&catType=${catType}`;
-      console.log(`Fetching agent profile data from: ${url}`);
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await axios.get(`${BASE_URL}${ENDPOINTS.PROFILE_DETAILS}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { email, catType }
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-      }
-
-      const data = await response.json();
-      console.log('Full agent profile data response:', data);
-
-      if (!data || (!data.personal_agency_code)) {  //changed
-        throw new Error("Agent code or Organizer code not found in profile data.");
-      }
-
-      setAgentProfile(data);
-      const code1 = data.personal_agency_code;  //changed
-      const code2 = data.newagt || 0;
-      fetchPersonalMdrt(code1, code2, catType);
+      setAgentProfile(response.data);
+      const agency_code1 = response.data.personal_agency_code;
+      const agency_code2 = response.data.newagt || 0;
+      fetchPersonalMdrt(agency_code1, agency_code2, catType);
     } catch (error) {
       handleErrorResponse(error);
       console.error('Error fetching agent profile:', error.message);
     }
   };
 
-  const fetchPersonalMdrt = async (code1, code2, catType) => {
+  const fetchPersonalMdrt = async (agency_code1, agency_code2, catType) => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      if (!token || !code1 || !catType) {
-        throw new Error('No token, code, or category type found');
-      }
-
-      const url = `${BASE_URL}${ENDPOINTS.PERSONAL_MDRT}?p_agency_1=${code1}&p_agency_2=${code2}&p_cat=${catType}&p_year=${currentYear}`;
-      console.log(`Fetching personal MDRT data from: ${url}`);
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await axios.get(`${BASE_URL}${ENDPOINTS.PERSONAL_MDRT}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { p_agency_1: agency_code1, p_agency_2: agency_code2, p_cat: catType, p_year: currentYear }
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-      }
-
-      const data = await response.json();
-      console.log('Personal MDRT data:', data);
-
-      if (!data || data.length === 0) {
-        setErrorMessage('No personal MDRT data available.');
-        return;
-      }
-
-      setPersonalMdrt(data);
+      setPersonalMdrt(response.data);
     } catch (error) {
       handleErrorResponse(error);
-      console.error('Error fetching personal MDRT data:', error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchBranchRegionalRankMdrt = async (rankingType, code1, code2, catType) => {
+  const fetchBranchRegionalRankMdrt = async (rankingType, agency_code1, agency_code2, catType) => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      if (!token || !code1 || !catType) {
-        throw new Error('No token, code, or category type found');
-      }
-
       const endpoint = rankingType === 'Branch Ranking' ? 'GetBranchRankMDRT' : 'GetRegionalRankMDRT';
-      const url = `${BASE_URL}/Mdrt/${endpoint}?p_agency_1=${code1}&p_agency_2=${code2}&p_cat=${catType}&p_year=${currentYear}`;
-
-      console.log(`Fetching ${rankingType} data from: ${url}`);
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await axios.get(`${BASE_URL}/Mdrt/${endpoint}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { p_agency_1: agency_code1, p_agency_2: agency_code2, p_cat: catType, p_year: currentYear }
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-      }
-
-      const data = await response.json();
-      console.log(`${rankingType} data:`, data);
-
-      if (!data || data.length === 0) {
-        setErrorMessage(`No data available for ${rankingType}.`);
-        setBranchRegionalData([]);
-        return;
-      }
-
-      const formattedData = data.map(item => ({
+      const formattedData = response.data.map(item => ({
         name: item.agent_name.trim(),
         achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
         NOP: item.nop.toString(),
@@ -189,37 +108,13 @@ const WinnersScreen = () => {
   const fetchWinnersData = async (rankingType) => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      if (!token) {
-        throw new Error('No token found');
-      }
-
       const endpoint = getEndpoint(rankingType);
-      const url = `${BASE_URL}${endpoint}?p_year=${currentYear}`;
-
-      console.log(`Fetching data from: ${url}`);
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await axios.get(`${BASE_URL}${endpoint}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { p_year: currentYear }
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-      }
-
-      const data = await response.json();
-      console.log(`${rankingType} data:`, data);
-
-      if (!data || data.length === 0) {
-        setErrorMessage(`No winners data available for ${rankingType}.`);
-        setWinnersData([]);
-        return;
-      }
-
-      const formattedData = data.map(item => ({
+      const formattedData = response.data.map(item => ({
         name: item.agent_name.trim(),
         achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
         NOP: item.nop.toString(),
@@ -258,12 +153,12 @@ const WinnersScreen = () => {
   const handleSelectionChange = (val) => {
     setSelectedValue(val);
     setShowDropdown(false);
-    setErrorMessage('');
+    setError(false);
     if (val === 'Branch Ranking' || val === 'Regional Ranking') {
-      const code1 = agentProfile?.personal_agency_code; //changed
-      const code2 = agentProfile?.newagt || 0;
+      const agency_code1 = agentProfile?.personal_agency_code;
+      const agency_code2 = agentProfile?.newagt || 0;
       const catType = agentProfile?.stid;
-      fetchBranchRegionalRankMdrt(val, code1, code2, catType);
+      fetchBranchRegionalRankMdrt(val, agency_code1, agency_code2, catType);
     } else if (val === 'Life Members') {
       checkIfUserIsLifeMember();
     } else {
@@ -274,43 +169,19 @@ const WinnersScreen = () => {
   const checkIfUserIsLifeMember = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      if (!token) {
-        throw new Error('No token found');
-      }
-
-      const url = `${BASE_URL}${ENDPOINTS.LIFE_MEMBER_MDRT}?p_year=${currentYear}`;
-      console.log(`Fetching life member details from: ${url}`);
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await axios.get(`${BASE_URL}${ENDPOINTS.LIFE_MEMBER_MDRT}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { p_year: currentYear }
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-      }
-
-      const data = await response.json();
-      console.log('Life member data:', data);
-
-      const userOrganizerCode = agentProfile?.personal_agency_code; //changed
-
-      const isLifeMember = data.some(member =>
+      const userOrganizerCode = agentProfile?.personal_agency_code;
+      const isLifeMember = response.data.some(member =>
         member.agency_code_1 === userOrganizerCode || member.agency_code_2 === userOrganizerCode
       );
 
       setIsLifeMember(isLifeMember);
 
-      if (!data || data.length === 0) {
-        setErrorMessage('No life member data available.');
-        setWinnersData([]);
-        return;
-      }
-
-      const formattedData = data.map(item => ({
+      const formattedData = response.data.map(item => ({
         name: item.agent_name.trim(),
         achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
         NOP: item.nop.toString(),
@@ -321,7 +192,6 @@ const WinnersScreen = () => {
 
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
       setWinnersData(formattedData);
-
     } catch (error) {
       handleErrorResponse(error);
       console.error('Error fetching life member details:', error.message);
@@ -329,6 +199,30 @@ const WinnersScreen = () => {
       setLoading(false);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          await fetchAgentProfile();
+          await fetchWinnersData('Island Ranking');
+        } catch (error) {
+          setError(true);
+          setLoading(false);
+        }
+      };
+
+      fetchData();
+    }, [])
+  );
+
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   const renderDropdown = () => {
     return (
@@ -363,8 +257,6 @@ const WinnersScreen = () => {
   };
 
   const renderItem = ({ item, index }) => {
-    const target = parseInt(item.achievedTarget.replace(/,/g, '')) || 0;
-
     return (
       <View style={[
         styles.itemContainer,
@@ -454,65 +346,44 @@ const WinnersScreen = () => {
           />
         </View>
         <View style={styles.textContainer}>
-        {showUserRank ? (
-          <>
-            <Text style={styles.uname}>Your place: {userRank}</Text>
-            <Text style={styles.salesAmount}>
-              Sales amount: {personalMdrt.fyp ? Number(personalMdrt.fyp).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
-            </Text>
-          </>
-        ) : (
-          <>
-            <Text style={styles.uname}>{userRank}</Text>
-            <Text style={styles.salesAmount}>
-              Sales amount: {personalMdrt.fyp ? Number(personalMdrt.fyp).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
-            </Text>
-          </>
-        )}
-      </View>
-      <AwesomeAlert
-        show={showAlert}
-        showProgress={false}
-        title="Session Expired"
-        message="Please Log Again!"
-        closeOnTouchOutside={false}
-        closeOnHardwareBackPress={false}
-        showConfirmButton={true}
-        confirmText="OK"
-        confirmButtonColor="#FF7758"
-        onConfirmPressed={handleConfirm}
-      />
+          {showUserRank ? (
+            <>
+              <Text style={styles.uname}>Your place: {userRank}</Text>
+              <Text style={styles.salesAmount}>
+                Sales amount: {personalMdrt.fyp ? Number(personalMdrt.fyp).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.uname}>{userRank}</Text>
+              <Text style={styles.salesAmount}>
+                Sales amount: {personalMdrt.fyp ? Number(personalMdrt.fyp).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+              </Text>
+            </>
+          )}
+        </View>
+        <AwesomeAlert
+          show={showAlert}
+          showProgress={false}
+          title="Session Expired"
+          message="Please Log Again!"
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={false}
+          showConfirmButton={true}
+          confirmText="OK"
+          confirmButtonColor="#FF7758"
+          onConfirmPressed={handleConfirm}
+        />
       </View>
     );
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        navigation.navigate('MDRT');
-        return true;
-      };
-
-      BackHandler.addEventListener('hardwareBackPress', onBackPress);
-
-      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-    }, [navigation])
-  );
-
-  if (loading) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       {renderDropdown()}
-      {errorMessage ? (
+      {error ? (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{errorMessage}</Text>
+          <Text style={styles.errorText}>No data available</Text>
         </View>
       ) : (
         <>
