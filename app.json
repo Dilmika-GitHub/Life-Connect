@@ -21,8 +21,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff",
-        "usesCleartextTraffic": true
+        "backgroundColor": "#ffffff"
       },
       "package": "com.dexter_rhys.xProject"
     },
@@ -31,7 +30,15 @@
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-build-properties",
+    {
+      "android":{
+        "usesCleartextTraffic": true
+      }
+    }
+  ]
     ],
     "extra": {
       "router": {
