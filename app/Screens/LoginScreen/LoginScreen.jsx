@@ -195,7 +195,6 @@ const LoginScreen = () => {
         visible={showSavePasswordPopup}
         transparent
         animationType="fade"
-        onRequestClose={() => setShowSavePasswordPopup(false)}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
