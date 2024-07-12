@@ -27,6 +27,11 @@ const MDRTProfile = ({ navigation }) => {
     navigation.navigate('Login');
   };
 
+  const formatConsiderAgencyCode = (code) => {
+    const paddedCode = code.padStart(6, '0');
+    return `L24${paddedCode}`;
+  };
+
   const getAgencyCode = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken'); 
@@ -46,11 +51,9 @@ const MDRTProfile = ({ navigation }) => {
 
       setAgencyCode(response.data);
 
-      if (categoryType === "Ag") {
-        await AsyncStorage.setItem("agencyCode", response.data?.agent_code);
-      } else if (categoryType === "Or") {
-        await AsyncStorage.setItem("agencyCode", response.data?.orgnizer_code);
-      }
+        await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
+        await AsyncStorage.setItem("agencyCode2", response.data?.newagt);
+     
 
       console.log("called", await AsyncStorage.getItem('agencyCode'));
     } catch (error) {
@@ -63,7 +66,11 @@ const MDRTProfile = ({ navigation }) => {
   const fetchMdrtPersonalData = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      const agencyCode = await AsyncStorage.getItem('agencyCode');
+      const agencyCode1 = await AsyncStorage.getItem('agencyCode1');
+      console.log("ag1:", agencyCode1);
+      let agencyCode2 = await AsyncStorage.getItem("agencyCode2");
+      agencyCode2 = agencyCode2 === null ? 0 : agencyCode2;
+      console.log("ag2:",agencyCode2);
       const categoryType = await AsyncStorage.getItem('categoryType');
       const year = new Date().getFullYear();
 
@@ -72,8 +79,8 @@ const MDRTProfile = ({ navigation }) => {
           Authorization: `Bearer ${token}`
         },
         params: {
-          p_agency_1: agencyCode,
-          p_agency_2: '0',
+          p_agency_1: agencyCode1,
+          p_agency_2: agencyCode2,
           p_cat: categoryType,
           p_year: year
         }
@@ -115,7 +122,7 @@ const MDRTProfile = ({ navigation }) => {
   if (error) {
     return (
       <View style={styles.loader}>
-        <Text style={styles.errorText}>Failed to load data.</Text>
+        <Text style={styles.errorText}>Not Applicable</Text>
         <AwesomeAlert
         show={showAlert}
         showProgress={false}
@@ -142,8 +149,8 @@ const MDRTProfile = ({ navigation }) => {
         {/* Grey color square text */}
         <View style={styles.greySquare}>
           <View style={styles.row}>
-            <Text style={styles.titleText}>Agent Code</Text>
-            <Text style={styles.normalText}>{data.consider_agency}</Text>
+            <Text style={styles.titleText}>Consider Agency Code</Text>
+            <Text style={styles.normalText}>{formatConsiderAgencyCode(data.consider_agency)}</Text>
           </View>
           <View style={styles.specialRow}>
             <Text style={styles.titleText}>MDRT Target</Text>

@@ -26,6 +26,11 @@ const Profile = ({ navigation }) => {
     navigation.navigate('Login');
   };
 
+  const formatAgencyCode = (code) => {
+    const paddedCode = code.padStart(6, '0');
+    return `L24${paddedCode}`;
+  };
+
   const fetchUserData = async () => {
     try {
       const token = await AsyncStorage.getItem("accessToken");
@@ -44,10 +49,12 @@ const Profile = ({ navigation }) => {
         });
       setUserData(response.data);
       if (categoryType === "Ag") {
-        await AsyncStorage.setItem("agencyCode", response.data?.agent_code);
+        await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
+        await AsyncStorage.setItem("agencyCode2", response.data?.newagt);
       }
       if (categoryType === "Or") {
-        await AsyncStorage.setItem("agencyCode", response.data?.orgnizer_code);
+        await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
+        await AsyncStorage.setItem("agencyCode2", response.data?.newagt);
         
       } else {
         
@@ -85,21 +92,10 @@ const Profile = ({ navigation }) => {
         {/* Grey color square text */}
         <View style={styles.greySquare}>
           <View style={styles.row}>
-            {categoryType === "Ag" ? (
-              <>
-                <Text style={styles.titleText}>Agent Code:</Text>
+                <Text style={styles.titleText}>Personal Agency Code:</Text>
                 <Text style={styles.normalText}>
-                  {userData?.agent_code || "N/A"}
+                  {formatAgencyCode(userData?.personal_agency_code) || "N/A"}
                 </Text>
-              </>
-            ) : categoryType === "Or" ? (
-              <>
-                <Text style={styles.titleText}>Organizer Code:</Text>
-                <Text style={styles.normalText}>
-                  {userData?.orgnizer_code || "N/A"}
-                </Text>
-              </>
-            ) : null}
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>NIC No:</Text>
@@ -129,7 +125,7 @@ const Profile = ({ navigation }) => {
           {categoryType === "Or" ? (
             <>
               <View style={styles.row}>
-                <Text style={styles.titleText}>Organizer Team Code:</Text>
+                <Text style={styles.titleText}>Organizer Team Leader Code:</Text>
                 <Text style={styles.normalText}>
                   {userData?.or_team_code || "N/A"}
                 </Text>

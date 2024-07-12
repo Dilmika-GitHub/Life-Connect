@@ -30,12 +30,17 @@ const LoginScreen = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false); 
+  const [newCredentials, setNewCredentials] = useState(null);
   const router = useRouter();
   const appVersion = Constants.expoConfig?.version || Constants.manifest2?.version || 'Version not found';
 
   const [fontsLoaded] = useFonts({
     "Poppins-Regular": require("../../../assets/font/Poppins-Regular.ttf"),
   });
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   // Check if credentials are saved
   useEffect(() => {
@@ -86,21 +91,27 @@ const LoginScreen = () => {
         await AsyncStorage.setItem("categoryType", jsonResponse.cattype);
         await AsyncStorage.setItem("email", jsonResponse.email);
 
-        if (!hasSavedCredentials) {
-          setShowSavePasswordPopup(true);
-        } else {
-          if(jsonResponse.firstAttempt === "Y"){
-            router.push("/Screens/LoginScreen/ChangeDefaultPassword")
-          }
-          else{
-            if(jsonResponse.cattype === "Ag"){
-              router.push("/Screens/HomePage/Home");
+
+        if(jsonResponse.firstAttempt === "Y"){
+          router.push("/Screens/LoginScreen/ChangeDefaultPassword")
+        }
+        else{
+          if(hasSavedCredentials) {
+            const storedUsername = await AsyncStorage.getItem("username");
+            const storedPassword = await AsyncStorage.getItem("password");
+
+            if(username === storedUsername && password === storedPassword) {
+                router.push("/Screens/HomePage/Home");
             }
-            else{
-              router.push("/Screens/LoginScreen/AccountTypeSelection");
-            }  
+            else {
+              setShowSavePasswordPopup(true);
+              setNewCredentials ({username, password});
+            }
           }
-          
+          else {
+            setShowSavePasswordPopup(true);
+              setNewCredentials ({username, password});
+          }
         }
       } else {
         setAlertMessage(`${jsonResponse.error || 'Unknown error'}`);
@@ -119,19 +130,27 @@ const LoginScreen = () => {
   const handleSavePassword = async (save) => {
     const loggedBefore = await AsyncStorage.getItem('loggedBefore');
 
-    if (save) {
-      await AsyncStorage.setItem("username", username);
-      await AsyncStorage.setItem("password", password);
+    if (save && newCredentials) {
+      await clearStoredCredentials();
+      await AsyncStorage.setItem("username", newCredentials.username);
+      await AsyncStorage.setItem("password", newCredentials.password);
     }
     
     setShowSavePasswordPopup(false);
+    setNewCredentials(null);
 
     if (loggedBefore) {
-      router.push("/Screens/HomePage/Home"); // For subsequent logins
+      router.push("/Screens/HomePage/Home");
     } else {
       await AsyncStorage.setItem('loggedBefore', 'true');
       router.push("/Screens/HomePage/Home"); // For the first login
     }
+  };
+
+  // Clear stored credentials
+  const clearStoredCredentials = async () => {
+    await AsyncStorage.removeItem("username");
+    await AsyncStorage.removeItem("password");
   };
 
   return (
@@ -162,7 +181,7 @@ const LoginScreen = () => {
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
         {loading ? (
-          <ActivityIndicator size="small" color="#0000ff" /> // Loading spinner
+          <ActivityIndicator size="small" color="#FEA58F" /> // Loading spinner
         ) : (
           <Text style={styles.loginButtonText}>Login</Text>
         )}
@@ -251,6 +270,27 @@ const styles = StyleSheet.create({
     width: wp("80%"),
     borderWidth: 2,
     fontSize: wp("4.5%"),
+  },
+  inputContainer: {
+    width: wp("80%"),
+    height: hp('5%'),
+    borderColor: "#ccc",
+    borderRadius: 10,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    borderWidth: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: wp("4.5%"),
+    height: hp('5%'),
+    width: wp("80%"),
+    borderColor: "#8b8b8b99",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingLeft: 0,
   },
   wavesTop: {
     position: "absolute",
@@ -341,6 +381,11 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: "white",
     fontSize: wp('4%'),
+  },
+  eyeIcon: {
+    padding: 10,
+    position: 'absolute',
+    right: 0,
   },
 });
 
