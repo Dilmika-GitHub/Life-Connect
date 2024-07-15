@@ -209,13 +209,8 @@ const styles = StyleSheet.create({
   greySquare: {
     width: 320,
     backgroundColor: 'lightgrey',
-<<<<<<< HEAD
-    marginTop: hp('24%'),
-    alignSelf: 'center',
-=======
     marginTop: 150,
     alignSelf: "center",
->>>>>>> a7e970f598cdb88ccb0c93474353ba096b8dd02d
     borderRadius: 10,
     padding: 10,
   },

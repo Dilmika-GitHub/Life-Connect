@@ -258,17 +258,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     fontWeight: 'bold',
-<<<<<<< HEAD
     color: 'black'
   },
   greySquareScroll: {
-    width: wp('80%'),
-    height: hp('55%'), // This sets the scrollable area's height
-    marginTop: hp('20%'),
-    alignSelf: 'center',
-=======
-    color: 'black',
->>>>>>> a7e970f598cdb88ccb0c93474353ba096b8dd02d
+    width: 320,
+    backgroundColor: 'lightgrey',
+    marginTop: 150,
+    alignSelf: "center",
+    borderRadius: 10,
+    padding: 10,
   },
   greySquare: {
     width: 350,
