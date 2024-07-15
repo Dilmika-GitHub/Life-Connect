@@ -299,14 +299,13 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   fypContainer: {
-    width: 350,
     marginTop: 10,
     marginBottom: 1,
     alignItems: 'center',
     backgroundColor: '#ff7758',
     alignSelf: 'center',
     borderRadius: 10,
-    padding: 20,
+    padding: 50,
   },
   yearText: {
     fontSize: 18,
@@ -348,7 +347,7 @@ const styles = StyleSheet.create({
   countdownText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#fad7c8',
+    color: '#fff',
   },
   greySquare: {
     width: 350,

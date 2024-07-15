@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   },
   greySquare: {
     width: 320,
-    backgroundColor: 'lightgrey',
+    backgroundColor: '#ffe0d9',
     marginTop: 150,
     alignSelf: "center",
     borderRadius: 10,
