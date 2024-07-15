@@ -296,7 +296,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     fontWeight: 'bold',
-    color: 'black',
+    color: 'black'
+  },
+  greySquareScroll: {
+    width: 320,
+    backgroundColor: 'lightgrey',
+    marginTop: 150,
+    alignSelf: "center",
+    borderRadius: 10,
+    padding: 10,
   },
   fypContainer: {
     marginTop: 10,

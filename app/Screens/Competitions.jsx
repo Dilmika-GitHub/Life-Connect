@@ -21,6 +21,8 @@ const WinnersScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [branchName, setBranchName] = useState('');
+  const [regionName, setRegionName] = useState('');
   const navigation = useNavigation();
 
   const currentYear = new Date().getFullYear();
@@ -72,6 +74,8 @@ const WinnersScreen = () => {
       });
 
       setPersonalMdrt(response.data);
+      setBranchName(response.data.branch_name);
+      setRegionName(response.data.region);
     } catch (error) {
       handleErrorResponse(error);
     } finally {
@@ -381,6 +385,11 @@ const WinnersScreen = () => {
   return (
     <View style={styles.container}>
       {renderDropdown()}
+      <Text style={styles.rightAlignedText}>
+  {selectedValue === 'Branch Ranking' && branchName}
+  {selectedValue === 'Regional Ranking' && regionName}
+</Text>
+
       {error ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>No data available</Text>
@@ -541,6 +550,14 @@ const styles = StyleSheet.create({
   achievedBeyondTopThree: {
     backgroundColor: '#d4edda', // A greenish background color, change as per your UI theme
   },
+  rightAlignedText: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
+    fontSize: 16,
+    color: '#333',
+  },
+  
 });
 
 export default WinnersScreen;
