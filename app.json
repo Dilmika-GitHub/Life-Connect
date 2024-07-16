@@ -23,21 +23,29 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.sanduni99.xProject"
+      "package": "com.dexter_rhys.xProject"
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-build-properties",
+    {
+      "android":{
+        "usesCleartextTraffic": true
+      }
+    }
+  ]
     ],
     "extra": {
       "router": {
         "origin": false
       },
       "eas": {
-        "projectId": "ef59b0f6-9515-4522-9efb-66baf9a98f5b"
+        "projectId": "bd6776eb-8798-4bfc-bf58-63a3ec02708c"
       }
     }
   }

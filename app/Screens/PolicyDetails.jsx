@@ -1,42 +1,135 @@
-import React, { useEffect } from "react";
-import { View, ScrollView, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { lockToAllOrientations, lockToPortrait } from './OrientationLock';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { View, ScrollView, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { lockToAllOrientations } from './OrientationLock';
 import { useIsFocused } from '@react-navigation/native';
+import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const PolicyDetails = ({ navigation }) => {
   const isFocused = useIsFocused();
+  const [agencyCode, setAgencyCode] = useState(null);
+  const [policyCount, setPolicyCount] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showAlert, setShowAlert] = useState(false);
 
-    useEffect(() => {
-        if (isFocused) {
-            lockToAllOrientations();
+  const handleErrorResponse = (error) => {
+    if (error.response.status === 401) {
+      console.log(error.response.status);
+      setShowAlert(true);
+    }
+  };
+
+  const handleConfirm = () => {
+    setShowAlert(false);
+    navigation.navigate('Login');
+  };
+
+  const getAgencyCode = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      const email = await AsyncStorage.getItem('email');
+      const categoryType = await AsyncStorage.getItem('categoryType');
+
+      const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { email, catType: categoryType }
+      });
+
+      setAgencyCode(response.data);
+      await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
+    } catch (error) {
+      console.error('Error Getting Agency Code:', error);
+      handleErrorResponse(error);
+    }
+  };
+
+  const fetchPolicyCount = async () => {
+    try {
+      const token = await AsyncStorage.getItem("accessToken");
+      const agencyCode1 = await AsyncStorage.getItem('agencyCode1');
+
+      const response = await axios.get(BASE_URL + ENDPOINTS.POLICY_COUNT, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { p_agency: agencyCode1 }
+      });
+
+      setPolicyCount(response.data);
+    } catch (error) {
+      console.error('Error fetching policy count:', error);
+      handleErrorResponse(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          await getAgencyCode();
+          await fetchPolicyCount();
+        } catch {
+          setLoading(false);
         }
-    }, [isFocused]);
+      };
+
+      fetchData();
+    }, [])
+  );
+
+  useEffect(() => {
+    if (isFocused) {
+      lockToAllOrientations();
+    }
+  }, [isFocused]);
 
   const navigateToLapsedScreen = () => {
     navigation.navigate('Lapsed');
   };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#FEA58F" />;
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={[styles.section1, styles.coloredSection]}>
+      <View style={[styles.section, styles.coloredSection]}>
         <Text style={styles.sectionHeading}>Policy Overview</Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>View comprehensive information about your insurance policies, including details about inforced polices and those that have been lapsed.</Text>
+            <Text style={styles.tableCell}>
+              View comprehensive information about your insurance policies, including details about inforced policies and those that have been lapsed.
+            </Text>
           </View>
           <View style={styles.tableRow}>
             <Text style={styles.sectionHeading2}>Inforced Policies</Text>
-            <Text style={styles.tableCell2}>38</Text>
+            <Text style={styles.tableCell2}>{policyCount?.infocount}</Text>
           </View>
         </View>
       </View>
       <TouchableOpacity onPress={navigateToLapsedScreen}>
-      <View style={[styles.section2, styles.coloredSection2]}>
-        <View style={styles.tableRow2}>
-          <Text style={styles.sectionHeading3}>Lapsed Policies</Text>
-          <Text style={styles.tableCell3}>14</Text>
+        <View style={[styles.section, styles.coloredSection2]}>
+          <View style={styles.tableRow}>
+            <Text style={styles.sectionHeading3}>Lapsed Policies</Text>
+            <Text style={styles.tableCell3}>{policyCount?.lapscount}</Text>
+          </View>
         </View>
-      </View>
       </TouchableOpacity>
+      <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Session Expired"
+        message="Please Log Again!"
+        closeOnTouchOutside={false}
+        closeOnHardwareBackPress={false}
+        showConfirmButton={true}
+        confirmText="OK"
+        confirmButtonColor="#FF7758"
+        onConfirmPressed={handleConfirm}
+      />
     </ScrollView>
   );
 };
@@ -44,21 +137,13 @@ const PolicyDetails = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'absolute',
     paddingVertical: 20,
     paddingHorizontal: 10,
-    backgroundColor:'white'
+    backgroundColor: 'white',
   },
-  section1: {
+  section: {
     marginBottom: 20,
     borderRadius: 12,
-    overflow: 'hidden',
-    padding: 20,
-  },
-  section2: {
-    marginBottom: 20,
-    borderRadius: 12,
-    overflow: 'hidden',
     padding: 20,
   },
   coloredSection: {
@@ -88,17 +173,10 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'column',
     borderRadius: 5,
-    overflow: 'hidden',
   },
   tableRow: {
     flexDirection: 'row',
-    borderBottomWidth: 1,
     borderColor: '#EBEBEB',
-  },
-  tableRow2: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderColor: '#FF7758',
   },
   tableCell: {
     flex: 1,
@@ -119,10 +197,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '600',
     paddingHorizontal: 10,
-    flexDirection: 'row',
     textAlign: 'right',
   },
 });
 
-
-export default PolicyDetails
+export default PolicyDetails;
