@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+// import DateTimePicker from 'react-native-modal-datetime-picker';
 import RadioGroup from 'react-native-radio-buttons-group';
 
 const data = [
