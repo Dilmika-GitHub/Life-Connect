@@ -8,8 +8,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-// import DateTimePicker from 'react-native-modal-datetime-picker';
-import RadioGroup from 'react-native-radio-buttons-group';
 
 const data = [
   { title: 'DIVI THILINA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', date: '2024/05/27', contact: '94 76 123 4567', email: 'dilshan@gmail.com' },
@@ -122,6 +120,18 @@ export default function Lapsed({ navigation }) {
     setSelectedOption(value);
   };
 
+  const validateDates = () => {
+    if ((fromDate && !toDate) || (!fromDate && toDate)) {
+      Alert.alert('Validation Error', 'Both From Date and To Date must be selected.');
+      return false;
+    }
+    if (fromDate && toDate && new Date(fromDate) >= new Date(toDate)) {
+      Alert.alert('Validation Error', 'From Date should be before To Date.');
+      return false;
+    }
+    return true;
+  };
+
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || fromDate;
     setShowFromDatePicker(false);
@@ -133,6 +143,89 @@ export default function Lapsed({ navigation }) {
     setShowToDatePicker(false);
     setToDate(currentDate.toISOString().split('T')[0]);
   };
+
+  const renderFilterModal = () => (
+    <Modal isVisible={isFilterModalVisible} animationIn="slideInUp" animationOut="slideOutDown">
+      <View style={styles.filterModal}>
+        <Text style={styles.modalTitle}>Filter Options</Text>
+        <Text style={styles.filterText}>Agent/Organizer Code:</Text>
+        <View style={styles.radioButtonGroup}>
+            {radioButtonsData.map((button) => (
+              <TouchableOpacity key={button.id} style={styles.radioButtonContainer} onPress={() => handleRadioButtonPress(button.value)}>
+                <View style={[styles.radioButton]} >
+                {button.selected && <View style={styles.radioButtonSelected} />}
+                </View>
+                <Text style={styles.radioLabel}>{button.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        <Text style={styles.filterText}>From Date:</Text>
+        <TouchableOpacity onPress={() => setShowFromDatePicker(true)} style={styles.dateInput}>
+          <Text>{fromDate || 'Select Date'}</Text>
+        </TouchableOpacity>
+        {showFromDatePicker && (
+          <DateTimePicker
+            value={fromDate ? new Date(fromDate) : new Date()}
+            mode="date"
+            display="default"
+            onChange={handleDateChange}
+          />
+        )}
+        <Text style={styles.filterText}>To Date:</Text>
+        <TouchableOpacity onPress={() => setShowToDatePicker(true)} style={styles.dateInput}>
+          <Text>{toDate || 'Select Date'}</Text>
+        </TouchableOpacity>
+        {showToDatePicker && (
+          <DateTimePicker
+            value={toDate ? new Date(toDate) : new Date()}
+            mode="date"
+            display="default"
+            onChange={handleToDateChange}
+          />
+        )}
+        <Button
+          title="Search"
+          onPress={() => {
+            if (validateDates()) {
+              console.log('From Date:', fromDate);
+              console.log('To Date:', toDate);
+              console.log('Filter Search Value:', filterSearchValue);
+              console.log('Selected Option:', selectedOption);
+              toggleFilterModal();
+            }
+          }}
+          buttonStyle={styles.searchButton}
+        />
+        <Button title="Cancel" onPress={toggleCancelModal} buttonStyle={styles.cancelButton} />
+      </View>
+    </Modal>
+  );
+
+  const renderModal = () => (
+    <Modal isVisible={isModalVisible} animationIn="slideInUp" animationOut="slideOutDown">
+      <View style={styles.modal}>
+        <Text style={styles.modalTitle}>{modalContent.title}</Text>
+        <Text style={styles.modalText}>Name: {modalContent.name}</Text>
+        <Text style={styles.modalText}>Key: {modalContent.key}</Text>
+        <Text style={styles.modalText}>Amount: {modalContent.amount}</Text>
+        <Text style={styles.modalText}>Date: {modalContent.date}</Text>
+        <Text style={styles.modalText}>Contact: {modalContent.contact}</Text>
+        <Text style={styles.modalText}>Email: {modalContent.email}</Text>
+        <View style={styles.contactRow}>
+          <TouchableOpacity onPress={() => handleContactPress(modalContent.contact)} style={styles.contactButton}>
+            <Icon name="phone" size={24} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleEmailPress(modalContent.email)} style={styles.contactButton}>
+            <Icon name="envelope" size={24} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleWhatsAppPress(modalContent.contact)} style={styles.contactButton}>
+            <Icon name="whatsapp" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+        <Button title="Close" onPress={hideModal} buttonStyle={styles.closeButton} />
+      </View>
+    </Modal>
+  );
 
   return (
     <View style={styles.container}>
@@ -146,7 +239,6 @@ export default function Lapsed({ navigation }) {
           inputStyle={styles.input}
           lightTheme
         />
-        <MaterialIcons name="filter-list" size={29} style={styles.iconView} onPress={toggleFilterModal} />
       </View>
       <FlatList
         // data={data}
@@ -167,6 +259,12 @@ export default function Lapsed({ navigation }) {
         keyExtractor={item => item.key}
         contentContainerStyle={styles.flatListContent}
       />
+      <TouchableOpacity style={styles.floatingButton} onPress={toggleFilterModal}>
+        <MaterialIcons name="filter-list" size={24} color="white" />
+      </TouchableOpacity>
+      {renderModal()}
+      {renderFilterModal()}
+
       <Modal isVisible={isModalVisible} onBackdropPress={hideModal}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>{modalContent.title}</Text>
@@ -215,58 +313,6 @@ export default function Lapsed({ navigation }) {
               <Text style={styles.modalTextLink}>{modalContent.email}</Text>
             </View>
           </TouchableOpacity>
-        </View>
-      </Modal>
-      <Modal isVisible={isFilterModalVisible} onBackdropPress={toggleFilterModal}>
-        <View style={styles.filterModalContent}>
-          <Text style={styles.filterTitle}>Filter Policies</Text>
-          <View style={styles.radioButtonGroup}>
-            {radioButtonsData.map((button) => (
-              <TouchableOpacity key={button.id} style={styles.radioButtonContainer} onPress={() => handleRadioButtonPress(button.value)}>
-                {/* <View style={[styles.radioButton,  selectedOption === button.value && styles.selectedRadioCircle]} /> */}
-                <View style={[styles.radioButton]} >
-                {button.selected && <View style={styles.radioButtonSelected} />}
-                </View>
-                <Text style={styles.radioLabel}>{button.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          <View style={styles.datePickerContainer}>
-            <Text style={styles.datePickerLabel}>From Date:</Text>
-            <TouchableOpacity onPress={() => setShowFromDatePicker(true)}>
-              <View style={styles.dateInput}>
-                <Text>{fromDate || 'YYYY-MM-DD'}</Text>
-              </View>
-            </TouchableOpacity>
-            {showFromDatePicker && (
-              <DateTimePicker
-                value={fromDate ? new Date(fromDate) : new Date()}
-                mode="date"
-                display="default"
-                onChange={handleDateChange}
-              />
-            )}
-          </View>
-          <View style={styles.datePickerContainer}>
-            <Text style={styles.datePickerLabel}>To Date:</Text>
-            <TouchableOpacity onPress={() => setShowToDatePicker(true)}>
-              <View style={styles.dateInput}>
-                <Text>{toDate || 'YYYY-MM-DD'}</Text>
-              </View>
-            </TouchableOpacity>
-            {showToDatePicker && (
-              <DateTimePicker
-                value={toDate ? new Date(toDate) : new Date()}
-                mode="date"
-                display="default"
-                onChange={handleToDateChange}
-              />
-            )}
-          </View>
-          <View style={styles.filterModalButtons}>
-          <Button title=" Apply " onPress={toggleFilterModal} buttonStyle={styles.applyButton} />
-          <Button title="Cancel" onPress={toggleCancelModal} buttonStyle={styles.cancelButton} />
-          </View>
         </View>
       </Modal>
     </View>
@@ -355,6 +401,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     backgroundColor: '#fff',
+    paddingLeft: '1%',
+    paddingRight: '1%',
   },
   searchBarContainer: {
     flex: 1,
@@ -398,6 +446,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
+    justifyContent: 'space-around',
+
   },
   radioButtonContainer: {
     flexDirection: 'row',
@@ -433,12 +483,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
     flex: 1,
   },
-  dateInput: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-  },
   filterModalButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -448,8 +492,60 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     marginRight: 15,
   },
+  contactRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 20,
+  },
+  contactButton: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButton: {
+    backgroundColor: '#dc3545',
+    marginTop: 20,
+    width: '100%',
+    borderRadius: 5,
+  },
+  filterModal: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+  },
+  searchButton: {
+    backgroundColor: '#007bff',
+    marginTop: 20,
+    width: '100%',
+    borderRadius: 5,
+  },
   cancelButton: {
-    backgroundColor: 'red',
-    marginLeft: 15,
+    backgroundColor: '#dc3545',
+    marginTop: 10,
+    width: '100%',
+    borderRadius: 5,
+  },
+  filterText: {
+    fontSize: wp('4%'),
+    marginBottom: 10,
+  },
+  dateInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+    justifyContent: 'center',
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: hp('5%'),
+    right: wp('5%'),
+    backgroundColor: '#FF7758',
+    padding: 15,
+    borderRadius: 30,
+    elevation: 5,
+    zIndex: 1,
   },
 })
