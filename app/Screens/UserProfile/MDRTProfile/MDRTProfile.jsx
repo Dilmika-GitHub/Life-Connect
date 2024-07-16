@@ -67,8 +67,6 @@ const MDRTProfile = ({ navigation }) => {
       // Convert agencyCode2 to a string before storing it
       await AsyncStorage.setItem("agencyCode2", JSON.stringify(agencyCode2));
      
-
-      console.log("called", await AsyncStorage.getItem('agencyCode'));
     } catch (error) {
       console.log("ffe",error.message);
       handleErrorResponse(error);
@@ -102,8 +100,6 @@ const MDRTProfile = ({ navigation }) => {
       });
 
       setData(response.data);
-      await AsyncStorage.setItem("branch", response.data?.branch_name);
-      await AsyncStorage.setItem("region", response.data?.region);
     } catch (error) {
       console.log(error.message);
       handleErrorResponse(error);
