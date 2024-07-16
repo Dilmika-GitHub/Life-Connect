@@ -33,12 +33,12 @@
       "expo-router",
       [
         "expo-build-properties",
-        {
-          "android": {
-            "usesCleartextTraffic": true
-          }
-        }
-      ]
+    {
+      "android":{
+        "usesCleartextTraffic": true
+      }
+    }
+  ]
     ],
     "extra": {
       "router": {

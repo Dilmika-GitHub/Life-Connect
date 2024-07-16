@@ -42,6 +42,7 @@
     "react-native-screens": "^3.31.1",
     "react-native-simple-radio-button": "^2.7.4",
     "react-native-svg": "^15.2.0",
+    "react-native-vector-icons": "^10.1.0",
     "react-native-web": "~0.19.6"
   },
   "devDependencies": {

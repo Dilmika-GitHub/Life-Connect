@@ -5,6 +5,8 @@ import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 import { BASE_URL, ENDPOINTS } from "../../../services/apiConfig";
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { ScrollView } from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 const MDRTProfile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
@@ -14,6 +16,12 @@ const MDRTProfile = ({ navigation }) => {
   const [agencyCode, setAgencyCode] = useState(null);
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState({
+    days: '',
+    hours: '',
+    minutes: '',
+    seconds: '',
+  });
 
   const handleErrorResponse = (error) => {
     if (error.response.status === 401) {
@@ -51,12 +59,18 @@ const MDRTProfile = ({ navigation }) => {
 
       setAgencyCode(response.data);
 
-        await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
-        await AsyncStorage.setItem("agencyCode2", response.data?.newagt);
+      await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
+
+      let agencyCode2 = response.data?.newagt;
+      agencyCode2 = agencyCode2 === null ? 0 : agencyCode2;
+      
+      // Convert agencyCode2 to a string before storing it
+      await AsyncStorage.setItem("agencyCode2", JSON.stringify(agencyCode2));
      
 
       console.log("called", await AsyncStorage.getItem('agencyCode'));
     } catch (error) {
+      console.log("ffe",error.message);
       handleErrorResponse(error);
       console.error('Error Getting Agency Code:', error.response?.status);
       throw error;
@@ -69,6 +83,7 @@ const MDRTProfile = ({ navigation }) => {
       const agencyCode1 = await AsyncStorage.getItem('agencyCode1');
       console.log("ag1:", agencyCode1);
       let agencyCode2 = await AsyncStorage.getItem("agencyCode2");
+      agencyCode2 = agencyCode2 !== null ? JSON.parse(agencyCode2) : null;
       agencyCode2 = agencyCode2 === null ? 0 : agencyCode2;
       console.log("ag2:",agencyCode2);
       const categoryType = await AsyncStorage.getItem('categoryType');
@@ -87,13 +102,39 @@ const MDRTProfile = ({ navigation }) => {
       });
 
       setData(response.data);
+      await AsyncStorage.setItem("branch", response.data?.branch_name);
+      await AsyncStorage.setItem("region", response.data?.region);
     } catch (error) {
+      console.log(error.message);
       handleErrorResponse(error);
       setError(true);
     } finally {
       setLoading(false);
     }
   };
+
+  const calculateTimeRemaining = () => {
+    const currentDate = new Date();
+    const endOfYear = new Date(currentDate.getFullYear(), 11, 31, 23, 59, 59);
+    const timeDiff = endOfYear - currentDate;
+    
+    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+    setTimeRemaining({
+      days,
+      hours,
+      minutes,
+      seconds,
+    });
+  };
+
+  useEffect(() => {
+    const interval = setInterval(calculateTimeRemaining, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -122,7 +163,7 @@ const MDRTProfile = ({ navigation }) => {
   if (error) {
     return (
       <View style={styles.loader}>
-        <Text style={styles.errorText}>Not Applicable</Text>
+        <Text style={styles.errorText}>Not Applicable{error.message}</Text>
         <AwesomeAlert
         show={showAlert}
         showProgress={false}
@@ -143,9 +184,41 @@ const MDRTProfile = ({ navigation }) => {
     <View style={styles.container}>
       {/* Top section border */}
       <View style={[styles.section, styles.topSection]}></View>
-
+      <View style={[styles.section, styles.topSection2]}></View>
       {/* Bottom section border */}
-      <View style={[styles.section, styles.bottomSection]}>
+      <ScrollView style={[styles.section, styles.bottomSection]}>
+        {/* New text container */}
+        <View style={styles.fypContainer}>
+          <Text style={styles.yearText}>{new Date().getFullYear()} FYP</Text>
+          <Text style={styles.fypText}>{data.fyp ? "Rs. " + new Intl.NumberFormat().format(data.fyp) : "N/A"}</Text>
+          <View style={styles.specialRow}>
+            <Text style={styles.fypContainerRowsTitleText}>Target</Text>
+            <Text style={styles.fypContainerRowsNormalText}>{data.mdrt_target ? "Rs. " + new Intl.NumberFormat().format(data.mdrt_target) : "N/A"}</Text>
+          </View>
+          <View style={styles.specialRow}>
+            <Text style={styles.fypContainerRowsTitleText}>NOP</Text>
+            <Text style={styles.fypContainerRowsNormalText}>{data.nop || "N/A"}</Text>
+          </View>
+          <View style={styles.countdownContainer}>
+            <View style={styles.countdownBox}>
+              <Text style={styles.countdownValue}>{timeRemaining.days}</Text>
+              <Text style={styles.countdownLabel}>Days</Text>
+            </View>
+            <View style={styles.countdownBox}>
+              <Text style={styles.countdownValue}>{timeRemaining.hours}</Text>
+              <Text style={styles.countdownLabel}>Hours</Text>
+            </View>
+            <View style={styles.countdownBox}>
+              <Text style={styles.countdownValue}>{timeRemaining.minutes}</Text>
+              <Text style={styles.countdownLabel}>Mins</Text>
+            </View>
+            <View style={styles.countdownBox}>
+              <Text style={styles.countdownValue}>{timeRemaining.seconds}</Text>
+              <Text style={styles.countdownLabel}>Secs</Text>
+            </View>
+          </View>
+        </View>
+
         {/* Grey color square text */}
         <View style={styles.greySquare}>
           <View style={styles.row}>
@@ -153,11 +226,7 @@ const MDRTProfile = ({ navigation }) => {
             <Text style={styles.normalText}>{formatConsiderAgencyCode(data.consider_agency)}</Text>
           </View>
           <View style={styles.specialRow}>
-            <Text style={styles.titleText}>MDRT Target</Text>
-            <Text style={styles.normalText}>{data.mdrt_target ? "Rs. " + new Intl.NumberFormat().format(data.mdrt_target) : "N/A"}</Text>
-          </View>
-          <View style={styles.specialRow}>
-            <Text style={styles.titleText}>MDRT Target Status</Text>
+            <Text style={styles.titleText}>Status</Text>
             {data.mdrt_achievment === 'Achieved' ? (
               <Text style={styles.greenText}>{"Achieved"}</Text>
             ) : data.mdrt_achievment === 'Not_achieved' ? (
@@ -165,7 +234,7 @@ const MDRTProfile = ({ navigation }) => {
             ) : null}
           </View>
           <View style={styles.specialRow}>
-            <Text style={styles.titleText}>MDRT Ranking</Text>
+            <Text style={styles.titleText}>Island Rank</Text>
             <Text style={styles.normalText}>{data.mdrt_rank || "N/A"}</Text>
           </View>
           {data.mdrt_achievment === 'Not_achieved' ? (
@@ -180,14 +249,6 @@ const MDRTProfile = ({ navigation }) => {
               </View>
             </>
           ) : null}
-          <View style={styles.row}>
-            <Text style={styles.titleText}>First Year Premium</Text>
-            <Text style={styles.normalText}>{data.fyp ? "Rs. " + new Intl.NumberFormat().format(data.fyp) : "N/A"}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>No of Policies</Text>
-            <Text style={styles.normalText}>{data.nop || "N/A"}</Text>
-          </View>
           <View style={styles.specialRow}>
             <Text style={styles.titleText}>TOT Ranking</Text>
             <Text style={styles.normalText}>{data.tot_rank || "N/A"}</Text>
@@ -202,14 +263,10 @@ const MDRTProfile = ({ navigation }) => {
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>Need more</Text>
-            <Text style={styles.normalText}>{data.cot_balance_due ? "Rs. " + new Intl.NumberFormat().format(data.cot_balance_due) : "N/A" || "N/A"}</Text>
-          </View>
-          <View style={styles.specialRow}>
-            <Text style={styles.titleText}>Is Life Member</Text>
-            <Text style={styles.greenText}>{data.life_member || "N/A"}</Text>
+            <Text style={styles.normalText}>{data.cot_balance_due ? "Rs. " + new Intl.NumberFormat().format(data.cot_balance_due) : "N/A"}</Text>
           </View>
         </View>
-      </View>
+      </ScrollView>
 
       {/* Profile Image */}
       <View style={styles.imageContainer}>
@@ -233,8 +290,13 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   topSection: {
-    flex: 1,
+    flex: 0.25,
     backgroundColor: '#FEA58F',
+  },
+  topSection2: {
+    flex: 0.3,
+    backgroundColor: 'white',
+    shadowColor:'black',
   },
   bottomSection: {
     flex: 5,
@@ -258,15 +320,84 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     fontWeight: 'bold',
-    color: 'black',
+    color: 'black'
   },
-  greySquare: {
-    width: 350,
+  greySquareScroll: {
+    width: 320,
     backgroundColor: 'lightgrey',
     marginTop: 150,
+    alignSelf: "center",
+    borderRadius: 10,
+    padding: 10,
+  },
+  fypContainer: {
+    marginTop: 10,
+    marginBottom: 1,
+    alignItems: 'center',
+    backgroundColor: '#ff7758',
+    alignSelf: 'center',
+    borderRadius: 10,
+    padding: 20,
+  },
+  yearText: {
+    fontSize: 18,
+    color: 'white',
+  },
+  fypText:{
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#ffdb16',
+    marginBottom: 10,
+    marginTop:10,
+  },
+  fypContainerRows:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  fypContainerRowsTitleText:{
+    fontSize: 18,
+    color: 'white',
+    minWidth: 100,
+    textAlign:'left',
+  },
+  fypContainerRowsNormalText:{
+    fontSize: 18,
+    color: 'white',
+    minWidth: 100,
+    textAlign:'right',
+  },
+  countdownContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    marginTop: 10,
+    width: '100%',
+  },
+  countdownBox: {
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    width: '20%',
+  },
+  countdownValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#ff7758',
+  },
+  countdownLabel: {
+    fontSize: 14,
+    color: '#ff7758',
+  },
+  greySquare: {
+    width: '95%',
+    backgroundColor: '#ffe0d9',
+    marginTop: 10,
     alignSelf: 'center',
     borderRadius: 10,
     padding: 10,
+    justifyContent: 'space-evenly',
   },
   row: {
     flexDirection: 'row',
