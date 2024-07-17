@@ -1,252 +1,122 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Alert, Linking, Platform, Dimensions } from 'react-native';
-import Modal from 'react-native-modal';
-import { SearchBar } from 'react-native-elements';
-import { lockToAllOrientations, lockToPortrait } from './OrientationLock';
-import { useIsFocused } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, Touchable } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { BASE_URL, ENDPOINTS } from '../services/apiConfig';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-const data = [
-    { title: 'DIVI THILINA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', date: '2024/05/27', contact: '94 76 123 4567', email: 'dilshan@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15585XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', date: '2024/05/27', contact: '94 75 669 2520', email: 'sudarshan@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10225XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00', date: '2024/05/27', contact: '94 76 345 4567', email: 'silva@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15586XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00', date: '2024/05/27', contact: '94 76 768 4897', email: 'tharanga@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10226XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00', date: '2024/05/27', contact: '94 76 123 4653', email: 'kulasekara@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15587XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00', date: '2024/05/27', contact: '94 76 836 0388', email: 'gunathilake@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10227XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', date: '2024/05/27', contact: '94 76 171 5346', email: 'dilshan@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15588XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', date: '2024/05/27', contact: '94 78 325 6972', email: 'sudarshan@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10228XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00', date: '2024/05/27', contact: '94 71 123 4567', email: 'silva@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15589XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00', date: '2024/05/27', contact: '94 77 177 5767', email: 'dTharanga@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP10229XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00', date: '2024/05/27', contact: '94 76 567 4567', email: 'kulasekara@gmail.com'},
-    { title: 'DIVI THILINA', key: 'GP15581XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00', date: '2024/05/27', contact: '94 75 768 4235', email: 'gunathilake@gmail.com'},
-  ];
+const getAgencyCode = async () => {
+  try {
+    const token = await AsyncStorage.getItem('accessToken');
+    const email = await AsyncStorage.getItem('email');
+    const categoryType = await AsyncStorage.getItem('categoryType');
 
-  const Item = ({title,  name, amount, date, contact, email, keyText, index, onPress }) => (
-    <TouchableOpacity
-      style={[styles.item]}
-      onPress={() => onPress(title, keyText, name, amount,date, contact, email)}
-    >
-      <Text style={styles.keyText}>{keyText}</Text>
-      <Text style={styles.name}>{name}</Text>
-      <Text style={styles.amount}>{amount}</Text>
-      {/* <Text style={styles.contact}>{contact}</Text> */}
-    </TouchableOpacity>
-  );
-  const { width, height } = Dimensions.get("window"); // Get screen dimensions
+    const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { email: email, catType: categoryType },
+    });
 
-  export default function Lapsed(navigation) {
-    const isFocused = useIsFocused();
-
-    useEffect(() => {
-        if (isFocused) {
-            lockToAllOrientations();
-        }
-    }, [isFocused]);
-
-    const [isModalVisible, setModalVisible] = useState(false);
-    const [modalContent, setModalContent] = useState({ title: '', key: '', name: '', amount: '', date: '', contact: '', email:''});
-    const [searchValue, setSearchValue] = useState('');
-
-    const showDetails = (title, key, name, amount, date, contact, email) => {
-      setModalContent({ title, key, name, amount, date, contact, email });
-      setModalVisible(true);
-    };
-  
-    const hideModal = () => setModalVisible(false);
-
-    const handleContactPress = (contact) => {
-      // let phoneNumber = Platform.OS === 'ios' ? `telprompt:${contact}` : `tel:${contact}`;
-      Linking.openURL(`tel:${contact}`);
-    };
-
-    const handleEmailPress = (email) => {
-      Linking.openURL(`mailto:${email}`);
-    };
-    const handleWhatsAppPress = (contact) => {
-      let url = `whatsapp://send?phone=${contact}`;
-      Linking.openURL(url).catch(() => {
-        Alert.alert('Error', 'WhatsApp not installed or invalid contact number.');
-      });
-    };
-    
-    return (
-      <View style={styles.searchbar}>
-      <SearchBar
-        placeholder="Search Policy"
-        containerStyle={styles.searchBarContainer}
-        inputContainerStyle={styles.inputContainer}
-        inputStyle={styles.input}
-        searchIcon={{ size: 24 }}
-        onChangeText={setSearchValue}
-        value={searchValue}
-      />
-      <View style={styles.container}>
-        <FlatList
-          data={data}
-          renderItem={({ item, index }) => (
-            <Item
-              title={item.title}
-              name={item.name}
-              amount={item.amount}
-              date={item.date}
-              contact={item.contact}
-              email={item.email}
-              keyText={item.key}
-              index={index}
-              onPress={showDetails}
-            />
-          )}
-          keyExtractor={item => item.key}
-        />
-        <Modal isVisible={isModalVisible} onBackdropPress={hideModal}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalheader}>{modalContent.title}</Text>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalLabel}>Policy No. </Text>
-              <Text style={styles.modalText}>{modalContent.key}</Text>
-            </View>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalLabel}>Insured Name </Text>
-              <Text style={styles.modalText}>{modalContent.name}</Text>
-            </View>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalLabel}>Sum Assured </Text>
-              <Text style={styles.modalText}>{modalContent.amount}</Text>
-            </View>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalLabel}>Lapsed Date </Text>
-              <Text style={styles.modalText}>{modalContent.date}</Text>
-            </View>
-            {/* <TouchableOpacity onPress={() => handleContactPress(modalContent.contact)}> */}
-            <View style={styles.modalRow}>
-              <Text style={styles.modalLabel}>Contact No. </Text>
-              <Text style={styles.modalText}>{modalContent.contact}</Text>
-            </View>
-            {/* </TouchableOpacity> */}
-            <View style={styles.modalRow}>
-            <Icon
-                  name="phone"
-                  size={20}
-                  color="blue"
-                  onPress={() => handleContactPress(modalContent.contact)}
-                  style={styles.contactIcon}
-                /> 
-            <Icon
-                  name="whatsapp"
-                  size={20}
-                  color="green"
-                  onPress={() => handleWhatsAppPress(modalContent.contact)}
-                  style={styles.whatsappIcon}
-                /> 
-            </View>
-
-            <TouchableOpacity onPress={() => handleEmailPress(modalContent.email)}>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalLabel}>Email </Text>
-              <Text style={styles.modalTextLink}>{modalContent.email}</Text>
-            </View>
-            </TouchableOpacity>
-          </View>
-        </Modal>
-      </View>
-      </View>
-    );
+    await AsyncStorage.setItem('agencyCode1', response.data?.personal_agency_code);
+  } catch (error) {
+    console.error('Error Getting Agency Code:', error);
   }
-  
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-    },
-    header: {
-      fontSize: 14,
-      paddingTop: 20,
-      paddingLeft: 10, 
-      paddingBottom: 10,
-    },
-    item: {
-      backgroundColor: '#F8F8F8',
+};
+
+const getPolicyDetails = async () => {
+  try {
+    const token = await AsyncStorage.getItem('accessToken');
+    const agencyCode = await AsyncStorage.getItem('agencyCode1');
+    const currentDate = new Date();
+    const toDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+    const fromDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear() - 1}`;
+    console.log(toDate);
+    console.log(fromDate);
+
+    const response = await axios.post(BASE_URL+ENDPOINTS.POLICY_DETAILS, {
+      p_agency: agencyCode,
+      p_polno: '',
+      p_fromdate: '',
+      p_todate: ''
+    }, {
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error Getting Policy Details:', error.response ? error.response.data : error.message);
+    return [];
+  }
+};
+
+
+
+
+
+const Lapsed = () => {
+  const [policies, setPolicies] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await getAgencyCode();
+      const policyDetails = await getPolicyDetails();
+      setPolicies(policyDetails);
+    };
+
+    fetchData();
+  }, []);
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity style={styles.itemContainer}>
+      <Text style={styles.policyNo}>{item.policy_no}</Text>
+      <Text style={styles.amount}>{item.sa ? "Rs. " + new Intl.NumberFormat().format(item.sa) : "N/A"}</Text>
+      <Text style={styles.name}>{item.customer_name}</Text>
+    </TouchableOpacity>
+    
+  );
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={policies}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.policy_no}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  itemContainer: {
+    backgroundColor: '#F8F8F8',
       padding: 10,
       marginVertical: 8,
       marginHorizontal: 8,
       borderRadius: 10,
       elevation: 3
-    },
-    majorBackground: {
-      backgroundColor: '#FFCECE',
-    },
-    keyText: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      marginLeft: 10,
-    },
-    name: {
-      fontSize: 14,
-      marginLeft: 10,
-    },
-    amount: {
-      fontSize: 16,
-      position: 'absolute',
-      right: 20,
-      top: 15,
-    },
-    modalContent: {
-      backgroundColor: 'white',
-      padding: 22,
-      borderRadius: 10,
-      justifyContent: 'flex-start',
-    },
-    modalText: {
-      fontSize: 16,
-      textAlign: 'left',
-      flex: 1,
-    },
-    modalTextLink: {
-      fontSize: 16,
-      textAlign: 'left',
-      flex: 1,
-      color: '#0400D3',
-    },
-    modalheader: {
-      color: 'black',
-      paddingBottom: 10,
-      fontWeight: 'bold',
-      fontSize: 18,
-    },
-    modalLabel: {
-      fontSize: 16,
-      fontWeight: '500',
-      flex: 1,
-      textAlign: 'left',
-    },
-    modalRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingBottom: 10,
-    },    
-    searchbar: {
-      flex: 1,
-      backgroundColor: '#fff',
-    },
-    searchBarContainer: {
-      backgroundColor: '#fff',
-      borderBottomColor: 'transparent',
-      borderTopColor: 'transparent',
-    },
-    inputContainer: {
-      backgroundColor: '#ECECEC',
-      borderRadius: 10,
-      height: 40,
-    },
-    input: {
-      fontSize: 16,
-    },
-    whatsappIcon: {
-      marginRight: wp('15'),
-      // marginLeft: wp('50'),
-    },
-    contactIcon: {
-      marginLeft: wp('45') ,
-    },
-  })
+  },
+  policyNo: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
+  name: {
+    fontSize: 14,
+    marginLeft: 10,
+  },
+  amount: {
+    fontSize: 16,
+    position: 'absolute',
+    right: 20,
+    top: 15,
+    color:'black',
+  },
+});
+
+export default Lapsed;

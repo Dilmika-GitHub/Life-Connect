@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Animated, ScrollView, Dimensions } from "react-native";
-import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Animated, ScrollView, Dimensions, BackHandler, Alert } from "react-native";
+import React, { useState, useEffect, useRef } from 'react';
 import Svg, { G, Circle } from "react-native-svg";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -35,7 +35,28 @@ export default function DashboardScreen({
         }
     }, [isFocused]);
 
-  const CircleRef = React.useRef();
+    useEffect(() => {
+      const backAction = () => {
+        Alert.alert("Hold on!", "Are you sure you want to exit?", [
+          {
+            text: "Cancel",
+            onPress: () => null,
+            style: "cancel",
+          },
+          { text: "YES", onPress: () => BackHandler.exitApp() },
+        ]);
+        return true;
+      };
+  
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+      );
+  
+      return () => backHandler.remove();
+    }, []);
+
+  const CircleRef = useRef();
   const halfCircle = radius + strokeWidth;
   const viewBoxValue = `0 0 ${halfCircle * 2} ${halfCircle * 2}`;
   const circleCircumference = 2 * Math.PI * radius;
@@ -85,7 +106,7 @@ export default function DashboardScreen({
         </Svg>
         <View style={styles.absoluteCenter}>
           <Text style={styles.valueText(textColor || color) }>
-            Accumulated
+          Estimated
           </Text>
           <Text style={styles.valueText(textColor || color)}>
             {totalvalueText}
