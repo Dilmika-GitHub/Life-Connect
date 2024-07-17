@@ -29,6 +29,8 @@ const getPolicyDetails = async () => {
     const currentDate = new Date();
     const toDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
     const fromDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear() - 1}`;
+    console.log(toDate);
+    console.log(fromDate);
 
     const response = await axios.post(BASE_URL+ENDPOINTS.POLICY_DETAILS, {
       p_agency: agencyCode,
@@ -68,9 +70,9 @@ const Lapsed = () => {
 
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.itemContainer}>
-      <Text style={styles.policyText}>Policy No: {item.policy_no}</Text>
-      <Text style={styles.policyText}>Sum A: {item.sa}</Text>
-      <Text style={styles.policyText}>Customer Name: {item.customer_name}</Text>
+      <Text style={styles.policyNo}>{item.policy_no}</Text>
+      <Text style={styles.amount}>{item.sa ? "Rs. " + new Intl.NumberFormat().format(item.sa) : "N/A"}</Text>
+      <Text style={styles.name}>{item.customer_name}</Text>
     </TouchableOpacity>
     
   );
@@ -99,8 +101,21 @@ const styles = StyleSheet.create({
       borderRadius: 10,
       elevation: 3
   },
-  policyText: {
+  policyNo: {
     fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
+  name: {
+    fontSize: 14,
+    marginLeft: 10,
+  },
+  amount: {
+    fontSize: 16,
+    position: 'absolute',
+    right: 20,
+    top: 15,
+    color:'black',
   },
 });
 
