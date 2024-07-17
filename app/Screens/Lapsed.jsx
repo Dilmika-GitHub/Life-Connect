@@ -10,6 +10,25 @@ import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 
+const getAgencyCode = async () => {
+  try {
+    const token = await AsyncStorage.getItem('accessToken');
+    // const email = await AsyncStorage.getItem('email');
+    // const categoryType = await AsyncStorage.getItem('categoryType');
+
+    const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { email, catType: categoryType }
+    });
+
+    setAgencyCode(response.data);
+    await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
+  } catch (error) {
+    console.error('Error Getting Agency Code:', error);
+    handleErrorResponse(error);
+  }
+};
+
 const data = [
   { title: 'DIVI THILINA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', date: '2024/05/27', contact: '94 76 123 4567', email: 'dilshan@gmail.com' },
   { title: 'DIVI THILINA', key: 'GP15585XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', date: '2024/05/27', contact: '94 75 669 2520', email: 'sudarshan@gmail.com' },
@@ -208,32 +227,6 @@ export default function Lapsed({ navigation }) {
     </Modal>
   );
 
-  const renderModal = () => (
-    <Modal isVisible={isModalVisible} animationIn="slideInUp" animationOut="slideOutDown">
-      <View style={styles.modal}>
-        <Text style={styles.modalTitle}>{modalContent.title}</Text>
-        <Text style={styles.modalText}>Name: {modalContent.name}</Text>
-        <Text style={styles.modalText}>Key: {modalContent.key}</Text>
-        <Text style={styles.modalText}>Amount: {modalContent.amount}</Text>
-        <Text style={styles.modalText}>Date: {modalContent.date}</Text>
-        <Text style={styles.modalText}>Contact: {modalContent.contact}</Text>
-        <Text style={styles.modalText}>Email: {modalContent.email}</Text>
-        <View style={styles.contactRow}>
-          <TouchableOpacity onPress={() => handleContactPress(modalContent.contact)} style={styles.contactButton}>
-            <Icon name="phone" size={24} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleEmailPress(modalContent.email)} style={styles.contactButton}>
-            <Icon name="envelope" size={24} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleWhatsAppPress(modalContent.contact)} style={styles.contactButton}>
-            <Icon name="whatsapp" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-        <Button title="Close" onPress={hideModal} buttonStyle={styles.closeButton} />
-      </View>
-    </Modal>
-  );
-
   return (
     <View style={styles.container}>
       <View style={styles.searchbar}>
@@ -269,7 +262,6 @@ export default function Lapsed({ navigation }) {
       <TouchableOpacity style={styles.floatingButton} onPress={toggleFilterModal} >
         <MaterialIcons name="filter-list" size={24} color="white" />
       </TouchableOpacity>
-      {renderModal()}
       {renderFilterModal()}
 
       <Modal isVisible={isModalVisible} onBackdropPress={hideModal} backdropOpacity={0.2}>
