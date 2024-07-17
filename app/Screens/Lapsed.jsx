@@ -10,25 +10,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 
-const getAgencyCode = async () => {
-  try {
-    const token = await AsyncStorage.getItem('accessToken');
-    // const email = await AsyncStorage.getItem('email');
-    // const categoryType = await AsyncStorage.getItem('categoryType');
-
-    const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { email, catType: categoryType }
-    });
-
-    setAgencyCode(response.data);
-    await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
-  } catch (error) {
-    console.error('Error Getting Agency Code:', error);
-    handleErrorResponse(error);
-  }
-};
-
 const data = [
   { title: 'DIVI THILINA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', date: '2024/05/27', contact: '94 76 123 4567', email: 'dilshan@gmail.com' },
   { title: 'DIVI THILINA', key: 'GP15585XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', date: '2024/05/27', contact: '94 75 669 2520', email: 'sudarshan@gmail.com' },
@@ -44,17 +25,6 @@ const data = [
   { title: 'DIVI THILINA', key: 'GP15581XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00', date: '2024/05/27', contact: '94 75 768 4235', email: 'gunathilake@gmail.com' },
 ];
 
-const Item = ({ title, name, amount, date, contact, email, keyText, index, onPress }) => (
-  <TouchableOpacity
-    style={[styles.item]}
-    onPress={() => onPress(title, keyText, name, amount, date, contact, email)}
-  >
-    <Text style={styles.keyText}>{keyText}</Text>
-    <Text style={styles.name}>{name}</Text>
-    <Text style={styles.amount}>{amount}</Text>
-    {/* <Text style={styles.contact}>{contact}</Text> */}
-  </TouchableOpacity>
-);
 const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
 export default function Lapsed({ navigation }) {
@@ -93,20 +63,18 @@ export default function Lapsed({ navigation }) {
   const [showFromDatePicker, setShowFromDatePicker] = useState(false);
   const [showToDatePicker, setShowToDatePicker] = useState(false);
 
-  const radioButtonsData = [
-    {
-      id: '1',
-      label: '123456',
-      value: 'Agent',
-      selected: selectedOption === 'Agent',
-    },
-    {
-      id: '2',
-      label: '987654',
-      value: 'Organizer',
-      selected: selectedOption === 'Organizer',
-    },
-  ];
+  const Item = ({ title, name, amount, date, contact, email, keyText, index, onPress }) => (
+    <TouchableOpacity
+      style={[styles.item]}
+      onPress={() => onPress(title, keyText, name, amount, date, contact, email)}
+    >
+      <Text style={styles.keyText}>{keyText}</Text>
+      <Text style={styles.name}>{name}</Text>
+      <Text style={styles.amount}>{amount}</Text>
+      {/* <Text style={styles.contact}>{contact}</Text> */}
+    </TouchableOpacity>
+  );
+
   const showDetails = (title, key, name, amount, date, contact, email) => {
     setModalContent({ title, key, name, amount, date, contact, email });
     setModalVisible(true);
@@ -169,6 +137,21 @@ export default function Lapsed({ navigation }) {
     setShowToDatePicker(false);
     setToDate(currentDate.toISOString().split('T')[0]);
   };
+
+  const radioButtonsData = [
+    {
+      id: '1',
+      label: '123456',
+      value: 'Agent',
+      selected: selectedOption === 'Agent',
+    },
+    {
+      id: '2',
+      label: '987654',
+      value: 'Organizer',
+      selected: selectedOption === 'Organizer',
+    },
+  ];
 
   const renderFilterModal = () => (
     <Modal isVisible={isFilterModalVisible} animationIn="slideInUp" animationOut="slideOutDown" onBackdropPress={toggleCancelModal}>
