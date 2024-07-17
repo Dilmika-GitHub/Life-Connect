@@ -94,7 +94,13 @@ export default function Lapsed({ navigation }) {
 
   const hideModal = () => setModalVisible(false);
   const toggleFilterModal = () => setFilterModalVisible(!isFilterModalVisible);
-  const toggleCancelModal = () => setFilterModalVisible(!isFilterModalVisible);
+  const toggleCancelModal = () => {
+    setFilterSearchValue('');
+    setSelectedOption('null');
+    setFromDate('');
+    setToDate('');
+    setFilterModalVisible(!isFilterModalVisible);
+  };
 
   const handleContactPress = (contact) => {
     // let phoneNumber = Platform.OS === 'ios' ? `telprompt:${contact}` : `tel:${contact}`;
@@ -145,7 +151,7 @@ export default function Lapsed({ navigation }) {
   };
 
   const renderFilterModal = () => (
-    <Modal isVisible={isFilterModalVisible} animationIn="slideInUp" animationOut="slideOutDown">
+    <Modal isVisible={isFilterModalVisible} animationIn="slideInUp" animationOut="slideOutDown" onBackdropPress={toggleCancelModal}>
       <View style={styles.filterModal}>
         <Text style={styles.modalTitle}>Filter Options</Text>
         <Text style={styles.filterText}>Agent/Organizer Code:</Text>
@@ -259,13 +265,13 @@ export default function Lapsed({ navigation }) {
         keyExtractor={item => item.key}
         contentContainerStyle={styles.flatListContent}
       />
-      <TouchableOpacity style={styles.floatingButton} onPress={toggleFilterModal}>
+      <TouchableOpacity style={styles.floatingButton} onPress={toggleFilterModal} >
         <MaterialIcons name="filter-list" size={24} color="white" />
       </TouchableOpacity>
       {renderModal()}
       {renderFilterModal()}
 
-      <Modal isVisible={isModalVisible} onBackdropPress={hideModal}>
+      <Modal isVisible={isModalVisible} onBackdropPress={hideModal} backdropOpacity={0.2}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>{modalContent.title}</Text>
           <View style={styles.modalRow}>
