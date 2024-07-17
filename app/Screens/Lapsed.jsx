@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Touchable } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BASE_URL, ENDPOINTS } from '../services/apiConfig';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const getAgencyCode = async () => {
   try {
@@ -29,10 +29,8 @@ const getPolicyDetails = async () => {
     const currentDate = new Date();
     const toDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
     const fromDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear() - 1}`;
-    console.log(toDate);
-    console.log(fromDate);
 
-    const response = await axios.post(BASE_URL+ENDPOINTS.POLICY_DETAILS, {
+    const response = await axios.post(BASE_URL + ENDPOINTS.POLICY_DETAILS, {
       p_agency: agencyCode,
       p_polno: '',
       p_fromdate: '',
@@ -43,7 +41,6 @@ const getPolicyDetails = async () => {
         'Content-Type': 'application/json'
       },
     });
-
     return response.data;
   } catch (error) {
     console.error('Error Getting Policy Details:', error.response ? error.response.data : error.message);
@@ -51,22 +48,23 @@ const getPolicyDetails = async () => {
   }
 };
 
-
-
-
-
 const Lapsed = () => {
   const [policies, setPolicies] = useState([]);
+  const [loading, setLoading] = useState(false); 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      await getAgencyCode();
-      const policyDetails = await getPolicyDetails();
-      setPolicies(policyDetails);
-    };
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        setLoading(true); // Start loading
+        await getAgencyCode();
+        const policyDetails = await getPolicyDetails();
+        setPolicies(policyDetails);
+        setLoading(false); // End loading
+      };
 
-    fetchData();
-  }, []);
+      fetchData();
+    }, [])
+  );
 
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.itemContainer}>
@@ -74,16 +72,25 @@ const Lapsed = () => {
       <Text style={styles.amount}>{item.sa ? "Rs. " + new Intl.NumberFormat().format(item.sa) : "N/A"}</Text>
       <Text style={styles.name}>{item.customer_name}</Text>
     </TouchableOpacity>
-    
   );
+
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#FEA58F" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={policies}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.policy_no}
-      />
+      
+        <FlatList
+          data={policies}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.policy_no}
+        />
+      
     </View>
   );
 };
@@ -95,11 +102,11 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     backgroundColor: '#F8F8F8',
-      padding: 10,
-      marginVertical: 8,
-      marginHorizontal: 8,
-      borderRadius: 10,
-      elevation: 3
+    padding: 10,
+    marginVertical: 8,
+    marginHorizontal: 8,
+    borderRadius: 10,
+    elevation: 3
   },
   policyNo: {
     fontSize: 16,
@@ -115,7 +122,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     top: 15,
-    color:'black',
+    color: 'black',
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
