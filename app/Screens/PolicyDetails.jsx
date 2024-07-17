@@ -35,7 +35,7 @@ const PolicyDetails = ({ navigation }) => {
 
       const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
         headers: { Authorization: `Bearer ${token}` },
-        params: { email, catType: categoryType }
+        params: { email: email, catType: categoryType },
       });
 
       setAgencyCode(response.data);
