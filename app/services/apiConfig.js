@@ -13,6 +13,8 @@ const ENDPOINTS = {
   PERSONAL_MDRT: "/Mdrt/GetPersonalMDRT",
   LIFE_MEMBER_MDRT: "/Mdrt/GetLifeMemberMDRT",
   POLICY_COUNT: "/PolicyDetail/GetInforceLapsCount",
+  POLICY_DETAILS: "/PolicyDetail/GetPolicyDetails",
+
 };
 
 export { BASE_URL, ENDPOINTS };
