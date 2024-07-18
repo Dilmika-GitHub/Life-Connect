@@ -7,6 +7,7 @@ import { SearchBar, Button, Input } from 'react-native-elements';
 import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { Ionicons } from '@expo/vector-icons';
 
 const getAgencyCode = async () => {
   try {
@@ -78,7 +79,15 @@ const Lapsed = () => {
 
   const showDetails = (title, key, name, amount, date, contact, email) => {
     console.log('showDetails called with:', { title, key, name, amount, date, contact, email });
-    setModalContent({ title, key, name, amount, date, contact, email });
+    setModalContent({
+      title,
+      key,
+      name,
+      amount,
+      date,
+      contact: contact || 'N/A',
+      email: email || 'N/A'
+    });
     setModalVisible(true);
   };
 
@@ -91,12 +100,17 @@ const Lapsed = () => {
 
   const handleContactPress = (contact) => {
     // let phoneNumber = Platform.OS === 'ios' ? `telprompt:${contact}` : `tel:${contact}`;
-    Linking.openURL(`tel:${contact}`);
+    if (contact !== 'N/A') {
+      Linking.openURL(`tel:${contact}`);
+    }
   };
 
   const handleEmailPress = (email) => {
-    Linking.openURL(`mailto:${email}`);
+    if (email !== 'N/A') {
+      Linking.openURL(`mailto:${email}`);
+    }
   };
+
   const handleWhatsAppPress = (contact) => {
     let url = `whatsapp://send?phone=${contact}`;
     Linking.openURL(url).catch(() => {
@@ -161,35 +175,53 @@ const Lapsed = () => {
             <Text style={styles.modalLabel}>Lapsed Date </Text>
             <Text style={styles.modalText}>{modalContent.date}</Text>
           </View>
-          {/* <TouchableOpacity onPress={() => handleContactPress(modalContent.contact)}> */}
           <View style={styles.modalRow}>
             <Text style={styles.modalLabel}>Contact No. </Text>
             <Text style={styles.modalText}>{modalContent.contact}</Text>
           </View>
-          {/* </TouchableOpacity> */}
-          <View style={styles.modalRow}>
-            <Icon
-              name="phone"
-              size={20}
-              color="blue"
-              onPress={() => handleContactPress(modalContent.contact)}
-              style={styles.contactIcon}
-            />
-            <Icon
-              name="whatsapp"
-              size={20}
-              color="green"
-              onPress={() => handleWhatsAppPress(modalContent.contact)}
-              style={styles.whatsappIcon}
-            />
-          </View>
+          {modalContent.contact !== 'N/A' && (
+            <View style={styles.iconRow}>
+              <Icon
+                name="phone"
+                size={20}
+                color="blue"
+                onPress={() => handleContactPress(modalContent.contact)}
+                style={styles.contactIcon}
+              />
+              <Icon
+                name="whatsapp"
+                size={20}
+                color="green"
+                onPress={() => handleWhatsAppPress(modalContent.contact)}
+                style={styles.whatsappIcon}
+              />
+            </View>
+          )}
 
+          <View style={styles.modalRow}>
+            <Text style={styles.modalLabel}>Email </Text>
+            <Text style={styles.modalText}>{modalContent.email}</Text>
+          </View>
+          {modalContent.email !== 'N/A' && (
+
+            <View style={styles.iconRow}>
+              <Ionicons
+                name="mail-outline"
+                size={24}
+                color="blue"
+                onPress={() => handleEmailPress(modalContent.email)}
+                style={styles.modalEmailLink}
+              />
+
+            </View>
+          )}
+{/*           
           <TouchableOpacity onPress={() => handleEmailPress(modalContent.email)}>
             <View style={styles.modalRow}>
               <Text style={styles.modalLabel}>Email </Text>
               <Text style={styles.modalTextLink}>{modalContent.email}</Text>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </Modal>
 
@@ -276,11 +308,22 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   whatsappIcon: {
-    marginRight: wp('15'),
+    marginLeft: wp('5%'),
   },
   contactIcon: {
-    marginLeft: wp('45'),
+    marginLeft: wp('5%'),
   },
+  modalEmailLink: {
+    marginLeft: wp('5%'),
+  },
+  iconRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingBottom: 10,
+    marginRight: wp('20%'),
+  },
+  
+
 });
 
 export default Lapsed;
