@@ -76,6 +76,12 @@ const Lapsed = () => {
     fetchData();
   }, []);
 
+  const formatPhoneNumber = (phoneNumber) => {
+    if (phoneNumber.startsWith('0') && phoneNumber.length === 10) {
+      return `94${phoneNumber.slice(1)}`;
+    }
+    return phoneNumber;
+  };
 
   const showDetails = (title, key, name, amount, date, contact, email) => {
     console.log('showDetails called with:', { title, key, name, amount, date, contact, email });
@@ -85,7 +91,7 @@ const Lapsed = () => {
       name,
       amount,
       date,
-      contact: contact || 'N/A',
+      contact: contact ? formatPhoneNumber(contact) : 'N/A',
       email: email || 'N/A'
     });
     setModalVisible(true);
@@ -95,7 +101,6 @@ const Lapsed = () => {
 
   const handleSearch = (text) => {
     setSearchValue(text);
-    // Add your search logic here
   };
 
   const handleContactPress = (contact) => {
@@ -215,13 +220,6 @@ const Lapsed = () => {
 
             </View>
           )}
-{/*           
-          <TouchableOpacity onPress={() => handleEmailPress(modalContent.email)}>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalLabel}>Email </Text>
-              <Text style={styles.modalTextLink}>{modalContent.email}</Text>
-            </View>
-          </TouchableOpacity> */}
         </View>
       </Modal>
 
