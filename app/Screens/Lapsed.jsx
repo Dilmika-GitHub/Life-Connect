@@ -105,17 +105,20 @@ const Lapsed = () => {
   };
 
 
-  const renderItem = ({ item }) => (
-<TouchableOpacity
-      style={styles.itemContainer}
-      onPress={() => showDetails(item.product_name, item.policy_no, item.customer_name, item.sa ? "Rs. " + new Intl.NumberFormat().format(item.sa) : "N/A", item.maturity_date, item.mobile_phone, item.email)}
-    >
-      <Text style={styles.policyNo}>{item.policy_no}</Text>
-      <Text style={styles.amount}>{item.sa ? "Rs. " + new Intl.NumberFormat().format(item.sa) : "N/A"}</Text>
-      <Text style={styles.name}>{item.customer_name}</Text>
-    </TouchableOpacity>
+  const renderItem = ({ item }) => {
+    const formattedMaturityDate = item.maturity_date.split(' ')[0];
+    return (
+      <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={() => showDetails(item.product_name, item.policy_no, item.customer_name, item.sa ? "Rs. " + new Intl.NumberFormat().format(item.sa) : "N/A", formattedMaturityDate, item.mobile_phone, item.email)}
+      >
+        <Text style={styles.policyNo}>{item.policy_no}</Text>
+        <Text style={styles.amount}>{item.sa ? "Rs. " + new Intl.NumberFormat().format(item.sa) : "N/A"}</Text>
+        <Text style={styles.name}>{item.customer_name}</Text>
+      </TouchableOpacity>
 
-  );
+    );
+  };
 
   ///////////////////////////
 
