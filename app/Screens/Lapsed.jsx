@@ -30,16 +30,24 @@ const getPolicyDetails = async (policyNumber = '') => {
   try {
     const token = await AsyncStorage.getItem('accessToken');
     const agencyCode = await AsyncStorage.getItem('agencyCode1');
-    const currentDate = new Date();
-    const toDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
-    const fromDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear() - 1}`;
 
-    const response = await axios.post(BASE_URL + ENDPOINTS.POLICY_DETAILS, {
+    const requestBody = {
       p_agency: agencyCode,
       p_polno: policyNumber,
       p_fromdate: '',
       p_todate: ''
-    }, {
+    };
+
+    if (!policyNumber) {
+      const currentDate = new Date();
+      const toDate = '';
+      const fromDate = '';
+
+      requestBody.p_fromdate = fromDate;
+      requestBody.p_todate = toDate;
+    }
+
+    const response = await axios.post(BASE_URL + ENDPOINTS.POLICY_DETAILS, requestBody, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -85,8 +93,11 @@ const Lapsed = () => {
 
   const handleSearch = async (text) => {
     setSearchValue(text);
+  };
+
+  const handleSearchSubmit = async () => {
     setLoading(true);
-    const policyDetails = await getPolicyDetails(text);
+    const policyDetails = await getPolicyDetails(searchValue);
     setPolicies(policyDetails);
     setLoading(false);
   };
@@ -130,11 +141,14 @@ const Lapsed = () => {
 
   return (
     <View style={styles.container}>
+      <Text>policies between </Text>
       <View style={styles.searchbar}>
         <SearchBar
           placeholder="Search Policy No"
           onChangeText={handleSearch}
           value={searchValue}
+          keyboardType="numbers-and-punctuation"
+          onSubmitEditing={handleSearchSubmit}
           containerStyle={styles.searchBarContainer}
           inputContainerStyle={styles.inputContainer}
           inputStyle={styles.input}
@@ -167,7 +181,7 @@ const Lapsed = () => {
             <Text style={styles.modalText}>{modalContent.date}</Text>
           </View>
           <View style={styles.modalRow}>
-            <Text style={styles.modalLabel}>Contact No. </Text>
+            <Text style={styles.modalLabel}>Contact No. </ Text>
             <Text style={styles.modalText}>{modalContent.contact}</Text>
           </View>
           <View style={styles.modalRow}>
