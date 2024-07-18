@@ -26,19 +26,17 @@ const getAgencyCode = async () => {
   }
 };
 
-const getPolicyDetails = async () => {
+const getPolicyDetails = async (policyNumber = '') => {
   try {
     const token = await AsyncStorage.getItem('accessToken');
     const agencyCode = await AsyncStorage.getItem('agencyCode1');
     const currentDate = new Date();
     const toDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
     const fromDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear() - 1}`;
-    console.log(toDate);
-    console.log(fromDate);
 
     const response = await axios.post(BASE_URL + ENDPOINTS.POLICY_DETAILS, {
       p_agency: agencyCode,
-      p_polno: '',
+      p_polno: policyNumber,
       p_fromdate: '',
       p_todate: ''
     }, {
@@ -55,18 +53,14 @@ const getPolicyDetails = async () => {
   }
 };
 
-
-
-
 const Lapsed = () => {
   const [policies, setPolicies] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState({ title: '', key: '', name: '', amount: '', date: '', contact: '', email: '' });
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
-  const { width, height } = Dimensions.get("window"); // Get screen dimensions
-
+  const { width, height } = Dimensions.get("window");
 
   useFocusEffect(
     useCallback(() => {
@@ -77,40 +71,40 @@ const Lapsed = () => {
         setPolicies(policyDetails);
         setLoading(false);
       };
-  
+
       fetchData();
     }, [])
   );
 
-
   const showDetails = (title, key, name, amount, date, contact, email) => {
-    console.log('showDetails called with:', { title, key, name, amount, date, contact, email });
     setModalContent({ title, key, name, amount, date, contact, email });
     setModalVisible(true);
   };
 
   const hideModal = () => setModalVisible(false);
 
-  const handleSearch = (text) => {
+  const handleSearch = async (text) => {
     setSearchValue(text);
-    // Add your search logic here
+    setLoading(true);
+    const policyDetails = await getPolicyDetails(text);
+    setPolicies(policyDetails);
+    setLoading(false);
   };
 
   const handleContactPress = (contact) => {
-    // let phoneNumber = Platform.OS === 'ios' ? `telprompt:${contact}` : `tel:${contact}`;
     Linking.openURL(`tel:${contact}`);
   };
 
   const handleEmailPress = (email) => {
     Linking.openURL(`mailto:${email}`);
   };
+
   const handleWhatsAppPress = (contact) => {
     let url = `whatsapp://send?phone=${contact}`;
     Linking.openURL(url).catch(() => {
       Alert.alert('Error', 'WhatsApp not installed or invalid contact number.');
     });
   };
-
 
   const renderItem = ({ item }) => {
     const formattedMaturityDate = item.maturity_date.split(' ')[0];
@@ -123,11 +117,8 @@ const Lapsed = () => {
         <Text style={styles.amount}>{item.sa ? "Rs. " + new Intl.NumberFormat().format(item.sa) : "N/A"}</Text>
         <Text style={styles.name}>{item.customer_name}</Text>
       </TouchableOpacity>
-
     );
   };
-
-  ///////////////////////////
 
   if (loading) {
     return (
@@ -154,7 +145,6 @@ const Lapsed = () => {
         data={policies}
         renderItem={renderItem}
         keyExtractor={(item) => item.policy_no}
-        // onPress={showDetails}
       />
 
       <Modal isVisible={isModalVisible} onBackdropPress={hideModal} backdropOpacity={0.2}>
@@ -176,12 +166,10 @@ const Lapsed = () => {
             <Text style={styles.modalLabel}>Lapsed Date </Text>
             <Text style={styles.modalText}>{modalContent.date}</Text>
           </View>
-          {/* <TouchableOpacity onPress={() => handleContactPress(modalContent.contact)}> */}
           <View style={styles.modalRow}>
             <Text style={styles.modalLabel}>Contact No. </Text>
             <Text style={styles.modalText}>{modalContent.contact}</Text>
           </View>
-          {/* </TouchableOpacity> */}
           <View style={styles.modalRow}>
             <Icon
               name="phone"
@@ -207,7 +195,6 @@ const Lapsed = () => {
           </TouchableOpacity>
         </View>
       </Modal>
-
     </View>
   );
 };
@@ -239,7 +226,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     top: 15,
-    // color:'black',
   },
   searchbar: {
     flexDirection: 'row',
