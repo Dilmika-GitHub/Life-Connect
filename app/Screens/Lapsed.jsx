@@ -9,6 +9,8 @@ import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const getAgencyCode = async () => {
   try {
@@ -65,6 +67,13 @@ const Lapsed = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState({ title: '', key: '', name: '', amount: '', date: '', contact: '', email: '' });
   const [loading, setLoading] = useState(false);
+  const [selectedOption, setSelectedOption] = useState('null');
+  const [isFilterModalVisible, setFilterModalVisible] = useState(false);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [showFromDatePicker, setShowFromDatePicker] = useState(false);
+  const [showToDatePicker, setShowToDatePicker] = useState(false);
+  const [filterSearchValue, setFilterSearchValue] = useState('');
 
   const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
@@ -129,6 +138,128 @@ const Lapsed = () => {
     });
   };
 
+  const handleRadioButtonPress = (value) => {
+    setSelectedOption(value);
+  };
+
+  const validateDates = () => {
+    if ((fromDate && !toDate) || (!fromDate && toDate)) {
+      Alert.alert('Validation Error', 'Both From Date and To Date must be selected.');
+      return false;
+    }
+    if (fromDate && toDate && new Date(fromDate) >= new Date(toDate)) {
+      Alert.alert('Validation Error', 'From Date should be before To Date.');
+      return false;
+    }
+    return true;
+  };
+
+  const handleDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || fromDate;
+    setShowFromDatePicker(false);
+    setFromDate(currentDate.toISOString().split('T')[0]);
+  };
+
+  const handleToDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || toDate;
+    setShowToDatePicker(false);
+    setToDate(currentDate.toISOString().split('T')[0]);
+  };
+
+  const toggleFilterModal = () => setFilterModalVisible(!isFilterModalVisible);
+
+  const toggleCancelModal = () => {
+    setFilterSearchValue('');
+    setSelectedOption('null');
+    setFromDate('');
+    setToDate('');
+    setFilterModalVisible(!isFilterModalVisible);
+  };
+
+  const radioButtonsData = [
+    {
+      id: '1',
+      label: '123456',
+      value: 'Agent',
+      selected: selectedOption === 'Agent',
+    },
+    {
+      id: '2',
+      label: '987654',
+      value: 'Organizer',
+      selected: selectedOption === 'Organizer',
+    },
+  ];
+
+  const renderFilterModal = () => (
+    <Modal isVisible={isFilterModalVisible} animationIn="slideInUp" animationOut="slideOutDown" onBackdropPress={toggleCancelModal}>
+      <View style={styles.filterModal}>
+        <Text style={styles.modalTitle}>Filter Options</Text>
+        <View style={styles.searchbar}>
+        <SearchBar
+          placeholder="Search Policy No"
+          onChangeText={handleSearch}
+          value={searchValue}
+          containerStyle={styles.searchBarContainer}
+          inputContainerStyle={styles.inputContainer}
+          inputStyle={styles.input}
+          lightTheme
+        />
+      </View>
+        <Text style={styles.filterText}>Agent Code:</Text>
+        <View style={styles.radioButtonGroup}>
+            {radioButtonsData.map((button) => (
+              <TouchableOpacity key={button.id} style={styles.radioButtonContainer} onPress={() => handleRadioButtonPress(button.value)}>
+                <View style={[styles.radioButton]} >
+                {button.selected && <View style={styles.radioButtonSelected} />}
+                </View>
+                <Text style={styles.radioLabel}>{button.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        <Text style={styles.filterText}>From Date:</Text>
+        <TouchableOpacity onPress={() => setShowFromDatePicker(true)} style={styles.dateInput}>
+          <Text>{fromDate || 'Select Date'}</Text>
+        </TouchableOpacity>
+        {showFromDatePicker && (
+          <DateTimePicker
+            value={fromDate ? new Date(fromDate) : new Date()}
+            mode="date"
+            display="default"
+            onChange={handleDateChange}
+          />
+        )}
+        <Text style={styles.filterText}>To Date:</Text>
+        <TouchableOpacity onPress={() => setShowToDatePicker(true)} style={styles.dateInput}>
+          <Text>{toDate || 'Select Date'}</Text>
+        </TouchableOpacity>
+        {showToDatePicker && (
+          <DateTimePicker
+            value={toDate ? new Date(toDate) : new Date()}
+            mode="date"
+            display="default"
+            onChange={handleToDateChange}
+          />
+        )}
+        <Button
+          title="Search"
+          onPress={() => {
+            if (validateDates()) {
+              console.log('From Date:', fromDate);
+              console.log('To Date:', toDate);
+              console.log('Filter Search Value:', filterSearchValue);
+              console.log('Selected Option:', selectedOption);
+              toggleFilterModal();
+            }
+          }}
+          buttonStyle={styles.searchButton}
+        />
+        <Button title="Cancel" onPress={toggleCancelModal} buttonStyle={styles.cancelButton} />
+      </View>
+    </Modal>
+  );
+
+
 
   const renderItem = ({ item }) => {
     const formatDate = (dateStr) => {
@@ -163,7 +294,7 @@ const Lapsed = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchbar}>
+      {/* <View style={styles.searchbar}>
         <SearchBar
           placeholder="Search Policy No"
           onChangeText={handleSearch}
@@ -173,13 +304,19 @@ const Lapsed = () => {
           inputStyle={styles.input}
           lightTheme
         />
-      </View>
+      </View> */}
       <FlatList
         data={policies}
         renderItem={renderItem}
         keyExtractor={(item) => item.policy_no}
         // onPress={showDetails}
+        contentContainerStyle={styles.flatListContent}
+
       />
+      <TouchableOpacity style={styles.floatingButton} onPress={toggleFilterModal} >
+        <MaterialIcons name="filter-list" size={24} color="white" />
+      </TouchableOpacity>
+      {renderFilterModal()}
 
       <Modal isVisible={isModalVisible} onBackdropPress={hideModal} backdropOpacity={0.2}>
         <View style={styles.modalContent}>
@@ -345,8 +482,75 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  
-
+  dateInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+    justifyContent: 'center',
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: hp('5%'),
+    right: wp('5%'),
+    backgroundColor: '#FF7758',
+    padding: 15,
+    borderRadius: 30,
+    elevation: 5,
+    zIndex: 1,
+  },
+  filterModal: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+  },
+  filterText: {
+    fontSize: wp('4%'),
+    marginBottom: 10,
+  },
+  radioButtonGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    justifyContent: 'space-around',
+  },
+  radioButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 20,
+  },
+  radioButton: {
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#FF7758',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  radioButtonSelected: {
+    height: 12,
+    width: 12,
+    borderRadius: 6,
+    backgroundColor: '#FF7758',
+  },
+  radioButtonLabel: {
+    fontSize: 16,
+  },
+  searchButton: {
+    backgroundColor: '#007bff',
+    marginTop: 20,
+    width: '100%',
+    borderRadius: 5,
+  },
+  cancelButton: {
+    backgroundColor: '#dc3545',
+    marginTop: 10,
+    width: '100%',
+    borderRadius: 5,
+  },
 });
 
 export default Lapsed;
