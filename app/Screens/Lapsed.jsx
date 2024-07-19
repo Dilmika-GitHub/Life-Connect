@@ -131,7 +131,13 @@ const Lapsed = () => {
 
 
   const renderItem = ({ item }) => {
-    const formattedMaturityDate = item.next_due_date.split(' ')[0];
+    const formatDate = (dateStr) => {
+      const [month, day, year] = dateStr.split('/');
+      return `${day}/${month}/${year}`;
+    };
+    
+    const formattedMaturityDate = formatDate(item.next_due_date.split(' ')[0]);
+    
     return (
       <TouchableOpacity
         style={styles.itemContainer}
