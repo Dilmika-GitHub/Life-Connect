@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Linking, Alert, Dimensions, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Linking, Alert, Dimensions,  ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BASE_URL, ENDPOINTS } from '../services/apiConfig';
@@ -8,6 +8,7 @@ import { SearchBar, Button, Input } from 'react-native-elements';
 import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { Ionicons } from '@expo/vector-icons';
 
 const getAgencyCode = async () => {
   try {
@@ -26,28 +27,22 @@ const getAgencyCode = async () => {
   }
 };
 
-const getPolicyDetails = async (policyNumber = '') => {
+const getPolicyDetails = async () => {
   try {
     const token = await AsyncStorage.getItem('accessToken');
     const agencyCode = await AsyncStorage.getItem('agencyCode1');
+    const currentDate = new Date();
+    const toDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+    const fromDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear() - 1}`;
+    console.log(toDate);
+    console.log(fromDate);
 
-    const requestBody = {
+    const response = await axios.post(BASE_URL + ENDPOINTS.POLICY_DETAILS, {
       p_agency: agencyCode,
-      p_polno: policyNumber,
+      p_polno: '',
       p_fromdate: '',
       p_todate: ''
-    };
-
-    if (!policyNumber) {
-      const currentDate = new Date();
-      const toDate = '';
-      const fromDate = '';
-
-      requestBody.p_fromdate = fromDate;
-      requestBody.p_todate = toDate;
-    }
-
-    const response = await axios.post(BASE_URL + ENDPOINTS.POLICY_DETAILS, requestBody, {
+    }, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -61,6 +56,9 @@ const getPolicyDetails = async (policyNumber = '') => {
   }
 };
 
+//////////////////////////////////
+
+
 const Lapsed = () => {
   const [policies, setPolicies] = useState([]);
   const [searchValue, setSearchValue] = useState('');
@@ -68,7 +66,7 @@ const Lapsed = () => {
   const [modalContent, setModalContent] = useState({ title: '', key: '', name: '', amount: '', date: '', contact: '', email: '' });
   const [loading, setLoading] = useState(false);
 
-  const { width, height } = Dimensions.get("window");
+  const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
   useFocusEffect(
     useCallback(() => {
@@ -84,30 +82,44 @@ const Lapsed = () => {
     }, [])
   );
 
+  const formatPhoneNumber = (phoneNumber) => {
+    if (phoneNumber.startsWith('0') && phoneNumber.length === 10) {
+      return `94${phoneNumber.slice(1)}`;
+    }
+    return phoneNumber;
+  };
+
   const showDetails = (title, key, name, amount, date, contact, email) => {
-    setModalContent({ title, key, name, amount, date, contact, email });
+    console.log('showDetails called with:', { title, key, name, amount, date, contact, email });
+    setModalContent({
+      title,
+      key,
+      name,
+      amount,
+      date,
+      contact: contact ? formatPhoneNumber(contact) : 'N/A',
+      email: email || 'N/A'
+    });
     setModalVisible(true);
   };
 
   const hideModal = () => setModalVisible(false);
 
-  const handleSearch = async (text) => {
+  const handleSearch = (text) => {
     setSearchValue(text);
   };
 
-  const handleSearchSubmit = async () => {
-    setLoading(true);
-    const policyDetails = await getPolicyDetails(searchValue);
-    setPolicies(policyDetails);
-    setLoading(false);
-  };
-
   const handleContactPress = (contact) => {
-    Linking.openURL(`tel:${contact}`);
+    // let phoneNumber = Platform.OS === 'ios' ? `telprompt:${contact}` : `tel:${contact}`;
+    if (contact !== 'N/A') {
+      Linking.openURL(`tel:${contact}`);
+    }
   };
 
   const handleEmailPress = (email) => {
-    Linking.openURL(`mailto:${email}`);
+    if (email !== 'N/A') {
+      Linking.openURL(`mailto:${email}`);
+    }
   };
 
   const handleWhatsAppPress = (contact) => {
@@ -117,8 +129,9 @@ const Lapsed = () => {
     });
   };
 
+
   const renderItem = ({ item }) => {
-    const formattedMaturityDate = item.maturity_date.split(' ')[0];
+    const formattedMaturityDate = item.next_due_date.split(' ')[0];
     return (
       <TouchableOpacity
         style={styles.itemContainer}
@@ -128,8 +141,11 @@ const Lapsed = () => {
         <Text style={styles.amount}>{item.sa ? "Rs. " + new Intl.NumberFormat().format(item.sa) : "N/A"}</Text>
         <Text style={styles.name}>{item.customer_name}</Text>
       </TouchableOpacity>
+
     );
   };
+
+  ///////////////////////////
 
   if (loading) {
     return (
@@ -141,14 +157,11 @@ const Lapsed = () => {
 
   return (
     <View style={styles.container}>
-      <Text>policies between </Text>
       <View style={styles.searchbar}>
         <SearchBar
           placeholder="Search Policy No"
           onChangeText={handleSearch}
           value={searchValue}
-          keyboardType="numbers-and-punctuation"
-          onSubmitEditing={handleSearchSubmit}
           containerStyle={styles.searchBarContainer}
           inputContainerStyle={styles.inputContainer}
           inputStyle={styles.input}
@@ -159,6 +172,7 @@ const Lapsed = () => {
         data={policies}
         renderItem={renderItem}
         keyExtractor={(item) => item.policy_no}
+        // onPress={showDetails}
       />
 
       <Modal isVisible={isModalVisible} onBackdropPress={hideModal} backdropOpacity={0.2}>
@@ -181,34 +195,48 @@ const Lapsed = () => {
             <Text style={styles.modalText}>{modalContent.date}</Text>
           </View>
           <View style={styles.modalRow}>
-            <Text style={styles.modalLabel}>Contact No. </ Text>
+            <Text style={styles.modalLabel}>Contact No. </Text>
             <Text style={styles.modalText}>{modalContent.contact}</Text>
           </View>
-          <View style={styles.modalRow}>
-            <Icon
-              name="phone"
-              size={20}
-              color="blue"
-              onPress={() => handleContactPress(modalContent.contact)}
-              style={styles.contactIcon}
-            />
-            <Icon
-              name="whatsapp"
-              size={20}
-              color="green"
-              onPress={() => handleWhatsAppPress(modalContent.contact)}
-              style={styles.whatsappIcon}
-            />
-          </View>
-
-          <TouchableOpacity onPress={() => handleEmailPress(modalContent.email)}>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalLabel}>Email </Text>
-              <Text style={styles.modalTextLink}>{modalContent.email}</Text>
+          {modalContent.contact !== 'N/A' && (
+            <View style={styles.iconRow}>
+              <Icon
+                name="phone"
+                size={20}
+                color="blue"
+                onPress={() => handleContactPress(modalContent.contact)}
+                style={styles.contactIcon}
+              />
+              <Icon
+                name="whatsapp"
+                size={20}
+                color="green"
+                onPress={() => handleWhatsAppPress(modalContent.contact)}
+                style={styles.whatsappIcon}
+              />
             </View>
-          </TouchableOpacity>
+          )}
+
+          <View style={styles.modalRow}>
+            <Text style={styles.modalLabel}>Email </Text>
+            <Text style={styles.modalText}>{modalContent.email}</Text>
+          </View>
+          {modalContent.email !== 'N/A' && (
+
+            <View style={styles.iconRow}>
+              <Ionicons
+                name="mail-outline"
+                size={24}
+                color="blue"
+                onPress={() => handleEmailPress(modalContent.email)}
+                style={styles.modalEmailLink}
+              />
+
+            </View>
+          )}
         </View>
       </Modal>
+
     </View>
   );
 };
@@ -240,6 +268,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     top: 15,
+    // color:'black',
   },
   searchbar: {
     flexDirection: 'row',
@@ -291,16 +320,27 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   whatsappIcon: {
-    marginRight: wp('15'),
+    marginLeft: wp('5%'),
   },
   contactIcon: {
-    marginLeft: wp('45'),
+    marginLeft: wp('5%'),
+  },
+  modalEmailLink: {
+    marginLeft: wp('5%'),
+  },
+  iconRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingBottom: 10,
+    marginRight: wp('20%'),
   },
   loader: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  
+
 });
 
 export default Lapsed;

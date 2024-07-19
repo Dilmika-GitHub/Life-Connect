@@ -245,22 +245,6 @@ const MDRTProfile = ({ navigation }) => {
               </View>
             </>
           ) : null}
-          <View style={styles.specialRow}>
-            <Text style={styles.titleText}>TOT Ranking</Text>
-            <Text style={styles.normalText}>{data.tot_rank || "N/A"}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>Need more</Text>
-            <Text style={styles.normalText}>{data.tot_balance_due ? "Rs. " + new Intl.NumberFormat().format(data.tot_balance_due) : "N/A"}</Text>
-          </View>
-          <View style={styles.specialRow}>
-            <Text style={styles.titleText}>COT Ranking</Text>
-            <Text style={styles.normalText}>{data.cot_rank || "N/A"}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>Need more</Text>
-            <Text style={styles.normalText}>{data.cot_balance_due ? "Rs. " + new Intl.NumberFormat().format(data.cot_balance_due) : "N/A"}</Text>
-          </View>
         </View>
       </ScrollView>
 
