@@ -24,6 +24,11 @@ const getAgencyCode = async () => {
     });
 
     await AsyncStorage.setItem('agencyCode1', response.data?.personal_agency_code);
+    let agencyCode2 = response.data?.newagt;
+      agencyCode2 = agencyCode2 === null ? 0 : agencyCode2;
+      
+      await AsyncStorage.setItem("agencyCode2", JSON.stringify(agencyCode2));
+
   } catch (error) {
     console.error('Error Getting Agency Code:', error);
   }
@@ -42,8 +47,8 @@ const getPolicyDetails = async () => {
     const response = await axios.post(BASE_URL + ENDPOINTS.POLICY_DETAILS, {
       p_agency: agencyCode,
       p_polno: '',
-      p_fromdate: '',
-      p_todate: ''
+      p_fromdate: fromDate,
+      p_todate: toDate
     }, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -179,15 +184,15 @@ const Lapsed = () => {
   const radioButtonsData = [
     {
       id: '1',
-      label: '123456',
-      value: 'Agent',
-      selected: selectedOption === 'Agent',
+      label: '',
+      value: 'Current_Agency_Code',
+      selected: selectedOption === 'Current_Agency_Code',
     },
     {
       id: '2',
-      label: '987654',
-      value: 'Organizer',
-      selected: selectedOption === 'Organizer',
+      label: '',
+      value: 'old_Agency_Code',
+      selected: selectedOption === 'old_Agency_Code',
     },
   ];
 
