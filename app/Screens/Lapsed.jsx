@@ -12,57 +12,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const getAgencyCode = async () => {
-  try {
-    const token = await AsyncStorage.getItem('accessToken');
-    const email = await AsyncStorage.getItem('email');
-    const categoryType = await AsyncStorage.getItem('categoryType');
-
-    const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { email: email, catType: categoryType },
-    });
-
-    await AsyncStorage.setItem('agencyCode1', response.data?.personal_agency_code);
-    let agencyCode2 = response.data?.newagt;
-      agencyCode2 = agencyCode2 === null ? 0 : agencyCode2;
-      
-      await AsyncStorage.setItem("agencyCode2", JSON.stringify(agencyCode2));
-
-  } catch (error) {
-    console.error('Error Getting Agency Code:', error);
-  }
-};
-
-const getPolicyDetails = async () => {
-  try {
-    const token = await AsyncStorage.getItem('accessToken');
-    const agencyCode = await AsyncStorage.getItem('agencyCode1');
-    const currentDate = new Date();
-    const toDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
-    const fromDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear() - 1}`;
-    console.log(toDate);
-    console.log(fromDate);
-
-    const response = await axios.post(BASE_URL + ENDPOINTS.POLICY_DETAILS, {
-      p_agency: agencyCode,
-      p_polno: '',
-      p_fromdate: fromDate,
-      p_todate: toDate
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error('Error Getting Policy Details:', error.response ? error.response.data : error.message);
-    return [];
-  }
-};
-
 //////////////////////////////////
 
 
@@ -72,15 +21,70 @@ const Lapsed = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState({ title: '', key: '', name: '', amount: '', date: '', contact: '', email: '' });
   const [loading, setLoading] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('null');
+  const [selectedOption, setSelectedOption] = useState(null); 
   const [isFilterModalVisible, setFilterModalVisible] = useState(false);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [showFromDatePicker, setShowFromDatePicker] = useState(false);
   const [showToDatePicker, setShowToDatePicker] = useState(false);
   const [filterSearchValue, setFilterSearchValue] = useState('');
+  const [agencyCode1, setAgencyCode1] = useState('');
+  const [agencyCode2, setAgencyCode2] = useState(null);
+  
 
   const { width, height } = Dimensions.get("window"); // Get screen dimensions
+
+  const getAgencyCode = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      const email = await AsyncStorage.getItem('email');
+      const categoryType = await AsyncStorage.getItem('categoryType');
+  
+      const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { email: email, catType: categoryType },
+      });
+  
+      const fetchedAgencyCode1 = response.data?.personal_agency_code;
+      const fetchedAgencyCode2 = response.data?.newagt;
+  
+      setAgencyCode1(fetchedAgencyCode1);
+      setAgencyCode2(fetchedAgencyCode2);
+  
+  
+    } catch (error) {
+      console.error('Error Getting Agency Code:', error);
+    }
+  };
+  
+  const getPolicyDetails = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      const agencyCode = await AsyncStorage.getItem('agencyCode1');
+      const currentDate = new Date();
+      const toDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+      const fromDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear() - 1}`;
+      console.log(toDate);
+      console.log(fromDate);
+  
+      const response = await axios.post(BASE_URL + ENDPOINTS.POLICY_DETAILS, {
+        p_agency: agencyCode,
+        p_polno: '',
+        p_fromdate: fromDate,
+        p_todate: toDate
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+      });
+  
+      return response.data;
+    } catch (error) {
+      console.error('Error Getting Policy Details:', error.response ? error.response.data : error.message);
+      return [];
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -95,6 +99,12 @@ const Lapsed = () => {
       fetchData();
     }, [])
   );
+
+  useEffect(() => {
+    if (agencyCode1) {
+      setSelectedOption(agencyCode1); // Set default option if agencyCode1 is available
+    }
+  }, [agencyCode1]);
 
   const formatPhoneNumber = (phoneNumber) => {
     if (phoneNumber.startsWith('0') && phoneNumber.length === 10) {
@@ -119,9 +129,7 @@ const Lapsed = () => {
 
   const hideModal = () => setModalVisible(false);
 
-  const handleSearch = (text) => {
-    setSearchValue(text);
-  };
+
 
   const handleContactPress = (contact) => {
     // let phoneNumber = Platform.OS === 'ios' ? `telprompt:${contact}` : `tel:${contact}`;
@@ -171,7 +179,12 @@ const Lapsed = () => {
     setToDate(currentDate.toISOString().split('T')[0]);
   };
 
-  const toggleFilterModal = () => setFilterModalVisible(!isFilterModalVisible);
+  const toggleFilterModal = () => {
+    if (!isFilterModalVisible && agencyCode1) {
+      setSelectedOption(agencyCode1); // Ensure default selection
+    }
+    setFilterModalVisible(!isFilterModalVisible);
+  };
 
   const toggleCancelModal = () => {
     setFilterSearchValue('');
@@ -184,16 +197,16 @@ const Lapsed = () => {
   const radioButtonsData = [
     {
       id: '1',
-      label: '',
-      value: 'Current_Agency_Code',
-      selected: selectedOption === 'Current_Agency_Code',
+      label: agencyCode1,
+      value: agencyCode1,
+      selected: selectedOption === agencyCode1,
     },
-    {
+    ...(agencyCode2 ? [{
       id: '2',
-      label: '',
-      value: 'old_Agency_Code',
-      selected: selectedOption === 'old_Agency_Code',
-    },
+      label: agencyCode2,
+      value: agencyCode2,
+      selected: selectedOption === agencyCode2,
+    }] : []),
   ];
 
   const renderFilterModal = () => (
@@ -203,7 +216,6 @@ const Lapsed = () => {
         <View style={styles.searchbar}>
         <SearchBar
           placeholder="Search Policy No"
-          onChangeText={handleSearch}
           value={searchValue}
           containerStyle={styles.searchBarContainer}
           inputContainerStyle={styles.inputContainer}
