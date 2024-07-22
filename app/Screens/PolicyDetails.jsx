@@ -35,7 +35,7 @@ const PolicyDetails = ({ navigation }) => {
 
       const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
         headers: { Authorization: `Bearer ${token}` },
-        params: { email, catType: categoryType }
+        params: { email: email, catType: categoryType },
       });
 
       setAgencyCode(response.data);
@@ -91,7 +91,11 @@ const PolicyDetails = ({ navigation }) => {
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#FEA58F" />;
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#FEA58F" />
+      </View>
+    );
   }
 
   return (
@@ -198,6 +202,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     paddingHorizontal: 10,
     textAlign: 'right',
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

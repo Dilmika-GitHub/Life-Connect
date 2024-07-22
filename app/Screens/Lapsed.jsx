@@ -1,113 +1,155 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Alert, Linking, Platform, Dimensions, BackHandler } from 'react-native';
-import Modal from 'react-native-modal';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Linking, Alert, Dimensions,  ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { BASE_URL, ENDPOINTS } from '../services/apiConfig';
 import { SearchBar, Button, Input } from 'react-native-elements';
-import { lockToAllOrientations, lockToPortrait } from './OrientationLock';
-import { useIsFocused, useFocusEffect } from '@react-navigation/native';
+import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 
-const data = [
-  { title: 'DIVI THILINA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', date: '2024/05/27', contact: '94 76 123 4567', email: 'dilshan@gmail.com' },
-  { title: 'DIVI THILINA', key: 'GP15585XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', date: '2024/05/27', contact: '94 75 669 2520', email: 'sudarshan@gmail.com' },
-  { title: 'DIVI THILINA', key: 'GP10225XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00', date: '2024/05/27', contact: '94 76 345 4567', email: 'silva@gmail.com' },
-  { title: 'DIVI THILINA', key: 'GP15586XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00', date: '2024/05/27', contact: '94 76 768 4897', email: 'tharanga@gmail.com' },
-  { title: 'DIVI THILINA', key: 'GP10226XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00', date: '2024/05/27', contact: '94 76 123 4653', email: 'kulasekara@gmail.com' },
-  { title: 'DIVI THILINA', key: 'GP15587XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00', date: '2024/05/27', contact: '94 76 836 0388', email: 'gunathilake@gmail.com' },
-  { title: 'DIVI THILINA', key: 'GP10227XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', date: '2024/05/27', contact: '94 76 171 5346', email: 'dilshan@gmail.com' },
-  { title: 'DIVI THILINA', key: 'GP15588XXXX', name: 'V. Sudarshan', amount: 'Rs. 4,600,000.00', date: '2024/05/27', contact: '94 78 325 6972', email: 'sudarshan@gmail.com' },
-  { title: 'DIVI THILINA', key: 'GP10228XXXX', name: 'N. Silva', amount: 'Rs. 4,100,000.00', date: '2024/05/27', contact: '94 71 123 4567', email: 'silva@gmail.com' },
-  { title: 'DIVI THILINA', key: 'GP15589XXXX', name: 'U. Tharanga', amount: 'Rs. 4,000,000.00', date: '2024/05/27', contact: '94 77 177 5767', email: 'dTharanga@gmail.com' },
-  { title: 'DIVI THILINA', key: 'GP10229XXXX', name: 'N. Kulasekara', amount: 'Rs. 1,500,000.00', date: '2024/05/27', contact: '94 76 567 4567', email: 'kulasekara@gmail.com' },
-  { title: 'DIVI THILINA', key: 'GP15581XXXX', name: 'D. Gunathilake', amount: 'Rs. 700,000.00', date: '2024/05/27', contact: '94 75 768 4235', email: 'gunathilake@gmail.com' },
-];
+//////////////////////////////////
 
-const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
-export default function Lapsed({ navigation }) {
-  const isFocused = useIsFocused();
-
-  useEffect(() => {
-    if (isFocused) {
-      lockToAllOrientations();
-    }
-  }, [isFocused]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const backAction = () => {
-        navigation.navigate('PolicyDetails');
-        return true;
-      };
-
-      const backHandler = BackHandler.addEventListener(
-        "hardwareBackPress",
-        backAction
-      );
-
-      return () => backHandler.remove();
-    }, [navigation])
-  );
-
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [isFilterModalVisible, setFilterModalVisible] = useState(false);
-  const [modalContent, setModalContent] = useState({ title: '', key: '', name: '', amount: '', date: '', contact: '', email: '' });
+const Lapsed = () => {
+  const [policies, setPolicies] = useState([]);
   const [searchValue, setSearchValue] = useState('');
-  const [filterSearchValue, setFilterSearchValue] = useState('');
-  const [selectedOption, setSelectedOption] = useState('null');
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState({ title: '', key: '', name: '', amount: '', date: '', contact: '', email: '' });
+  const [loading, setLoading] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null); 
+  const [isFilterModalVisible, setFilterModalVisible] = useState(false);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [showFromDatePicker, setShowFromDatePicker] = useState(false);
   const [showToDatePicker, setShowToDatePicker] = useState(false);
+  const [filterSearchValue, setFilterSearchValue] = useState('');
+  const [agencyCode1, setAgencyCode1] = useState('');
+  const [agencyCode2, setAgencyCode2] = useState(null);
+  
 
-  const Item = ({ title, name, amount, date, contact, email, keyText, index, onPress }) => (
-    <TouchableOpacity
-      style={[styles.item]}
-      onPress={() => onPress(title, keyText, name, amount, date, contact, email)}
-    >
-      <Text style={styles.keyText}>{keyText}</Text>
-      <Text style={styles.name}>{name}</Text>
-      <Text style={styles.amount}>{amount}</Text>
-      {/* <Text style={styles.contact}>{contact}</Text> */}
-    </TouchableOpacity>
+  const { width, height } = Dimensions.get("window"); // Get screen dimensions
+
+  const getAgencyCode = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      const email = await AsyncStorage.getItem('email');
+      const categoryType = await AsyncStorage.getItem('categoryType');
+  
+      const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { email: email, catType: categoryType },
+      });
+  
+      const fetchedAgencyCode1 = response.data?.personal_agency_code;
+      const fetchedAgencyCode2 = response.data?.newagt;
+  
+      setAgencyCode1(fetchedAgencyCode1);
+      setAgencyCode2(fetchedAgencyCode2);
+  
+  
+    } catch (error) {
+      console.error('Error Getting Agency Code:', error);
+    }
+  };
+  
+  const getPolicyDetails = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      const agencyCode = await AsyncStorage.getItem('agencyCode1');
+      const currentDate = new Date();
+      const toDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+      const fromDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear() - 1}`;
+      console.log(toDate);
+      console.log(fromDate);
+  
+      const response = await axios.post(BASE_URL + ENDPOINTS.POLICY_DETAILS, {
+        p_agency: agencyCode,
+        p_polno: '',
+        p_fromdate: fromDate,
+        p_todate: toDate
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+      });
+  
+      return response.data;
+    } catch (error) {
+      console.error('Error Getting Policy Details:', error.response ? error.response.data : error.message);
+      return [];
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        setLoading(true);
+        await getAgencyCode();
+        const policyDetails = await getPolicyDetails();
+        setPolicies(policyDetails);
+        setLoading(false);
+      };
+
+      fetchData();
+    }, [])
   );
 
+  useEffect(() => {
+    if (agencyCode1) {
+      setSelectedOption(agencyCode1); // Set default option if agencyCode1 is available
+    }
+  }, [agencyCode1]);
+
+  const formatPhoneNumber = (phoneNumber) => {
+    if (phoneNumber.startsWith('0') && phoneNumber.length === 10) {
+      return `94${phoneNumber.slice(1)}`;
+    }
+    return phoneNumber;
+  };
+
   const showDetails = (title, key, name, amount, date, contact, email) => {
-    setModalContent({ title, key, name, amount, date, contact, email });
+    console.log('showDetails called with:', { title, key, name, amount, date, contact, email });
+    setModalContent({
+      title,
+      key,
+      name,
+      amount,
+      date,
+      contact: contact ? formatPhoneNumber(contact) : 'N/A',
+      email: email || 'N/A'
+    });
     setModalVisible(true);
   };
 
   const hideModal = () => setModalVisible(false);
-  const toggleFilterModal = () => setFilterModalVisible(!isFilterModalVisible);
-  const toggleCancelModal = () => {
-    setFilterSearchValue('');
-    setSelectedOption('null');
-    setFromDate('');
-    setToDate('');
-    setFilterModalVisible(!isFilterModalVisible);
-  };
+
+
 
   const handleContactPress = (contact) => {
     // let phoneNumber = Platform.OS === 'ios' ? `telprompt:${contact}` : `tel:${contact}`;
-    Linking.openURL(`tel:${contact}`);
+    if (contact !== 'N/A') {
+      Linking.openURL(`tel:${contact}`);
+    }
   };
 
   const handleEmailPress = (email) => {
-    Linking.openURL(`mailto:${email}`);
+    if (email !== 'N/A') {
+      Linking.openURL(`mailto:${email}`);
+    }
   };
+
   const handleWhatsAppPress = (contact) => {
     let url = `whatsapp://send?phone=${contact}`;
     Linking.openURL(url).catch(() => {
       Alert.alert('Error', 'WhatsApp not installed or invalid contact number.');
     });
-  };
-
-  const handleSearch = (text) => {
-    setSearchValue(text);
-    // Add your search logic here
   };
 
   const handleRadioButtonPress = (value) => {
@@ -138,26 +180,51 @@ export default function Lapsed({ navigation }) {
     setToDate(currentDate.toISOString().split('T')[0]);
   };
 
+  const toggleFilterModal = () => {
+    if (!isFilterModalVisible && agencyCode1) {
+      setSelectedOption(agencyCode1); // Ensure default selection
+    }
+    setFilterModalVisible(!isFilterModalVisible);
+  };
+
+  const toggleCancelModal = () => {
+    setFilterSearchValue('');
+    setSelectedOption('null');
+    setFromDate('');
+    setToDate('');
+    setFilterModalVisible(!isFilterModalVisible);
+  };
+
   const radioButtonsData = [
     {
       id: '1',
-      label: '123456',
-      value: 'Agent',
-      selected: selectedOption === 'Agent',
+      label: agencyCode1,
+      value: agencyCode1,
+      selected: selectedOption === agencyCode1,
     },
-    {
+    ...(agencyCode2 ? [{
       id: '2',
-      label: '987654',
-      value: 'Organizer',
-      selected: selectedOption === 'Organizer',
-    },
+      label: agencyCode2,
+      value: agencyCode2,
+      selected: selectedOption === agencyCode2,
+    }] : []),
   ];
 
   const renderFilterModal = () => (
     <Modal isVisible={isFilterModalVisible} animationIn="slideInUp" animationOut="slideOutDown" onBackdropPress={toggleCancelModal}>
       <View style={styles.filterModal}>
         <Text style={styles.modalTitle}>Filter Options</Text>
-        <Text style={styles.filterText}>Agent/Organizer Code:</Text>
+        <View style={styles.searchbar}>
+        <SearchBar
+          placeholder="Search Policy No"
+          value={searchValue}
+          containerStyle={styles.searchBarContainer}
+          inputContainerStyle={styles.inputContainer}
+          inputStyle={styles.input}
+          lightTheme
+        />
+      </View>
+        <Text style={styles.filterText}>Agent Code:</Text>
         <View style={styles.radioButtonGroup}>
             {radioButtonsData.map((button) => (
               <TouchableOpacity key={button.id} style={styles.radioButtonContainer} onPress={() => handleRadioButtonPress(button.value)}>
@@ -210,9 +277,42 @@ export default function Lapsed({ navigation }) {
     </Modal>
   );
 
+
+
+  const renderItem = ({ item }) => {
+    const formatDate = (dateStr) => {
+      const [month, day, year] = dateStr.split('/');
+      return `${day}/${month}/${year}`;
+    };
+    
+    const formattedMaturityDate = formatDate(item.next_due_date.split(' ')[0]);
+    
+    return (
+      <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={() => showDetails(item.product_name, item.policy_no, item.customer_name, item.sa ? "Rs. " + new Intl.NumberFormat().format(item.sa) : "N/A", formattedMaturityDate, item.mobile_phone, item.email)}
+      >
+        <Text style={styles.policyNo}>{item.policy_no}</Text>
+        <Text style={styles.amount}>{item.sa ? "Rs. " + new Intl.NumberFormat().format(item.sa) : "N/A"}</Text>
+        <Text style={styles.name}>{item.customer_name}</Text>
+      </TouchableOpacity>
+
+    );
+  };
+
+  ///////////////////////////
+
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#FEA58F" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <View style={styles.searchbar}>
+      {/* <View style={styles.searchbar}>
         <SearchBar
           placeholder="Search Policy No"
           onChangeText={handleSearch}
@@ -222,25 +322,14 @@ export default function Lapsed({ navigation }) {
           inputStyle={styles.input}
           lightTheme
         />
-      </View>
+      </View> */}
       <FlatList
-        // data={data}
-        data={data.filter(item => item.name.toLowerCase().includes(searchValue.toLowerCase()))}
-        renderItem={({ item, index }) => (
-          <Item
-            title={item.title}
-            keyText={item.key}
-            name={item.name}
-            amount={item.amount}
-            date={item.date}
-            contact={item.contact}
-            email={item.email}
-            index={index}
-            onPress={showDetails}
-          />
-        )}
-        keyExtractor={item => item.key}
+        data={policies}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.policy_no}
+        // onPress={showDetails}
         contentContainerStyle={styles.flatListContent}
+
       />
       <TouchableOpacity style={styles.floatingButton} onPress={toggleFilterModal} >
         <MaterialIcons name="filter-list" size={24} color="white" />
@@ -266,54 +355,59 @@ export default function Lapsed({ navigation }) {
             <Text style={styles.modalLabel}>Lapsed Date </Text>
             <Text style={styles.modalText}>{modalContent.date}</Text>
           </View>
-          {/* <TouchableOpacity onPress={() => handleContactPress(modalContent.contact)}> */}
           <View style={styles.modalRow}>
             <Text style={styles.modalLabel}>Contact No. </Text>
             <Text style={styles.modalText}>{modalContent.contact}</Text>
           </View>
-          {/* </TouchableOpacity> */}
-          <View style={styles.modalRow}>
-            <Icon
-              name="phone"
-              size={20}
-              color="blue"
-              onPress={() => handleContactPress(modalContent.contact)}
-              style={styles.contactIcon}
-            />
-            <Icon
-              name="whatsapp"
-              size={20}
-              color="green"
-              onPress={() => handleWhatsAppPress(modalContent.contact)}
-              style={styles.whatsappIcon}
-            />
-          </View>
-
-          <TouchableOpacity onPress={() => handleEmailPress(modalContent.email)}>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalLabel}>Email </Text>
-              <Text style={styles.modalTextLink}>{modalContent.email}</Text>
+          {modalContent.contact !== 'N/A' && (
+            <View style={styles.iconRow}>
+              <Icon
+                name="phone"
+                size={20}
+                color="blue"
+                onPress={() => handleContactPress(modalContent.contact)}
+                style={styles.contactIcon}
+              />
+              <Icon
+                name="whatsapp"
+                size={20}
+                color="green"
+                onPress={() => handleWhatsAppPress(modalContent.contact)}
+                style={styles.whatsappIcon}
+              />
             </View>
-          </TouchableOpacity>
+          )}
+
+          <View style={styles.modalRow}>
+            <Text style={styles.modalLabel}>Email </Text>
+            <Text style={styles.modalText}>{modalContent.email}</Text>
+          </View>
+          {modalContent.email !== 'N/A' && (
+
+            <View style={styles.iconRow}>
+              <Ionicons
+                name="mail-outline"
+                size={24}
+                color="blue"
+                onPress={() => handleEmailPress(modalContent.email)}
+                style={styles.modalEmailLink}
+              />
+
+            </View>
+          )}
         </View>
       </Modal>
+
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    // alignItems: 'center',
   },
-  header: {
-    fontSize: 14,
-    paddingTop: 20,
-    paddingLeft: 10,
-    paddingBottom: 10,
-  },
-  item: {
+  itemContainer: {
     backgroundColor: '#F8F8F8',
     padding: 10,
     marginVertical: 8,
@@ -321,10 +415,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 3
   },
-  majorBackground: {
-    backgroundColor: '#FFCECE',
-  },
-  keyText: {
+  policyNo: {
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 10,
@@ -338,45 +429,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     top: 15,
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    padding: 22,
-    borderRadius: 10,
-    justifyContent: 'flex-start',
-  },
-  modalText: {
-    fontSize: 16,
-    textAlign: 'left',
-    flex: 1,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  modalTextLink: {
-    fontSize: 16,
-    textAlign: 'left',
-    flex: 1,
-    color: '#0400D3',
-  },
-  modalheader: {
-    color: 'black',
-    paddingBottom: 10,
-    fontWeight: 'bold',
-    fontSize: 18,
-  },
-  modalLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-    flex: 1,
-    textAlign: 'left',
-  },
-  modalRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingBottom: 10,
+    // color:'black',
   },
   searchbar: {
     flexDirection: 'row',
@@ -400,36 +453,85 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 16,
   },
-  whatsappIcon: {
-    marginRight: wp('15'),
-  },
-  contactIcon: {
-    marginLeft: wp('45'),
-  },
-  iconView: {
-    marginRight: width * 0.03,
-    marginLeft: 'auto',
-    color: 'black',
-  },
-  filterModalContent: {
+  modalContent: {
     backgroundColor: 'white',
     padding: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
     borderRadius: 10,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
+    justifyContent: 'flex-start',
   },
-  filterTitle: {
+  modalText: {
+    fontSize: 16,
+    textAlign: 'left',
+    flex: 1,
+  },
+  modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
+  },
+  modalLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    flex: 1,
+    textAlign: 'left',
+  },
+  modalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: 10,
+  },
+  whatsappIcon: {
+    marginLeft: wp('5%'),
+  },
+  contactIcon: {
+    marginLeft: wp('5%'),
+  },
+  modalEmailLink: {
+    marginLeft: wp('5%'),
+  },
+  iconRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingBottom: 10,
+    marginRight: wp('20%'),
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dateInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+    justifyContent: 'center',
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: hp('5%'),
+    right: wp('5%'),
+    backgroundColor: '#FF7758',
+    padding: 15,
+    borderRadius: 30,
+    elevation: 5,
+    zIndex: 1,
+  },
+  filterModal: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+  },
+  filterText: {
+    fontSize: wp('4%'),
+    marginBottom: 10,
   },
   radioButtonGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
     justifyContent: 'space-around',
-
   },
   radioButtonContainer: {
     flexDirection: 'row',
@@ -455,47 +557,6 @@ const styles = StyleSheet.create({
   radioButtonLabel: {
     fontSize: 16,
   },
-  datePickerContainer: {
-    flexDirection: 'row',
-    alignItems: 'left',
-    marginBottom: 10,
-  },
-  datePickerLabel: {
-    fontSize: 16,
-    marginRight: 10,
-    flex: 1,
-  },
-  filterModalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '50%',
-  },
-  applyButton: {
-    backgroundColor: 'blue',
-    marginRight: 15,
-  },
-  contactRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginTop: 20,
-  },
-  contactButton: {
-    backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 5,
-  },
-  closeButton: {
-    backgroundColor: '#dc3545',
-    marginTop: 20,
-    width: '100%',
-    borderRadius: 5,
-  },
-  filterModal: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-  },
   searchButton: {
     backgroundColor: '#007bff',
     marginTop: 20,
@@ -508,26 +569,6 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 5,
   },
-  filterText: {
-    fontSize: wp('4%'),
-    marginBottom: 10,
-  },
-  dateInput: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-    justifyContent: 'center',
-  },
-  floatingButton: {
-    position: 'absolute',
-    bottom: hp('5%'),
-    right: wp('5%'),
-    backgroundColor: '#FF7758',
-    padding: 15,
-    borderRadius: 30,
-    elevation: 5,
-    zIndex: 1,
-  },
-})
+});
+
+export default Lapsed;

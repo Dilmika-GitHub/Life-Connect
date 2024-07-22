@@ -223,7 +223,7 @@ const WinnersScreen = () => {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#FEA58F" />
       </View>
     );
   }
@@ -426,11 +426,11 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     backgroundColor: '#fff',
     borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 10,
-    elevation: 3,
+    // shadowColor: '#000',
+    // shadowOpacity: 0.1,
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowRadius: 10,
+    // elevation: 3,
   },
   highlightedItem: {
     backgroundColor: '#FFD70020',
