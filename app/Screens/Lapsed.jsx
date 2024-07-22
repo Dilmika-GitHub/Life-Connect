@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Linking, Alert, Dimensions,  ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import { BASE_URL, ENDPOINTS } from '../services/apiConfig';
 import { SearchBar, Button, Input } from 'react-native-elements';
 import Modal from 'react-native-modal';
