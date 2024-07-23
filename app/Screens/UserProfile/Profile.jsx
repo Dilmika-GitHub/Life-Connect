@@ -7,6 +7,8 @@ import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 import { CommonActions } from '@react-navigation/native';
 import route from 'color-convert/route';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
 
 const Profile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
@@ -83,6 +85,7 @@ const Profile = ({ navigation }) => {
   }
 
   return (
+    
     <View style={styles.container}>
       {/* Top section border */}
       <View style={[styles.section, styles.topSection]}></View>
@@ -141,6 +144,7 @@ const Profile = ({ navigation }) => {
               Change Password
             </Text>
           </View>
+         
         </View>
       </View>
 
@@ -151,9 +155,16 @@ const Profile = ({ navigation }) => {
           style={styles.roundImage}
           resizeMode="cover"
         />
+       <View style={[styles.section, styles.topSection]}>
+  <View style={styles.cameraIconContainer}>
+    <Icon name="camera-alt" size={30} color="#FEA58F" style={styles.cameraIcon} />
+  </View>
+</View>
+
         <Text style={styles.imageText}>
           {userData?.intial?.trim()} {userData?.name?.trim()}
         </Text>
+        
      
       </View>
       <AwesomeAlert
@@ -168,7 +179,11 @@ const Profile = ({ navigation }) => {
         confirmButtonColor="#FF7758"
         onConfirmPressed={handleConfirm}
       />
+
+      
+
     </View>
+    
   );
 };
 
@@ -232,6 +247,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "blue",
   },
+  cameraIconContainer: {
+    position: 'absolute',
+    right: 20,
+    top: -35,
+    width: 40, // Diameter of the circle
+    height: 40,
+    borderRadius: 20, // Makes the view perfectly round
+    backgroundColor: '#FFFFFF', // White color for the circle
+    justifyContent: 'center', // Center the icon horizontally
+    alignItems: 'center', // Center the icon vertically
+  },
+  cameraIcon: {
+    color: "#FEA58F", // Assuming you want to keep the icon color as before
+  },
+  
 });
 
 export default Profile;
