@@ -66,6 +66,8 @@ const Lapsed = () => {
       const fromDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear() - 1}`;
       console.log(toDate);
       console.log(fromDate);
+      setFromDate(fromDate);
+      setToDate(toDate);
   
       const response = await axios.post(BASE_URL + ENDPOINTS.POLICY_DETAILS, {
         p_agency: agencyCode,
@@ -218,8 +220,9 @@ const Lapsed = () => {
       console.log(toDate);
 
       setPolicies(filteredPolicies);
-      setLoading(false);
       toggleFilterModal();
+      setLoading(false);
+      
     }
   };
 
@@ -235,7 +238,17 @@ const Lapsed = () => {
     setSelectedOption('null');
     setFromDate('');
     setToDate('');
+    const fetchData = async () => {
+      setLoading(true);
+      await getAgencyCode();
+      const policyDetails = await getPolicyDetails();
+      setPolicies(policyDetails);
+      setLoading(false);
+    };
+
+    fetchData();
     setFilterModalVisible(!isFilterModalVisible);
+    
   };
 
   const radioButtonsData = [
@@ -350,6 +363,7 @@ const Lapsed = () => {
 
   return (
     <View style={styles.container}>
+      <Text>Policies of {fromDate} - {toDate}</Text>
       <FlatList
         data={policies}
         renderItem={renderItem}
