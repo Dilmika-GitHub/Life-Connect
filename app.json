@@ -16,14 +16,20 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dexter_rhys.xProject",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to allow users to take photos.",
+        "NSPhotoLibraryUsageDescription": "This app accesses the photo library to let users choose photos."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.dexter_rhys.xProject"
+      "package": "com.dexter_rhys.xProject",
+      "permissions": ["CAMERA", "WRITE_EXTERNAL_STORAGE", "READ_EXTERNAL_STORAGE"]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -33,12 +39,12 @@
       "expo-router",
       [
         "expo-build-properties",
-    {
-      "android":{
-        "usesCleartextTraffic": true
-      }
-    }
-  ]
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
     ],
     "extra": {
       "router": {
