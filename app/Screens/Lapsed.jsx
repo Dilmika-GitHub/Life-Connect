@@ -86,6 +86,28 @@ const Lapsed = () => {
     }
   };
 
+  const getFilteredPolicyDetails = async (agencyCode, policyNo, fromDate, toDate) => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      const response = await axios.post(BASE_URL + ENDPOINTS.POLICY_DETAILS, {
+        p_agency: agencyCode,
+        p_polno: policyNo || '',
+        p_fromdate: fromDate || '',
+        p_todate: toDate || ''
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+      });
+  
+      return response.data;
+    } catch (error) {
+      console.error('Error Getting Filtered Policy Details:', error.response ? error.response.data : error.message);
+      return [];
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
@@ -167,16 +189,38 @@ const Lapsed = () => {
     return true;
   };
 
+  const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || fromDate;
     setShowFromDatePicker(false);
-    setFromDate(currentDate.toISOString().split('T')[0]);
+    setFromDate(formatDate(currentDate));
   };
 
   const handleToDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || toDate;
     setShowToDatePicker(false);
-    setToDate(currentDate.toISOString().split('T')[0]);
+    setToDate(formatDate(currentDate));
+  };
+
+  const handleSearch = async () => {
+    if (validateDates()) {
+      setLoading(true);
+      const filteredPolicies = await getFilteredPolicyDetails(selectedOption, filterSearchValue, fromDate, toDate);
+      console.log(selectedOption);
+      console.log(filterSearchValue);
+      console.log(fromDate);
+      console.log(toDate);
+
+      setPolicies(filteredPolicies);
+      setLoading(false);
+      toggleFilterModal();
+    }
   };
 
   const toggleFilterModal = () => {
@@ -216,7 +260,8 @@ const Lapsed = () => {
         <View style={styles.searchbar}>
         <SearchBar
           placeholder="Search Policy No"
-          value={searchValue}
+          value={filterSearchValue} // Use filterSearchValue state
+          onChangeText={setFilterSearchValue} // Add this line to update state
           containerStyle={styles.searchBarContainer}
           inputContainerStyle={styles.inputContainer}
           inputStyle={styles.input}
@@ -259,18 +304,12 @@ const Lapsed = () => {
           />
         )}
         <Button
-          title="Search"
-          onPress={() => {
-            if (validateDates()) {
-              console.log('From Date:', fromDate);
-              console.log('To Date:', toDate);
-              console.log('Filter Search Value:', filterSearchValue);
-              console.log('Selected Option:', selectedOption);
-              toggleFilterModal();
-            }
-          }}
-          buttonStyle={styles.searchButton}
-        />
+    
+  title="Search"
+  onPress={handleSearch}
+  buttonStyle={styles.searchButton}
+/>
+
         <Button title="Cancel" onPress={toggleCancelModal} buttonStyle={styles.cancelButton} />
       </View>
     </Modal>
@@ -311,17 +350,6 @@ const Lapsed = () => {
 
   return (
     <View style={styles.container}>
-      {/* <View style={styles.searchbar}>
-        <SearchBar
-          placeholder="Search Policy No"
-          onChangeText={handleSearch}
-          value={searchValue}
-          containerStyle={styles.searchBarContainer}
-          inputContainerStyle={styles.inputContainer}
-          inputStyle={styles.input}
-          lightTheme
-        />
-      </View> */}
       <FlatList
         data={policies}
         renderItem={renderItem}
