@@ -98,6 +98,7 @@ const Lapsed = () => {
       return response.data;
     } catch (error) {
       console.error('Error Getting Policy Details:', error.response ? error.response.data : error.message);
+      handleErrorResponse(error);
       return [];
     }
   };
@@ -120,6 +121,7 @@ const Lapsed = () => {
       return response.data;
     } catch (error) {
       console.error('Error Getting Filtered Policy Details:', error.response ? error.response.data : error.message);
+      handleErrorResponse(error);
       return [];
     }
   };
