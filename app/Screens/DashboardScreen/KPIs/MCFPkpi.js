@@ -7,6 +7,7 @@ import {
   Modal,
   TextInput,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -29,6 +30,7 @@ export default function MCFPkpi({
   const [agencyCode2, setAgencyCode2] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -132,6 +134,7 @@ export default function MCFPkpi({
 
   const handleSubmit = async () => {
     try {
+      setLoading(true);
       const token = await AsyncStorage.getItem('accessToken');
       await axios.post(
         BASE_URL + ENDPOINTS.SET_TARGET,
@@ -143,11 +146,20 @@ export default function MCFPkpi({
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTargetValue(Number(inputValue));
+      setLoading(false);
       setModalVisible(false);
     } catch (error) {
       console.error('Error Setting Target:', error);
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#FEA58F" />
+      </View>
+    );
+  }
 
   const percentageText = `${percentage.toFixed(0)}%`;
 
@@ -161,7 +173,7 @@ export default function MCFPkpi({
             <View style={styles.leftValues}>
               <Text style={styles.actualValue}>{ "Rs. " + new Intl.NumberFormat().format(actualValue)}</Text>
               <Text style={[styles.targetValue, { color: (targetValue && targetValue !== 0) ? 'white' : 'red' }]}>
-    {targetValue && targetValue !== 0 ? `Target : ${targetValue}` : "Please set a target"}
+    {targetValue && targetValue !== 0 ? `Target : ${"Rs. " + new Intl.NumberFormat().format(targetValue)}` : "Please set a target"}
   </Text>
             </View>
             <Text style={styles.percentageText}>{percentageText}</Text>

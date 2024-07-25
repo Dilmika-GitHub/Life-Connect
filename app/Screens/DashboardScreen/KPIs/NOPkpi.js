@@ -7,6 +7,7 @@ import {
   Modal,
   TextInput,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -23,12 +24,13 @@ export default function NOPkpi({
   textColor = "black",
 }) {
   const [actualValue, setActualValue] = useState(0);
-  const [targetValue, setTargetValue] = useState(0); // Set initial state to 0 for numerical calculations
+  const [targetValue, setTargetValue] = useState(0); 
   const [percentage, setPercentage] = useState(0);
   const [agencyCode1, setAgencyCode1] = useState("");
   const [agencyCode2, setAgencyCode2] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -132,6 +134,7 @@ export default function NOPkpi({
 
   const handleSubmit = async () => {
     try {
+      setLoading(true);
       const token = await AsyncStorage.getItem('accessToken');
       await axios.post(
         BASE_URL + ENDPOINTS.SET_TARGET,
@@ -143,11 +146,20 @@ export default function NOPkpi({
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTargetValue(Number(inputValue));
+      setLoading(false);
       setModalVisible(false);
     } catch (error) {
       console.error('Error Setting Target:', error);
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#FEA58F" />
+      </View>
+    );
+  }
 
   const percentageText = `${percentage.toFixed(0)}%`;
 
