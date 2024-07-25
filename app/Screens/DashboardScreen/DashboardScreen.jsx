@@ -12,6 +12,8 @@ import FYPkpi from "./KPIs/FYPkpi";
 import GWPkpi from "./KPIs/GWPkpi";
 import MCFPkpi from "./KPIs/MCFPkpi";
 import CheckConnection from "../../../components/checkConnection";
+import Mainmeter from "./Mainmeter";
+
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const { height, width } = Dimensions.get('window');
@@ -77,42 +79,9 @@ export default function DashboardScreen({
       <View style={styles.iconView}>
         <Income/>
       </View>
-      <View style={styles.circleView(radius, halfCircle, strokeWidth)}>
-        <Svg width={radius * 2} height={radius * 2} viewBox={viewBoxValue}>
-          <G rotation="-90" origin={`${halfCircle}, ${halfCircle}`}>
-            <Circle
-              cx="50%"
-              cy="50%"
-              r={radius}
-              stroke={color}
-              strokeWidth={strokeWidth}
-              strokeOpacity={0.5}
-              fill="transparent"
-            />
-            <AnimatedCircle
-              ref={CircleRef}
-              cx="50%"
-              cy="50%"
-              r={radius}
-              stroke={animatedCircleColor}
-              strokeWidth={strokeWidth}
-              strokeDasharray={circleCircumference}
-              strokeDashoffset={strokeDashoffset}
-              strokeOpacity={1.0}
-              fill="transparent"
-              strokeLinecap="round"
-            />
-          </G>
-        </Svg>
-        <View style={styles.absoluteCenter}>
-          <Text style={styles.valueText(textColor || color)}>
-            Estimated
-          </Text>
-          <Text style={styles.valueText(textColor || color)}>
-            {totalvalueText}
-          </Text>
-        </View>
-      </View>
+      {/* main meter */}
+      <Mainmeter/>
+      {/* main meter */}
       <View style={styles.kpiContainer}>
         <View style={styles.kpiWrapper}>
           <FPkpi />
