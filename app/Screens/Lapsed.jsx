@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Linking, Alert, Dimensions,  ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Linking, Alert, Dimensions, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import { BASE_URL, ENDPOINTS } from '../services/apiConfig';
 import { SearchBar, Button, Input } from 'react-native-elements';
 import Modal from 'react-native-modal';
@@ -11,6 +10,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import axios from 'axios';
 
 //////////////////////////////////
 
@@ -21,7 +21,7 @@ const Lapsed = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState({ title: '', key: '', name: '', amount: '', date: '', contact: '', email: '' });
   const [loading, setLoading] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null); 
+  const [selectedOption, setSelectedOption] = useState(null);
   const [isFilterModalVisible, setFilterModalVisible] = useState(false);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
@@ -30,7 +30,8 @@ const Lapsed = () => {
   const [filterSearchValue, setFilterSearchValue] = useState('');
   const [agencyCode1, setAgencyCode1] = useState('');
   const [agencyCode2, setAgencyCode2] = useState(null);
-  
+  const [dateRangeText, setDateRangeText] = useState('');
+  const [isClearButtonVisible, setClearButtonVisible] = useState(false);
 
   const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
@@ -39,24 +40,24 @@ const Lapsed = () => {
       const token = await AsyncStorage.getItem('accessToken');
       const email = await AsyncStorage.getItem('email');
       const categoryType = await AsyncStorage.getItem('categoryType');
-  
+
       const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
         headers: { Authorization: `Bearer ${token}` },
         params: { email: email, catType: categoryType },
       });
-  
+
       const fetchedAgencyCode1 = response.data?.personal_agency_code;
       const fetchedAgencyCode2 = response.data?.newagt;
-  
+
       setAgencyCode1(fetchedAgencyCode1);
       setAgencyCode2(fetchedAgencyCode2);
-  
-  
+
+
     } catch (error) {
       console.error('Error Getting Agency Code:', error);
     }
   };
-  
+
   const getPolicyDetails = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
@@ -66,9 +67,7 @@ const Lapsed = () => {
       const fromDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear() - 1}`;
       console.log(toDate);
       console.log(fromDate);
-      setFromDate(fromDate);
-      setToDate(toDate);
-  
+
       const response = await axios.post(BASE_URL + ENDPOINTS.POLICY_DETAILS, {
         p_agency: agencyCode,
         p_polno: '',
@@ -80,7 +79,7 @@ const Lapsed = () => {
           'Content-Type': 'application/json'
         },
       });
-  
+
       return response.data;
     } catch (error) {
       console.error('Error Getting Policy Details:', error.response ? error.response.data : error.message);
@@ -102,7 +101,7 @@ const Lapsed = () => {
           'Content-Type': 'application/json'
         },
       });
-  
+
       return response.data;
     } catch (error) {
       console.error('Error Getting Filtered Policy Details:', error.response ? error.response.data : error.message);
@@ -110,16 +109,22 @@ const Lapsed = () => {
     }
   };
 
+  const fetchData = async () => {
+    setLoading(true);
+    await getAgencyCode();
+    const policyDetails = await getPolicyDetails();
+    setPolicies(policyDetails);
+    const currentDate = new Date();
+    const defaultToDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+    const defaultFromDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear() - 1}`;
+    setDateRangeText(`${defaultFromDate} - ${defaultToDate}`);
+
+    setLoading(false);
+  };
+
+
   useFocusEffect(
     useCallback(() => {
-      const fetchData = async () => {
-        setLoading(true);
-        await getAgencyCode();
-        const policyDetails = await getPolicyDetails();
-        setPolicies(policyDetails);
-        setLoading(false);
-      };
-
       fetchData();
     }, [])
   );
@@ -199,15 +204,28 @@ const Lapsed = () => {
   };
 
   const handleDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || fromDate;
-    setShowFromDatePicker(false);
-    setFromDate(formatDate(currentDate));
+    if (event.type === 'set') {
+      const currentDate = selectedDate || fromDate;
+      setShowFromDatePicker(false);
+      setFromDate(formatDate(currentDate));
+    } else {
+      setShowFromDatePicker(false);
+    }
+  };
+  
+  const handleToDateChange = (event, selectedDate) => {
+    if (event.type === 'set') {
+      const currentDate = selectedDate || toDate;
+      setShowToDatePicker(false);
+      setToDate(formatDate(currentDate));
+    } else {
+      setShowToDatePicker(false);
+    }
   };
 
-  const handleToDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || toDate;
-    setShowToDatePicker(false);
-    setToDate(formatDate(currentDate));
+  const parseDate = (dateString) => {
+    const [day, month, year] = dateString.split('/');
+    return new Date(`${year}-${month}-${day}`);
   };
 
   const handleSearch = async () => {
@@ -222,7 +240,8 @@ const Lapsed = () => {
       setPolicies(filteredPolicies);
       toggleFilterModal();
       setLoading(false);
-      
+      applyDateFilter();
+      setClearButtonVisible(true);
     }
   };
 
@@ -248,8 +267,28 @@ const Lapsed = () => {
 
     fetchData();
     setFilterModalVisible(!isFilterModalVisible);
-    
+    fetchData();
+    setClearButtonVisible(false);
   };
+
+  const toggleClearModal = () => {
+    setFilterSearchValue('');
+    setSelectedOption('null');
+    setFromDate('');
+    setToDate('');
+    fetchData();
+    setClearButtonVisible(false);
+
+  };
+  const applyDateFilter = () => {
+    if (fromDate && toDate) {
+      setDateRangeText(`${fromDate} - ${toDate}`);
+    } else {
+      setDateRangeText('');
+    }
+    setFilterModalVisible(false); // Close the filter modal
+  };
+
 
   const radioButtonsData = [
     {
@@ -267,38 +306,38 @@ const Lapsed = () => {
   ];
 
   const renderFilterModal = () => (
-    <Modal isVisible={isFilterModalVisible} animationIn="slideInUp" animationOut="slideOutDown" onBackdropPress={toggleCancelModal}>
+    <Modal isVisible={isFilterModalVisible} animationIn="slideInUp" animationOut="slideOutDown" onBackdropPress={null}>
       <View style={styles.filterModal}>
         <Text style={styles.modalTitle}>Filter Options</Text>
         <View style={styles.searchbar}>
-        <SearchBar
-          placeholder="Search Policy No"
-          value={filterSearchValue} // Use filterSearchValue state
-          onChangeText={setFilterSearchValue} // Add this line to update state
-          containerStyle={styles.searchBarContainer}
-          inputContainerStyle={styles.inputContainer}
-          inputStyle={styles.input}
-          lightTheme
-        />
-      </View>
+          <SearchBar
+            placeholder="Search Policy No"
+            value={filterSearchValue} // Use filterSearchValue state
+            onChangeText={setFilterSearchValue} // Add this line to update state
+            containerStyle={styles.searchBarContainer}
+            inputContainerStyle={styles.inputContainer}
+            inputStyle={styles.input}
+            lightTheme
+          />
+        </View>
         <Text style={styles.filterText}>Agent Code:</Text>
         <View style={styles.radioButtonGroup}>
-            {radioButtonsData.map((button) => (
-              <TouchableOpacity key={button.id} style={styles.radioButtonContainer} onPress={() => handleRadioButtonPress(button.value)}>
-                <View style={[styles.radioButton]} >
+          {radioButtonsData.map((button) => (
+            <TouchableOpacity key={button.id} style={styles.radioButtonContainer} onPress={() => handleRadioButtonPress(button.value)}>
+              <View style={[styles.radioButton]} >
                 {button.selected && <View style={styles.radioButtonSelected} />}
-                </View>
-                <Text style={styles.radioLabel}>{button.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+              </View>
+              <Text style={styles.radioLabel}>{button.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
         <Text style={styles.filterText}>From Date:</Text>
         <TouchableOpacity onPress={() => setShowFromDatePicker(true)} style={styles.dateInput}>
           <Text>{fromDate || 'Select Date'}</Text>
         </TouchableOpacity>
         {showFromDatePicker && (
           <DateTimePicker
-            value={fromDate ? new Date(fromDate) : new Date()}
+            value={fromDate ? parseDate(fromDate) : new Date()}
             mode="date"
             display="default"
             onChange={handleDateChange}
@@ -310,18 +349,18 @@ const Lapsed = () => {
         </TouchableOpacity>
         {showToDatePicker && (
           <DateTimePicker
-            value={toDate ? new Date(toDate) : new Date()}
+            value={toDate ? parseDate(toDate) : new Date()}
             mode="date"
             display="default"
             onChange={handleToDateChange}
           />
         )}
         <Button
-    
-  title="Search"
-  onPress={handleSearch}
-  buttonStyle={styles.searchButton}
-/>
+
+          title="Search"
+          onPress={handleSearch}
+          buttonStyle={styles.searchButton}
+        />
 
         <Button title="Cancel" onPress={toggleCancelModal} buttonStyle={styles.cancelButton} />
       </View>
@@ -335,9 +374,9 @@ const Lapsed = () => {
       const [month, day, year] = dateStr.split('/');
       return `${day}/${month}/${year}`;
     };
-    
+
     const formattedMaturityDate = formatDate(item.next_due_date.split(' ')[0]);
-    
+
     return (
       <TouchableOpacity
         style={styles.itemContainer}
@@ -363,7 +402,14 @@ const Lapsed = () => {
 
   return (
     <View style={styles.container}>
-      <Text>Policies of {fromDate} - {toDate}</Text>
+      <View style={styles.headercontainer}>
+        <Text style={styles.dateText}>{dateRangeText}</Text>
+
+        {isClearButtonVisible && <TouchableOpacity onPress={toggleClearModal} style={styles.clearButton}>
+          <Text style={styles.clearButtonText}>Clear Filter</Text>
+        </TouchableOpacity>}
+
+      </View>
       <FlatList
         data={policies}
         renderItem={renderItem}
@@ -609,6 +655,32 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: '100%',
     borderRadius: 5,
+  },
+  headercontainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  dateText: {
+    marginTop: 5,
+    marginLeft: 10,
+    textAlign: 'left',
+  },
+  clearButton: {
+    backgroundColor: '#FF7758',
+    height: 28, 
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    marginTop: 5,
+    width: '30%',
+    textAlign: 'right',
+    marginRight: 10,
+    marginLeft: 10,
+  },
+  clearButtonText: {
+    color: 'white',
+    fontSize: 13,
+    fontWeight: 'bold',
   },
 });
 
