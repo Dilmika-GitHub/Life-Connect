@@ -159,7 +159,7 @@ export default function MCFPkpi({
           <Text style={styles.titleText}>MCFP KPI</Text>
           <View style={styles.valuesContainer}>
             <View style={styles.leftValues}>
-              <Text style={styles.actualValue}>{actualValue}</Text>
+              <Text style={styles.actualValue}>{ "Rs. " + new Intl.NumberFormat().format(actualValue)}</Text>
               <Text style={[styles.targetValue, { color: (targetValue && targetValue !== 0) ? 'white' : 'red' }]}>
     {targetValue && targetValue !== 0 ? `Target : ${targetValue}` : "Please set a target"}
   </Text>
@@ -179,7 +179,7 @@ export default function MCFPkpi({
           <View
             style={[styles.modalView, { height: hp("22%"), width: wp("70%") }]}
           >
-            <Text style={styles.modalText}>Set your target for FYP</Text>
+            <Text style={styles.modalText}>Set your target for MCFP</Text>
             <TextInput
               style={styles.input}
               onChangeText={(text) => {

@@ -179,7 +179,7 @@ export default function GWPkpi({
           <View
             style={[styles.modalView, { height: hp("22%"), width: wp("70%") }]}
           >
-            <Text style={styles.modalText}>Set your target for FYP</Text>
+            <Text style={styles.modalText}>Set your target for GWP</Text>
             <TextInput
               style={styles.input}
               onChangeText={(text) => {

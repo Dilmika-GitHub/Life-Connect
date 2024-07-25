@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 //////////////////////////////////
 
@@ -32,8 +33,21 @@ const Lapsed = () => {
   const [agencyCode2, setAgencyCode2] = useState(null);
   const [dateRangeText, setDateRangeText] = useState('');
   const [isClearButtonVisible, setClearButtonVisible] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
-  const { width, height } = Dimensions.get("window"); // Get screen dimensions
+  const { width, height } = Dimensions.get("window"); 
+
+  const handleErrorResponse = (error) => {
+    if (error.response.status === 401) {
+      console.log(error.response.status);
+      setShowAlert(true);
+    }
+  };
+
+  const handleConfirm = () => {
+    setShowAlert(false);
+    navigation.navigate('Login');
+  };
 
   const getAgencyCode = async () => {
     try {
@@ -55,6 +69,7 @@ const Lapsed = () => {
 
     } catch (error) {
       console.error('Error Getting Agency Code:', error);
+      handleErrorResponse(error);
     }
   };
 
@@ -402,6 +417,18 @@ const Lapsed = () => {
 
   return (
     <View style={styles.container}>
+      <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Session Expired"
+        message="Please Log Again!"
+        closeOnTouchOutside={false}
+        closeOnHardwareBackPress={false}
+        showConfirmButton={true}
+        confirmText="OK"
+        confirmButtonColor="#FF7758"
+        onConfirmPressed={handleConfirm}
+      />
       <View style={styles.headercontainer}>
         <Text style={styles.dateText}>{dateRangeText}</Text>
 
@@ -664,6 +691,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 10,
     textAlign: 'left',
+    color: '#FF7758'
   },
   clearButton: {
     backgroundColor: '#FF7758',
