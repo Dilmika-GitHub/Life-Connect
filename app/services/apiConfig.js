@@ -13,6 +13,10 @@ const ENDPOINTS = {
   PERSONAL_MDRT: "/Mdrt/GetPersonalMDRT",
   LIFE_MEMBER_MDRT: "/Mdrt/GetLifeMemberMDRT",
   POLICY_COUNT: "/PolicyDetail/GetInforceLapsCount",
+  POLICY_DETAILS:"/PolicyDetail/GetPolicyDetails",
+  ACTUAL_KPI_VALUES: "/DashBoard/GetAgentKPIs",
+  SET_TARGET: "/DashBoard/SetTargets",
+  GET_TARGET: "/DashBoard/GetSettedTarget",
 };
 
 export { BASE_URL, ENDPOINTS };

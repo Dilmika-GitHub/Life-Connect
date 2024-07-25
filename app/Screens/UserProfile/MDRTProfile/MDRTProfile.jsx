@@ -16,7 +16,12 @@ const MDRTProfile = ({ navigation }) => {
   const [agencyCode, setAgencyCode] = useState(null);
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState('');
+  const [timeRemaining, setTimeRemaining] = useState({
+    days: '',
+    hours: '',
+    minutes: '',
+    seconds: '',
+  });
 
   const handleErrorResponse = (error) => {
     if (error.response.status === 401) {
@@ -62,8 +67,6 @@ const MDRTProfile = ({ navigation }) => {
       // Convert agencyCode2 to a string before storing it
       await AsyncStorage.setItem("agencyCode2", JSON.stringify(agencyCode2));
      
-
-      console.log("called", await AsyncStorage.getItem('agencyCode'));
     } catch (error) {
       console.log("ffe",error.message);
       handleErrorResponse(error);
@@ -97,8 +100,6 @@ const MDRTProfile = ({ navigation }) => {
       });
 
       setData(response.data);
-      await AsyncStorage.setItem("branch", response.data?.branch_name);
-      await AsyncStorage.setItem("region", response.data?.region);
     } catch (error) {
       console.log(error.message);
       handleErrorResponse(error);
@@ -118,7 +119,12 @@ const MDRTProfile = ({ navigation }) => {
     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
-    setTimeRemaining(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+    setTimeRemaining({
+      days,
+      hours,
+      minutes,
+      seconds,
+    });
   };
 
   useEffect(() => {
@@ -190,8 +196,22 @@ const MDRTProfile = ({ navigation }) => {
             <Text style={styles.fypContainerRowsNormalText}>{data.nop || "N/A"}</Text>
           </View>
           <View style={styles.countdownContainer}>
-            <Icon name="clock" size={24} color="#fff" style={styles.icon} />
-            <Text style={styles.countdownText}>{timeRemaining}</Text>
+            <View style={styles.countdownBox}>
+              <Text style={styles.countdownValue}>{timeRemaining.days}</Text>
+              <Text style={styles.countdownLabel}>Days</Text>
+            </View>
+            <View style={styles.countdownBox}>
+              <Text style={styles.countdownValue}>{timeRemaining.hours}</Text>
+              <Text style={styles.countdownLabel}>Hours</Text>
+            </View>
+            <View style={styles.countdownBox}>
+              <Text style={styles.countdownValue}>{timeRemaining.minutes}</Text>
+              <Text style={styles.countdownLabel}>Mins</Text>
+            </View>
+            <View style={styles.countdownBox}>
+              <Text style={styles.countdownValue}>{timeRemaining.seconds}</Text>
+              <Text style={styles.countdownLabel}>Secs</Text>
+            </View>
           </View>
         </View>
 
@@ -225,22 +245,6 @@ const MDRTProfile = ({ navigation }) => {
               </View>
             </>
           ) : null}
-          <View style={styles.specialRow}>
-            <Text style={styles.titleText}>TOT Ranking</Text>
-            <Text style={styles.normalText}>{data.tot_rank || "N/A"}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>Need more</Text>
-            <Text style={styles.normalText}>{data.tot_balance_due ? "Rs. " + new Intl.NumberFormat().format(data.tot_balance_due) : "N/A"}</Text>
-          </View>
-          <View style={styles.specialRow}>
-            <Text style={styles.titleText}>COT Ranking</Text>
-            <Text style={styles.normalText}>{data.cot_rank || "N/A"}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>Need more</Text>
-            <Text style={styles.normalText}>{data.cot_balance_due ? "Rs. " + new Intl.NumberFormat().format(data.cot_balance_due) : "N/A"}</Text>
-          </View>
         </View>
       </ScrollView>
 
@@ -313,7 +317,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff7758',
     alignSelf: 'center',
     borderRadius: 10,
-    padding: 50,
+    padding: 20,
   },
   yearText: {
     fontSize: 18,
@@ -345,25 +349,35 @@ const styles = StyleSheet.create({
   },
   countdownContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
     marginTop: 10,
+    width: '100%',
   },
-  icon: {
-    marginRight: 10,
+  countdownBox: {
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    width: '20%',
   },
-  countdownText: {
+  countdownValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#ff7758',
+  },
+  countdownLabel: {
+    fontSize: 14,
+    color: '#ff7758',
   },
   greySquare: {
-    width: 350,
+    width: '95%',
     backgroundColor: '#ffe0d9',
     marginTop: 10,
     alignSelf: 'center',
     borderRadius: 10,
     padding: 10,
+    justifyContent: 'space-evenly',
   },
   row: {
     flexDirection: 'row',

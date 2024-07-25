@@ -20,6 +20,7 @@ import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 import AwesomeAlert from 'react-native-awesome-alerts';
 import Constants from 'expo-constants';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { MaterialIcons, SimpleLineIcons } from "@expo/vector-icons";
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -193,12 +194,17 @@ const LoginScreen = () => {
       <Modal
         visible={showSavePasswordPopup}
         transparent
-        animationType="slide"
-        onRequestClose={() => setShowSavePasswordPopup(false)}
+        animationType="fade"
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalText}>Do you want to save your password?</Text>
+          <MaterialIcons
+              name="save-alt"
+              size={45}//24
+              color="black"
+              style={{ marginBottom: 10}}
+            />
+            <Text style={{ fontSize: 18, marginBottom: 15 }}>Do you want to save your password?</Text>
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={styles.modalButton}
@@ -207,7 +213,7 @@ const LoginScreen = () => {
                 <Text style={styles.modalButtonText}>Yes</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.modalButton}
+                style={styles.modalButton2}
                 onPress={() => handleSavePassword(false)}
               >
                 <Text style={styles.modalButtonText}>No</Text>
@@ -354,33 +360,29 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
-    width: wp("80%"),
     padding: 20,
     backgroundColor: "white",
     borderRadius: 10,
     alignItems: "center",
-  },
-  modalText: {
-    fontSize: wp('5%'),
-    marginBottom: 20,
-    textAlign: "center",
+    elevation: 5,
   },
   modalButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%",
   },
   modalButton: {
-    flex: 1,
-    marginHorizontal: 10,
-    paddingVertical: 10,
-    backgroundColor: "#007bff",
     borderRadius: 5,
-    alignItems: "center",
+    backgroundColor: "blue",
+    padding: 10,
+    marginRight: 10,
+  },
+  modalButton2: {
+    backgroundColor: "red",
+    padding: 10,
+    borderRadius: 5,
   },
   modalButtonText: {
     color: "white",
-    fontSize: wp('4%'),
   },
   eyeIcon: {
     padding: 10,

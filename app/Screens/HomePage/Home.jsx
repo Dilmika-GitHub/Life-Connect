@@ -20,7 +20,7 @@ import {
 } from "react-native";
 import DashboardScreen from "../DashboardScreen/DashboardScreen";
 import SettingsScreen from "../SettingsScreen";
-import Competitions from "../Competitions";
+import Competitions from "../MDRTRanking";
 import Profile from "../UserProfile/Profile";
 import PolicyDetails from "../PolicyDetails";
 import Maturity from "../Maturity";
