@@ -238,8 +238,8 @@ const Lapsed = () => {
       console.log(toDate);
 
       setPolicies(filteredPolicies);
+      toggleFilterModal();
       setLoading(false);
-      // toggleFilterModal();
       applyDateFilter();
       setClearButtonVisible(true);
     }
