@@ -204,15 +204,28 @@ const Lapsed = () => {
   };
 
   const handleDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || fromDate;
-    setShowFromDatePicker(false);
-    setFromDate(formatDate(currentDate));
+    if (event.type === 'set') {
+      const currentDate = selectedDate || fromDate;
+      setShowFromDatePicker(false);
+      setFromDate(formatDate(currentDate));
+    } else {
+      setShowFromDatePicker(false);
+    }
+  };
+  
+  const handleToDateChange = (event, selectedDate) => {
+    if (event.type === 'set') {
+      const currentDate = selectedDate || toDate;
+      setShowToDatePicker(false);
+      setToDate(formatDate(currentDate));
+    } else {
+      setShowToDatePicker(false);
+    }
   };
 
-  const handleToDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || toDate;
-    setShowToDatePicker(false);
-    setToDate(formatDate(currentDate));
+  const parseDate = (dateString) => {
+    const [day, month, year] = dateString.split('/');
+    return new Date(`${year}-${month}-${day}`);
   };
 
   const handleSearch = async () => {
@@ -315,7 +328,7 @@ const Lapsed = () => {
         </TouchableOpacity>
         {showFromDatePicker && (
           <DateTimePicker
-            value={fromDate ? new Date(fromDate) : new Date()}
+            value={fromDate ? parseDate(fromDate) : new Date()}
             mode="date"
             display="default"
             onChange={handleDateChange}
@@ -327,7 +340,7 @@ const Lapsed = () => {
         </TouchableOpacity>
         {showToDatePicker && (
           <DateTimePicker
-            value={toDate ? new Date(toDate) : new Date()}
+            value={toDate ? parseDate(toDate) : new Date()}
             mode="date"
             display="default"
             onChange={handleToDateChange}
