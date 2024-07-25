@@ -29,32 +29,32 @@ export default function DashboardScreen({
 }) {
   const isFocused = useIsFocused();
 
-    useEffect(() => {
-        if (isFocused) {
-            lockToPortrait();
-        }
-    }, [isFocused]);
+  useEffect(() => {
+      if (isFocused) {
+          lockToPortrait();
+      }
+  }, [isFocused]);
 
-    useEffect(() => {
-      const backAction = () => {
-        Alert.alert("Hold on!", "Are you sure you want to exit?", [
-          {
-            text: "Cancel",
-            onPress: () => null,
-            style: "cancel",
-          },
-          { text: "YES", onPress: () => BackHandler.exitApp() },
-        ]);
-        return true;
-      };
-  
-      const backHandler = BackHandler.addEventListener(
-        "hardwareBackPress",
-        backAction
-      );
-  
-      return () => backHandler.remove();
-    }, []);
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert("Hold on!", "Are you sure you want to exit?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel",
+        },
+        { text: "YES", onPress: () => BackHandler.exitApp() },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   const CircleRef = useRef();
   const halfCircle = radius + strokeWidth;
@@ -105,8 +105,8 @@ export default function DashboardScreen({
           </G>
         </Svg>
         <View style={styles.absoluteCenter}>
-          <Text style={styles.valueText(textColor || color) }>
-          Estimated
+          <Text style={styles.valueText(textColor || color)}>
+            Estimated
           </Text>
           <Text style={styles.valueText(textColor || color)}>
             {totalvalueText}
@@ -114,11 +114,21 @@ export default function DashboardScreen({
         </View>
       </View>
       <View style={styles.kpiContainer}>
-        <FPkpi />
-        <NOPkpi />
-        <FYPkpi />
-        <GWPkpi />
-        <MCFPkpi />
+        <View style={styles.kpiWrapper}>
+          <FPkpi />
+        </View>
+        <View style={styles.kpiWrapper}>
+          <FYPkpi />
+        </View>
+        <View style={styles.kpiWrapper}>
+          <GWPkpi />
+        </View>
+        <View style={styles.kpiWrapper}>
+          <MCFPkpi />
+        </View>
+        <View style={styles.kpiWrapper}>
+          <NOPkpi />
+        </View>
       </View>
     </ScrollView>
   );
@@ -163,5 +173,11 @@ const styles = StyleSheet.create({
   kpiContainer: {
     paddingLeft: wp('0.5%'),
     paddingBottom: hp('2%'),
+    flexDirection: 'column', // Assuming you want them stacked vertically
+    padding: 10,
+  },
+  kpiWrapper: {
+    marginBottom: 10, // Adjust the space as necessary
   },
 });
+
