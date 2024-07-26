@@ -1,14 +1,12 @@
-import React, { useEffect, useState, useCallback  } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator, Alert } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, Image, ActivityIndicator, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
-import { CommonActions } from '@react-navigation/native';
-import route from 'color-convert/route';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
+import * as ImagePicker from 'expo-image-picker';
 
 const Profile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
@@ -17,7 +15,7 @@ const Profile = ({ navigation }) => {
   const [showAlert, setShowAlert] = useState(false);
 
   const handleErrorResponse = (error) => {
-    if (error.response.status === 401) {
+    if (error.response && error.response.status === 401) {
       console.log(error.response.status);
       setShowAlert(true);
     }
@@ -40,15 +38,15 @@ const Profile = ({ navigation }) => {
       const categoryType = await AsyncStorage.getItem("categoryType");
       setCategoryType(categoryType);
 
-      const response = await axios.get(BASE_URL+ENDPOINTS.PROFILE_DETAILS,{
-          headers:{
-            Authorization: `Bearer ${token}`
-          },
-          params: {
-            email: email,
-            catType: categoryType
-          }
-        });
+      const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        params: {
+          email: email,
+          catType: categoryType
+        }
+      });
       setUserData(response.data);
       if (categoryType === "Ag") {
         await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
@@ -57,9 +55,6 @@ const Profile = ({ navigation }) => {
       if (categoryType === "Or") {
         await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
         await AsyncStorage.setItem("agencyCode2", response.data?.newagt);
-        
-      } else {
-        
       }
       console.log("called");
     } catch (error) {
@@ -68,6 +63,63 @@ const Profile = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const requestPermissions = async () => {
+    if (Platform.OS !== 'web') {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+      const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
+      if (cameraStatus.status !== 'granted') {
+        alert('Sorry, we need camera permissions to make this work!');
+      }
+    }
+  };
+
+  useEffect(() => {
+    requestPermissions();
+  }, []);
+
+  const handlePhotoSelection = async () => {
+    Alert.alert(
+      "Select Photo",
+      "Choose an option",
+      [
+        {
+          text: "Take Photo",
+          onPress: async () => {
+            const result = await ImagePicker.launchCameraAsync();
+            if (!result.cancelled) {
+              setUserData((prevState) => ({
+                ...prevState,
+                profilePhoto: result.uri,
+              }));
+              // Here you can call an API to upload the image to the server if needed
+            }
+          },
+        },
+        {
+          text: "Choose from Library",
+          onPress: async () => {
+            const result = await ImagePicker.launchImageLibraryAsync();
+            if (!result.cancelled) {
+              setUserData((prevState) => ({
+                ...prevState,
+                profilePhoto: result.uri,
+              }));
+              // Here you can call an API to upload the image to the server if needed
+            }
+          },
+        },
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   useFocusEffect(
@@ -85,7 +137,6 @@ const Profile = ({ navigation }) => {
   }
 
   return (
-    
     <View style={styles.container}>
       {/* Top section border */}
       <View style={[styles.section, styles.topSection]}></View>
@@ -95,10 +146,10 @@ const Profile = ({ navigation }) => {
         {/* Grey color square text */}
         <View style={styles.greySquare}>
           <View style={styles.row}>
-                <Text style={styles.titleText}>Personal Agency Code:</Text>
-                <Text style={styles.normalText}>
-                  {formatAgencyCode(userData?.personal_agency_code) || "N/A"}
-                </Text>
+            <Text style={styles.titleText}>Personal Agency Code:</Text>
+            <Text style={styles.normalText}>
+              {formatAgencyCode(userData?.personal_agency_code) || "N/A"}
+            </Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.titleText}>NIC No:</Text>
@@ -144,29 +195,33 @@ const Profile = ({ navigation }) => {
               Change Password
             </Text>
           </View>
-         
         </View>
       </View>
 
       {/* Profile Image */}
       <View style={styles.imageContainer}>
         <Image
-          source={require("../../../components/user.jpg")}
+          source={userData?.profilePhoto ? { uri: userData.profilePhoto } : require("../../../components/user.jpg")}
           style={styles.roundImage}
           resizeMode="cover"
         />
-       <View style={[styles.section, styles.topSection]}>
-  <View style={styles.cameraIconContainer}>
-    <Icon name="camera-alt" size={30} color="#FEA58F" style={styles.cameraIcon} />
-  </View>
-</View>
+        <View style={[styles.section, styles.topSection]}>
+          <View style={styles.cameraIconContainer}>
+            <Icon
+              name="camera-alt"
+              size={30}
+              color="#FEA58F"
+              style={styles.cameraIcon}
+              onPress={handlePhotoSelection}
+            />
+          </View>
+        </View>
 
         <Text style={styles.imageText}>
           {userData?.intial?.trim()} {userData?.name?.trim()}
         </Text>
-        
-     
       </View>
+
       <AwesomeAlert
         show={showAlert}
         showProgress={false}
@@ -179,11 +234,7 @@ const Profile = ({ navigation }) => {
         confirmButtonColor="#FF7758"
         onConfirmPressed={handleConfirm}
       />
-
-      
-
     </View>
-    
   );
 };
 
@@ -251,17 +302,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     top: -35,
-    width: 40, // Diameter of the circle
+    width: 40,
     height: 40,
-    borderRadius: 20, // Makes the view perfectly round
-    backgroundColor: '#FFFFFF', // White color for the circle
-    justifyContent: 'center', // Center the icon horizontally
-    alignItems: 'center', // Center the icon vertically
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cameraIcon: {
-    color: "#FEA58F", // Assuming you want to keep the icon color as before
+    color: "#FEA58F",
   },
-  
 });
 
 export default Profile;
