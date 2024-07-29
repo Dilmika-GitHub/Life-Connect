@@ -55,13 +55,14 @@ export default function DashboardScreen({
       <CheckConnection />
       <View style={styles.centeredView}>
         <Text style={styles.titleText(textColor || color)}>
-          Income Performance
+          Have a Nice Day!
         </Text>
       </View>
-      <View style={styles.iconView}>
+      <View style={styles.kpiContainer}>
+      <View style={styles.kpiWrapper}>
         <Income/>
       </View>
-      <View style={styles.kpiContainer}>
+      
         <View style={styles.kpiWrapper}>
           <FPkpi />
         </View>
@@ -94,7 +95,6 @@ const styles = StyleSheet.create({
   titleText: (color) => ({
     color: color,
     fontSize: wp('5%'),
-    textTransform: "uppercase",
   }),
   iconView: {
     justifyContent: 'flex-end',
@@ -123,9 +123,11 @@ const styles = StyleSheet.create({
     paddingBottom: hp('2%'),
     flexDirection: 'column', // Assuming you want them stacked vertically
     padding: 10,
+    alignItems:'center',
   },
   kpiWrapper: {
     marginBottom: 10, // Adjust the space as necessary
+    width: wp('93%'),
   },
 });
 

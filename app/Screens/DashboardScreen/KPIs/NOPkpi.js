@@ -173,7 +173,7 @@ export default function NOPkpi({
             <View style={styles.leftValues}>
               <Text style={styles.actualValue}>{actualValue}</Text>
               <Text style={[styles.targetValue, { color: (targetValue && targetValue !== 0) ? 'white' : 'red' }]}>
-    {targetValue && targetValue !== 0 ? `Target : ${targetValue}` : "Please set a target"}
+    {targetValue && targetValue !== 0 ? `Target : ${targetValue}` : "Click here to set a target"}
   </Text>
             </View>
             <Text style={styles.percentageText}>{percentageText}</Text>

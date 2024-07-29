@@ -12,8 +12,8 @@ export default function Income ({
   percentage = 65,
   color = "grey",
   animatedCircleColor = "#05beda",
-  strokeWidth = wp('8%'),
-  radius = wp('30%'),
+  strokeWidth = wp('6%'),
+  radius = wp('22%'),
   textColor = "black",
   max = 100,
   totalvalue = "6,60,00,000",
@@ -53,10 +53,6 @@ export default function Income ({
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={openModal} style={styles.iconView}>
-        <MaterialCommunityIcons name="target" size={hp('5%')} color="black" />
-      </TouchableOpacity>
-
       <Modal
         animationType="fade"
         transparent={true}
@@ -91,44 +87,47 @@ export default function Income ({
       </Modal>
 
       {/* Main meter */}
-      <View style={styles.mainMeterContainer}>
-        <View style={styles.circleView}>
-          <Svg width={radius * 2} height={radius * 2} viewBox={viewBoxValue}>
-            <G rotation="-90" origin={`${halfCircle}, ${halfCircle}`}>
-              <Circle
-                cx="50%"
-                cy="50%"
-                r={radius}
-                stroke={color}
-                strokeWidth={strokeWidth}
-                strokeOpacity={0.5}
-                fill="transparent"
-              />
-              <AnimatedCircle
-                ref={CircleRef}
-                cx="50%"
-                cy="50%"
-                r={radius}
-                stroke={animatedCircleColor}
-                strokeWidth={strokeWidth}
-                strokeDasharray={circleCircumference}
-                strokeDashoffset={strokeDashoffset}
-                strokeOpacity={1.0}
-                fill="transparent"
-                strokeLinecap="round"
-              />
-            </G>
-          </Svg>
-          <View style={styles.absoluteCenter}>
-            <Text style={styles.valueText(textColor || color)}>
-              Estimated
-            </Text>
-            <Text style={styles.valueText(textColor || color)}>
-              {totalvalueText}
-            </Text>
+      <TouchableOpacity onPress={openModal} style={styles.tile}>
+        <View style={styles.mainMeterContainer}>
+          <View style={styles.textContainer}>
+            <Text style={styles.infoText}>Total Income</Text>
+            <Text style={styles.valueText}>{totalvalueText}</Text>
+          </View>
+          <View style={styles.circleView}>
+            <Svg width={radius * 2} height={radius * 2} viewBox={viewBoxValue}>
+              <G rotation="-90" origin={`${halfCircle}, ${halfCircle}`}>
+                <Circle
+                  cx="50%"
+                  cy="50%"
+                  r={radius}
+                  stroke={color}
+                  strokeWidth={strokeWidth}
+                  strokeOpacity={0.5}
+                  fill="transparent"
+                />
+                <AnimatedCircle
+                  ref={CircleRef}
+                  cx="50%"
+                  cy="50%"
+                  r={radius}
+                  stroke={animatedCircleColor}
+                  strokeWidth={strokeWidth}
+                  strokeDasharray={circleCircumference}
+                  strokeDashoffset={strokeDashoffset}
+                  strokeOpacity={1.0}
+                  fill="transparent"
+                  strokeLinecap="round"
+                />
+              </G>
+            </Svg>
+            <View style={styles.absoluteCenter}>
+              <Text style={styles.percentageText(textColor || color)}>
+                {percentage.toFixed(0)}%
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
       {/* Main meter */}
     </View>
   );
@@ -139,12 +138,25 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    width: wp("95%"),
   },
-  iconView: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: hp('2%'), // Added margin bottom to separate the icon from the meter
-    marginRight: -wp('60%')
+  tile:{
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    width: "100%",
+    paddingHorizontal: wp("2.5%"),
+    borderRadius: 10,
+    backgroundColor: "#8cd9da",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   centeredView: {
     flex: 1,
@@ -208,45 +220,39 @@ const styles = StyleSheet.create({
     fontSize: wp('4%'),
     textAlign: 'center',
   },
-  scrollView: {
-    flex: 1,
-    padding: 5,
-    backgroundColor: 'white',
-  },
-  titleText: (color) => ({
-    color: color,
-    fontSize: wp('5%'),
-    textTransform: "uppercase",
-  }),
   mainMeterContainer: {
-    flex: 1,
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  textContainer: {
+    marginRight: wp('5%'),
+    marginLeft:5,
+
+  },
+  infoText: {
+    fontSize: wp('5%'),
+    color: 'white',
+  },
+  valueText: {
+    fontSize: wp('6%'),
+    color: 'black',
   },
   circleView: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: wp('90%'), // Ensures circleView has proper width
-    height: wp('60%'), // Ensures circleView has proper height
+    width: wp('40%'),
+    height: wp('50%'),
   },
   absoluteCenter: {
     position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  valueText: (color) => ({
+  percentageText: (color) => ({
     color: color,
     fontSize: wp('5%'),
     textAlign: 'center',
   }),
-  kpiContainer: {
-    paddingLeft: wp('0.5%'),
-    paddingBottom: hp('2%'),
-    flexDirection: 'column',
-    padding: 10,
-  },
-  kpiWrapper: {
-    marginBottom: 10,
-  },
 });
 
