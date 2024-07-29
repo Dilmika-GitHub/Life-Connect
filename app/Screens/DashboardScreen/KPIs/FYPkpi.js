@@ -96,7 +96,6 @@ export default function FYPkpi({
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setActualValue(response.data[0].fyp);
-      console.log('hj',response.data[0].fyp);
     } catch (error) {
       console.error('Error Fetching Actual FYP Value:', error);
     }

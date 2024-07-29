@@ -96,7 +96,6 @@ export default function MCFPkpi({
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setActualValue(response.data[0].mcfp);
-      console.log('hj',response.data[0].mcfp);
     } catch (error) {
       console.error('Error Fetching Actual FYP Value:', error);
     }

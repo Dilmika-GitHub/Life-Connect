@@ -160,7 +160,7 @@ const CustomDrawerContent = ({ navigation }) => {
         />
         <DrawerItem
           label="Policy Details"
-          onPress={() => navigation.navigate("PolicyDetails")}
+          onPress={() => navigation.navigate("Policy Details")}
           icon={({ focused, color, size }) => (
             <Ionicons
               name={focused ? "document-text" : "document-text-outline"}
@@ -297,11 +297,11 @@ export default function Home() {
             ),
           })}
         />
-        <Drawer.Screen name="PolicyDetails" component={PolicyDetails} />
+        <Drawer.Screen name="Policy Details" component={PolicyDetails} />
         <Drawer.Screen name="Maturity" component={Maturity} />
         <Drawer.Screen name="Lapsed" component={Lapsed} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
-        <Drawer.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false }} />
+        <Drawer.Screen name="Change Password" component={ChangePassword} options={{ headerShown: false }} />
         <Drawer.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       </Drawer.Navigator>
     </NavigationContainer>

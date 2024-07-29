@@ -95,7 +95,6 @@ export default function FPkpi({
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setActualValue(response.data[0].fp);
-      console.log('hj',response.data[0].fp);
     } catch (error) {
       console.error('Error Fetching Actual FP Value:', error);
     }

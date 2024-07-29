@@ -96,7 +96,6 @@ export default function GWPkpi({
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setActualValue(response.data[0].i_gwp);
-      console.log('hj',response.data[0].i_gwp);
     } catch (error) {
       console.error('Error Fetching Actual FYP Value:', error);
     }

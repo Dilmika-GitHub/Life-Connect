@@ -96,7 +96,6 @@ export default function NOPkpi({
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setActualValue(response.data[0].nop);
-      console.log('hj',response.data[0].nop);
     } catch (error) {
       console.error('Error Fetching Actual NOP Value:', error);
     }

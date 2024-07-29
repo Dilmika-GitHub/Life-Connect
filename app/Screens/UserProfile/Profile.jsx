@@ -64,7 +64,7 @@ const Profile = ({ navigation }) => {
   );
 
   const navigateToPasswordChange = () => {
-    navigation.navigate("ChangePassword");
+    navigation.navigate("Change Password");
   };
 
   if (loading) {
