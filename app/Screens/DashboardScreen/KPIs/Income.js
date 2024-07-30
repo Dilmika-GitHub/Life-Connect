@@ -86,13 +86,7 @@ export default function Income ({
 
   const fetchActualIncmComValue = async () => {
     try {
-      const token = await AsyncStorage.getItem('accessToken');
-      console.log("Token: ", token);
-      console.log("Fetching actual income commission value with params:", {
-        p_agency1: agencyCode1,
-        p_agency2: !agencyCode2 || agencyCode2 === "0" ? agencyCode1 : agencyCode2,
-      });
-  
+      const token = await AsyncStorage.getItem('accessToken');  
       const response = await axios.get(
         BASE_URL + ENDPOINTS.ACTUAL_INCOME_COMMISION_VALUE,
         {
@@ -103,8 +97,6 @@ export default function Income ({
           },
         }
       );
-  
-      console.log("Response data:", response.data);
       setActualValue(response.data[0].commissionValue);
     } catch (error) {
       if (error.response) {
