@@ -44,8 +44,8 @@ export default function MCFPkpi({
   useEffect(() => {
     if (agencyCode1) {
       const fetchAdditionalData = async () => {
-        await fetchActualGWPValue();
-        await fetchTargetGWPValue();
+        await fetchActualMCFPValue();
+        await fetchTargetMCFPValue();
       };
       fetchAdditionalData();
     }
@@ -81,7 +81,7 @@ export default function MCFPkpi({
   };
 
 
-  const fetchActualGWPValue = async () => {
+  const fetchActualMCFPValue = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
       const response = await axios.post(
@@ -101,7 +101,7 @@ export default function MCFPkpi({
     }
   };
 
-  const fetchTargetGWPValue = async () => {
+  const fetchTargetMCFPValue = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
       console.log(agencyCode1);

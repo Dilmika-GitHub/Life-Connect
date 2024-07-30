@@ -15,6 +15,7 @@ const ENDPOINTS = {
   POLICY_COUNT: "/PolicyDetail/GetInforceLapsCount",
   POLICY_DETAILS:"/PolicyDetail/GetPolicyDetails",
   ACTUAL_KPI_VALUES: "/DashBoard/GetAgentKPIs",
+  ACTUAL_INCOME_COMMISION_VALUE: "/DashBoard/GetAgentMonthlySalesIncome",
   SET_TARGET: "/DashBoard/SetTargets",
   GET_TARGET: "/DashBoard/GetSettedTarget",
 };
