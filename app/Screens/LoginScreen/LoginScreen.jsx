@@ -21,6 +21,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import Constants from 'expo-constants';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { MaterialIcons, SimpleLineIcons } from "@expo/vector-icons";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -182,7 +183,7 @@ const LoginScreen = () => {
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
         {loading ? (
-          <ActivityIndicator size="small" color="#FEA58F" /> // Loading spinner
+          <ActivityIndicator size="small" color="#08818B" /> // Loading spinner
         ) : (
           <Text style={styles.loginButtonText}>Login</Text>
         )}
@@ -231,7 +232,7 @@ const LoginScreen = () => {
         closeOnHardwareBackPress={false}
         showConfirmButton={true}
         confirmText="OK"
-        confirmButtonColor="#FF7758"
+        confirmButtonColor="#08818B"
         onConfirmPressed={() => setShowAlert(false)}
       />
     </View>
@@ -245,7 +246,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#BBFAFF",
   },
   welcomeText: {
     left: 50,
@@ -266,11 +267,12 @@ const styles = StyleSheet.create({
   versionText:{
     bottom: -280,
     right:160,
+    color:'white',
   },
   input: {
     height: hp('5%'),
     borderColor: "#8b8b8b99",
-    borderRadius: 10,
+    borderRadius: 60,
     marginBottom: 10,
     paddingHorizontal: 10,
     width: wp("80%"),
@@ -281,7 +283,7 @@ const styles = StyleSheet.create({
     width: wp("80%"),
     height: hp('5%'),
     borderColor: "#ccc",
-    borderRadius: 10,
+    borderRadius: 60,
     marginBottom: 20,
     paddingHorizontal: 10,
     borderWidth: 2,
@@ -294,7 +296,7 @@ const styles = StyleSheet.create({
     height: hp('5%'),
     width: wp("80%"),
     borderColor: "#8b8b8b99",
-    borderRadius: 10,
+    borderRadius: 60,
     paddingHorizontal: 10,
     paddingLeft: 0,
   },
@@ -317,7 +319,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderColor: "#8b8b8b99",
-    borderRadius: 10,
+    borderRadius: 60,
     paddingHorizontal: 10,
     width: wp("80%"),
     borderWidth: 2,
@@ -329,12 +331,12 @@ const styles = StyleSheet.create({
     fontSize: wp("4.5%"),
   },
   loginButton: {
-    width: wp('33%'),
+    width: wp('30%'),
     height: hp('6%'),
     top: hp('29%'),
     left: wp('30%'),
-    backgroundColor: 'white',
-    borderRadius: 20,
+    backgroundColor: '#BBFAFF',
+    borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: 'rgba(0, 0, 0, 0.25)',
