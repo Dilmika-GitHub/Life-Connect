@@ -278,7 +278,7 @@ export default function Home() {
           headerTintColor: "#fff",
         }}
       >
-        <Drawer.Screen name="Home" component={DashboardScreen} />
+        <Drawer.Screen name="Home" component={DashboardScreen} options={{ headerShown: false }}/>
         <Drawer.Screen name="MDRT Ranking" component={Competitions} />
         <Drawer.Screen name="My Profile" component={Profile} />
         <Drawer.Screen

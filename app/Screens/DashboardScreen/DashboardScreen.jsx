@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Animated, ScrollView, Dimensions, BackHandler, Alert } from "react-native";
+import { StyleSheet, Text, View, Animated, ScrollView, Dimensions, BackHandler, Alert, TouchableOpacity } from "react-native";
 import React, { useState, useEffect, useRef } from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { lockToPortrait, lockToAllOrientations } from "../OrientationLock";
@@ -10,13 +10,14 @@ import FYPkpi from "./KPIs/FYPkpi";
 import GWPkpi from "./KPIs/GWPkpi";
 import MCFPkpi from "./KPIs/MCFPkpi";
 import CheckConnection from "../../../components/checkConnection";
-
+import { Ionicons } from "@expo/vector-icons";
 
 
 //const { height, width } = Dimensions.get('window');
 
 export default function DashboardScreen({
   textColor = "black",
+  navigation
 }) {
   const isFocused = useIsFocused();
 
@@ -52,6 +53,11 @@ export default function DashboardScreen({
 
   return (
     <ScrollView style={styles.scrollView}>
+      <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+            <Ionicons name="menu" size={26} color="white" />
+          </TouchableOpacity>
+        </View>
       <CheckConnection />
       <View style={styles.centeredView}>
         <Text style={styles.titleText(textColor || color)}>
@@ -88,6 +94,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 5,
     backgroundColor: 'white',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#FEA58F',
   },
   centeredView: {
     alignItems: "center",
