@@ -276,33 +276,34 @@ export default function Home() {
             backgroundColor: "#FEA58F",
           },
           headerTintColor: "#fff",
+          headerShown: false
         }}
       >
-        <Drawer.Screen name="Home" component={DashboardScreen} options={{ headerShown: false }}/>
+        <Drawer.Screen name="Home" component={DashboardScreen} />
         <Drawer.Screen name="MDRT Ranking" component={Competitions} />
         <Drawer.Screen name="My Profile" component={Profile} />
         <Drawer.Screen
           name="MDRT"
           component={MDRTProfile}
-          options={({ navigation }) => ({
-            headerRight: () => (
-              <TouchableOpacity
-                onPress={() => navigation.navigate("MDRT Ranking")}
-              >
-                <Image
-                  source={require("../../../components/pngtree.png")}
-                  style={{ width: 30, height: 30, margin: 10 }}
-                />
-              </TouchableOpacity>
-            ),
-          })}
+          // options={({ navigation }) => ({
+          //   headerRight: () => (
+          //     <TouchableOpacity
+          //       onPress={() => navigation.navigate("MDRT Ranking")}
+          //     >
+          //       <Image
+          //         source={require("../../../components/pngtree.png")}
+          //         style={{ width: 30, height: 30, margin: 10 }}
+          //       />
+          //     </TouchableOpacity>
+          //   ),
+          // })}
         />
         <Drawer.Screen name="Policy Details" component={PolicyDetails} />
         <Drawer.Screen name="Maturity" component={Maturity} />
         <Drawer.Screen name="Lapsed" component={Lapsed} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
-        <Drawer.Screen name="Change Password" component={ChangePassword} options={{ headerShown: false }} />
-        <Drawer.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <Drawer.Screen name="Change Password" component={ChangePassword}  />
+        <Drawer.Screen name="Login" component={LoginScreen} />
       </Drawer.Navigator>
     </NavigationContainer>
   );

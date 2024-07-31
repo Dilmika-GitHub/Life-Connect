@@ -7,6 +7,7 @@ import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { Ionicons } from "@expo/vector-icons";
 
 const PolicyDetails = ({ navigation }) => {
   const isFocused = useIsFocused();
@@ -100,6 +101,11 @@ const PolicyDetails = ({ navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+            <Ionicons name="menu" size={26} color="white" />
+          </TouchableOpacity>
+        </View>
       <View style={[styles.section, styles.coloredSection]}>
         <Text style={styles.sectionHeading}>Policy Overview</Text>
         <View style={styles.table}>
@@ -141,14 +147,22 @@ const PolicyDetails = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    paddingVertical: 20,
-    paddingHorizontal: 10,
+    // paddingVertical: 20,
+    // paddingHorizontal: 10,
     backgroundColor: 'white',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#FEA58F',
   },
   section: {
     marginBottom: 20,
     borderRadius: 12,
     padding: 20,
+    marginTop: 15,
+    marginHorizontal: 10,
   },
   coloredSection: {
     backgroundColor: '#EBEBEB',
