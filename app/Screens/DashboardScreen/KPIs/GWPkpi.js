@@ -171,7 +171,7 @@ export default function GWPkpi({
           <View style={styles.valuesContainer}>
             <View style={styles.leftValues}>
               <Text style={styles.actualValue}>{ "Rs. " + new Intl.NumberFormat().format(actualValue)}</Text>
-              <Text style={[styles.targetValue, { color: (targetValue && targetValue !== 0) ? 'white' : 'red' }]}>
+              <Text style={[styles.targetValue, { color: (targetValue && targetValue !== 0) ? '#085258' : 'red' }]}>
     {targetValue && targetValue !== 0 ? `Target : ${"Rs. " + new Intl.NumberFormat().format(targetValue)}` : "Click here to set a target"}
   </Text>
             </View>
@@ -190,7 +190,7 @@ export default function GWPkpi({
           <View
             style={[styles.modalView, { height: hp("22%"), width: wp("70%") }]}
           >
-            <Text style={styles.modalText}>Set your target for GWP</Text>
+            <Text style={styles.modalText}>Set target - GWP</Text>
             <TextInput
               style={styles.input}
               onChangeText={(text) => {
@@ -204,7 +204,7 @@ export default function GWPkpi({
               <TouchableOpacity
                 onPress={handleSubmit}
                 style={[
-                  styles.blueButton,
+                  styles.targetSetButton,
                   { height: hp("5.5%"), width: wp("30%") },
                 ]}
               >
@@ -213,7 +213,7 @@ export default function GWPkpi({
               <TouchableOpacity
                 onPress={handleCancel}
                 style={[
-                  styles.redButton,
+                  styles.cancelButton,
                   { height: hp("5.5%"), width: wp("30%") },
                 ]}
               >
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: wp("2.5%"),
     borderRadius: 10,
-    backgroundColor: "#9fb449",
+    backgroundColor: "#93e3ea",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -258,9 +258,10 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontWeight: "bold",
-    color: "white",
+    color: "#085258",
     fontSize: wp("4.5%"),
     textAlign: "center",
+    marginBottom:20,
   },
   valuesContainer: {
     flexDirection: "row",
@@ -272,18 +273,18 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   actualValue: {
-    color: "white",
+    color: "#085258",
     fontSize: wp("6%"),
     textAlign: "left",
     fontWeight:"bold",
   },
   targetValue: {
-    color: "white",
+    color: "#085258",
     fontSize: wp("3.5%"),
     textAlign: "left",
   },
   percentageText: {
-    color: "white",
+    color: "#085258",
     fontSize: wp("6%"),
     textAlign: "right",
     fontWeight: "bold",
@@ -328,15 +329,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: wp("60%"),
   },
-  blueButton: {
-    backgroundColor: "blue",
+  targetSetButton: {
+    backgroundColor: "#085258",
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 10,
   },
-  redButton: {
-    backgroundColor: "red",
+  cancelButton: {
+    backgroundColor: "#12a4b1",
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",

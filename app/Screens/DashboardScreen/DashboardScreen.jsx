@@ -93,13 +93,13 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     padding: 5,
-    backgroundColor: 'white',
+    backgroundColor: '#d1f7fa',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#FEA58F',
+    backgroundColor: '#08818a',
   },
   centeredView: {
     alignItems: "center",
