@@ -92,7 +92,7 @@ export default function DashboardScreen({
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
-    padding: 5,
+    // padding: 5,
     backgroundColor: '#d1f7fa',
   },
   header: {

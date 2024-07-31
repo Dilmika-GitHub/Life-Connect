@@ -276,9 +276,10 @@ export default function Home() {
             backgroundColor: "#FEA58F",
           },
           headerTintColor: "#fff",
+          headerShown: false
         }}
       >
-        <Drawer.Screen name="Home" component={DashboardScreen} options={{ headerShown: false }}/>
+        <Drawer.Screen name="Home" component={DashboardScreen} />
         <Drawer.Screen name="MDRT Ranking" component={Competitions} />
         <Drawer.Screen name="My Profile" component={Profile} />
         <Drawer.Screen
@@ -301,8 +302,8 @@ export default function Home() {
         <Drawer.Screen name="Maturity" component={Maturity} />
         <Drawer.Screen name="Lapsed" component={Lapsed} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
-        <Drawer.Screen name="Change Password" component={ChangePassword} options={{ headerShown: false }} />
-        <Drawer.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <Drawer.Screen name="Change Password" component={ChangePassword} />
+        <Drawer.Screen name="Login" component={LoginScreen} />
       </Drawer.Navigator>
     </NavigationContainer>
   );

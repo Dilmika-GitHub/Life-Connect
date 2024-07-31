@@ -5,6 +5,7 @@ import { lockToPortrait, lockToAllOrientations } from "./OrientationLock";
 import { useIsFocused } from '@react-navigation/native'; 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { Ionicons } from "@expo/vector-icons";
 
 const data = [
     { title:'YASTIYA', key: 'GP10224XXXX', name: 'T. Dilshan', amount: 'Rs. 5,000,000.00', contact: '94 76 123 4567', email: 'dilshan@gmail.com', maturetext: '2024/05/05'},
@@ -33,7 +34,7 @@ const data = [
     </TouchableOpacity>
   );
   
-  export default function Maturity() {
+  export default function Maturity({navigation}) {
     const isFocused = useIsFocused();
 
     useEffect(() => {
@@ -70,7 +71,12 @@ const data = [
   
     return (
       <View style={styles.container}>
-        <Text style={styles.header}>Upcoming 30 Days</Text>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+            <Ionicons name="menu" size={26} color="white" />
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.headerText}>Upcoming 30 Days</Text>
         <FlatList
           data={data}
           renderItem={({ item, index }) => (
@@ -145,11 +151,16 @@ const data = [
       flex: 1,
       backgroundColor: '#fff',
     },
-    header: {
+    headerText: {
       fontSize: 14,
-      paddingTop: 20,
+      paddingTop: 10,
       paddingLeft: 10,
-      paddingBottom: 10,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 10,
+      backgroundColor: '#08818a',
     },
     item: {
       backgroundColor: '#F8F8F8',

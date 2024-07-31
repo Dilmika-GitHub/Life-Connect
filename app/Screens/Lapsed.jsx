@@ -16,7 +16,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 //////////////////////////////////
 
 
-const Lapsed = () => {
+const Lapsed = ({navigation}) => {
   const [policies, setPolicies] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
@@ -419,6 +419,11 @@ const Lapsed = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+            <Ionicons name="menu" size={26} color="white" />
+          </TouchableOpacity>
+        </View>
       <AwesomeAlert
         show={showAlert}
         showProgress={false}
@@ -522,6 +527,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#08818a',
   },
   itemContainer: {
     backgroundColor: '#F8F8F8',

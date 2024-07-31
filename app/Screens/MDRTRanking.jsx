@@ -7,6 +7,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
 import { FirstPlaceSvg, SecondPlaceSvg, ThirdPlaceSvg } from "../../components/Top3";
+import { Ionicons } from "@expo/vector-icons";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -230,6 +231,13 @@ const WinnersScreen = () => {
 
   const renderDropdown = () => {
     return (
+      <View style={styles.headercontainer}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.openDrawer()}>
+          <Ionicons name="menu" size={26} color="white" />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.dcontainer}>
       <View style={styles.dropdownContainer}>
         <TouchableOpacity onPress={() => setShowDropdown(!showDropdown)} style={styles.dropdownTouchable}>
           <Text style={styles.dropdownText}>{selectedValue}</Text>
@@ -256,6 +264,8 @@ const WinnersScreen = () => {
           confirmButtonColor="#FF7758"
           onConfirmPressed={handleConfirm}
         />
+      </View>
+      </View>
       </View>
     );
   };
@@ -412,10 +422,19 @@ const WinnersScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  body: {
     flex: 1,
+    flexDirection: 'column',
+  },
+  dcontainer: {
     padding: 10,
     backgroundColor: '#f5f5f5',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#08818a',
   },
   flatListContainer: {
     paddingBottom: 100,
@@ -426,6 +445,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     backgroundColor: '#fff',
     borderRadius: 10,
+    marginHorizontal: 10,
     // shadowColor: '#000',
     // shadowOpacity: 0.1,
     // shadowOffset: { width: 0, height: 2 },
@@ -503,7 +523,6 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     width: 170,
-    marginBottom: 20,
     backgroundColor: '#e8e6e3',
     borderWidth: 1,
     borderColor: '#ddd',
@@ -553,7 +572,7 @@ const styles = StyleSheet.create({
   rightAlignedText: {
     position: 'absolute',
     right: 10,
-    top: 10,
+    top: '8%',
     fontSize: 16,
     color: '#333',
   },

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback  } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
@@ -7,6 +7,7 @@ import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 import { CommonActions } from '@react-navigation/native';
 import route from 'color-convert/route';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { Ionicons } from "@expo/vector-icons";
 
 const Profile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
@@ -73,6 +74,11 @@ const Profile = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+          <Ionicons name="menu" size={26} color="white" />
+        </TouchableOpacity>
+      </View>
       {/* Top section border */}
       <View style={[styles.section, styles.topSection]}></View>
 
@@ -166,12 +172,18 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#08818a',
+  },
   section: {
     width: "100%",
   },
   topSection: {
     flex: 1,
-    backgroundColor: "#FEA58F",
+    backgroundColor: "#08818a",
   },
   bottomSection: {
     flex: 5,
@@ -180,7 +192,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     position: "absolute",
     left: "50%",
-    top: "16%",
+    top: "22%",
     transform: [{ translateX: -100 }, { translateY: -100 }],
   },
   roundImage: {

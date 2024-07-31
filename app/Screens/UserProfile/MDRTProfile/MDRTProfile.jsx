@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
@@ -7,6 +7,7 @@ import { BASE_URL, ENDPOINTS } from "../../../services/apiConfig";
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import { Ionicons } from "@expo/vector-icons";
 
 const MDRTProfile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
@@ -178,6 +179,20 @@ const MDRTProfile = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+            <Ionicons name="menu" size={26} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity
+                onPress={() => navigation.navigate("MDRT Ranking")}
+                style={styles.rankingImageContainer}
+              >
+                <Image
+                  source={require("../../../../components/pngtree.png")}
+                  style={styles.rankingimage}
+                />
+              </TouchableOpacity>
+        </View>
       {/* Top section border */}
       <View style={[styles.section, styles.topSection]}></View>
       <View style={[styles.section, styles.topSection2]}></View>
@@ -266,12 +281,19 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#08818a',
+    justifyContent: 'space-between',
+  },
   section: {
     width: '100%',
   },
   topSection: {
     flex: 0.25,
-    backgroundColor: '#FEA58F',
+    backgroundColor: '#08818a',
   },
   topSection2: {
     flex: 0.3,
@@ -285,7 +307,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     position: 'absolute',
     left: '50%',
-    top: '16%',
+    top: '21%',
     transform: [{ translateX: -100 }, { translateY: -100 }],
   },
   roundImage: {
@@ -415,6 +437,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'red',
   },
+  rankingimage: {
+    width: 30,
+    height: 30,
+    // margin: 10,
+  }
 });
 
 export default MDRTProfile;
