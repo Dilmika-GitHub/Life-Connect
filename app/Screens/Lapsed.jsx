@@ -420,7 +420,7 @@ const Lapsed = ({navigation}) => {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#FEA58F" />
+        <ActivityIndicator size="large" color="#08818a" />
       </View>
     );
   }
@@ -647,7 +647,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: hp('5%'),
     right: wp('5%'),
-    backgroundColor: '#FF7758',
+    backgroundColor: '#08818a',
     padding: 15,
     borderRadius: 30,
     elevation: 5,
@@ -678,7 +678,7 @@ const styles = StyleSheet.create({
     width: 20,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#FF7758',
+    borderColor: '#08818a',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
@@ -687,7 +687,7 @@ const styles = StyleSheet.create({
     height: 12,
     width: 12,
     borderRadius: 6,
-    backgroundColor: '#FF7758',
+    backgroundColor: '#08818a',
   },
   radioButtonLabel: {
     fontSize: 16,
@@ -712,10 +712,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 10,
     textAlign: 'left',
-    color: '#FF7758'
+    color: '#08818a'
   },
   clearButton: {
-    backgroundColor: '#FF7758',
+    backgroundColor: '#08818a',
     height: 28, 
     justifyContent: 'center',
     alignItems: 'center',

@@ -152,7 +152,7 @@ const MDRTProfile = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#FEA58F" />
+        <ActivityIndicator size="large" color="#08818a" />
       </View>
     );
   }
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 1,
     alignItems: 'center',
-    backgroundColor: '#ff7758',
+    backgroundColor: '#08818a',
     alignSelf: 'center',
     borderRadius: 10,
     padding: 20,
@@ -386,15 +386,15 @@ const styles = StyleSheet.create({
   countdownValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#ff7758',
+    color: '#08818a',
   },
   countdownLabel: {
     fontSize: 14,
-    color: '#ff7758',
+    color: '#08818a',
   },
   greySquare: {
     width: '95%',
-    backgroundColor: '#ffe0d9',
+    backgroundColor: '#c4f1f5',
     marginTop: 10,
     alignSelf: 'center',
     borderRadius: 10,

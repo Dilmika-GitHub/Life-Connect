@@ -201,7 +201,7 @@ const LoginScreen = () => {
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
         {loading ? (
-          <ActivityIndicator size="small" color="#08818B" /> // Loading spinner
+          <ActivityIndicator size="small" color="#08818a" /> 
         ) : (
           <Text style={styles.loginButtonText}>Login</Text>
         )}

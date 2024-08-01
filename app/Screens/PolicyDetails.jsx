@@ -94,7 +94,7 @@ const PolicyDetails = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#FEA58F" />
+        <ActivityIndicator size="large" color="#08818a" />
       </View>
     );
   }
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#EBEBEB',
   },
   coloredSection2: {
-    backgroundColor: '#FF7758',
+    backgroundColor: '#08818a',
   },
   sectionHeading: {
     fontSize: 20,

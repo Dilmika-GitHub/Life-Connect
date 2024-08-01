@@ -69,7 +69,7 @@ const Profile = ({ navigation }) => {
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#FEA58F" />;
+    return <ActivityIndicator size="large" color="#08818a" />;
   }
 
   return (
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   },
   greySquare: {
     width: '95%',
-    backgroundColor: '#ffe0d9',
+    backgroundColor: '#c4f1f5',
     marginTop: 150,
     alignSelf: "center",
     borderRadius: 10,

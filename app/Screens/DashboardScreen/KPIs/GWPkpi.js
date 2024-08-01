@@ -155,7 +155,7 @@ export default function GWPkpi({
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#FEA58F" />
+        <ActivityIndicator size="large" color="#08818a" />
       </View>
     );
   }
