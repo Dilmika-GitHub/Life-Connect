@@ -69,7 +69,7 @@ const MDRTProfile = ({ navigation }) => {
       await AsyncStorage.setItem("agencyCode2", JSON.stringify(agencyCode2));
      
     } catch (error) {
-      console.log("ffe",error.message);
+      console.log(error.message);
       handleErrorResponse(error);
       console.error('Error Getting Agency Code:', error.response?.status);
       throw error;

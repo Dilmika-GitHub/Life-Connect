@@ -3,12 +3,13 @@ import { Text, View, Modal, TouchableOpacity, StyleSheet, TextInput, Animated, A
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Svg, { G, Circle } from "react-native-svg";
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { lockToPortrait } from "../../OrientationLock";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useFocusEffect } from '@react-navigation/native';
 import { BASE_URL, ENDPOINTS } from "../../../services/apiConfig";
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -22,6 +23,7 @@ export default function Income ({
   currencyType = "Rs",
 }) {
   const isFocused = useIsFocused();
+  const navigation = useNavigation(); 
   const [actualValue, setActualValue] = useState(0);
   const [targetValue, setTargetValue] = useState(0);
   const [percentage, setPercentage] = useState(0);
@@ -29,6 +31,19 @@ export default function Income ({
   const [agencyCode2, setAgencyCode2] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+
+  const handleErrorResponse = (error) => {
+    if (error.response.status === 401) {
+      console.log(error.response.status);
+      setShowAlert(true);
+    }
+  };
+
+  const handleConfirm = () => {
+    setShowAlert(false);
+    navigation.navigate('Login');
+  };
 
   const getAgencyCode = useCallback(async () => {
     try {
@@ -47,6 +62,7 @@ export default function Income ({
       setAgencyCode1(fetchedAgencyCode1);
       setAgencyCode2(fetchedAgencyCode2);
     } catch (error) {
+      handleErrorResponse(error);
       console.error('Error Getting Agency Code:', error);
     }
   }, []);
@@ -158,6 +174,18 @@ export default function Income ({
 
   return (
     <View style={styles.container}>
+      <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Session Expired"
+        message="Please Log Again!"
+        closeOnTouchOutside={false}
+        closeOnHardwareBackPress={false}
+        showConfirmButton={true}
+        confirmText="OK"
+        confirmButtonColor="#08818a"
+        onConfirmPressed={handleConfirm}
+      />
       <Modal
         animationType="fade"
         transparent={true}
