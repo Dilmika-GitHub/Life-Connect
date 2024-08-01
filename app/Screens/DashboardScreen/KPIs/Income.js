@@ -195,7 +195,7 @@ export default function Income ({
       <TouchableOpacity onPress={handlePress} style={styles.tile}>
         <View style={styles.mainMeterContainer}>
           <View style={styles.textContainer}>
-            <Text style={styles.infoText}>Commission Income</Text>
+            <Text style={styles.infoText}>Total Income</Text>
             <Text style={[styles.valueText, {fontWeight:'bold'}]}>{ "Rs. " + new Intl.NumberFormat().format(actualValue)}</Text>
             <Text style={[styles.targetText, { color: (targetValue && targetValue !== 0) ? 'white' : 'red' }]}>
     {targetValue && targetValue !== 0 ? `Target : ${"Rs. " + new Intl.NumberFormat().format(targetValue)}` : "Click here to set a target"}

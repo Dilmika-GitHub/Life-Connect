@@ -7,7 +7,7 @@ const UpdateApp = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const appVersion = '1.0.0';
+    const appVersion = '1.0.1';
 
     const fetchUpdateInfo = async () => {
       try {
@@ -30,8 +30,8 @@ const UpdateApp = () => {
 
   const handleUpdatePress = () => {
     const updateUrl = Platform.select({
-      ios: 'https://apps.apple.com/us/app/facebook/id284882215', // Replace with your App Store URL
-      android: 'https://play.google.com/store/apps/details?id=YOUR_PACKAGE_NAME' // Replace with your Play Store URL
+      ios: 'https://apps.apple.com/us/app/facebook/id284882215', 
+      android: 'https://play.google.com/store/apps/details?id=YOUR_PACKAGE_NAME' 
     });
 
     if (updateUrl) {

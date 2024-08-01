@@ -58,10 +58,9 @@ const LoginScreen = () => {
     });
 
     checkMaintenance().then(data => {
-      if (data.isMaintenance === 'Y') {
-        alert('The system is currently under maintenance. Please try again later.');
-        // Optionally, you can redirect to a maintenance page
-        // router.push("/Screens/MaintenanceScreen");
+      if (data.isinforce === 'Y') {
+        router.push("/Screens/LoginScreen/MaintenanceScreen");
+        //alert('The system is currently under maintenance. Please try again later.');
       }
     }).catch(error => {
       console.error("Error:", error);
