@@ -52,12 +52,13 @@ export default function DashboardScreen({
   React.useEffect(() => {});
 
   return (
-    <ScrollView style={styles.scrollView}>
+    <View style={styles.container}>
       <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
             <Ionicons name="menu" size={26} color="white" />
           </TouchableOpacity>
         </View>
+    <ScrollView style={styles.scrollView}>
       <CheckConnection />
       <View style={styles.centeredView}>
         <Text style={styles.titleText(textColor || color)}>
@@ -86,10 +87,14 @@ export default function DashboardScreen({
         </View>
       </View>
     </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   scrollView: {
     flex: 1,
     // padding: 5,

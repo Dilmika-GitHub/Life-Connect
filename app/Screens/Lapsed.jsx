@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Linking, Alert, Dimensions, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Linking, Alert, Dimensions, ActivityIndicator, BackHandler } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL, ENDPOINTS } from '../services/apiConfig';
 import { SearchBar, Button, Input } from 'react-native-elements';
@@ -143,7 +143,15 @@ const Lapsed = ({navigation}) => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
-    }, [])
+      const onBackPress = () => {
+        navigation.navigate('Policy Details');
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [navigation])
   );
 
   useEffect(() => {

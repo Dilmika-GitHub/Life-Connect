@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, Image, ActivityIndicator, BackHandler } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -216,9 +216,16 @@ const WinnersScreen = () => {
           setLoading(false);
         }
       };
-
       fetchData();
-    }, [])
+
+      const onBackPress = () => {
+        navigation.navigate('MDRT');
+        return true;
+      };
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+
+    }, [navigation])
   );
 
   if (loading) {
