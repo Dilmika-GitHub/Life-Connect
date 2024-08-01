@@ -147,15 +147,13 @@ const PolicyDetails = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    // paddingVertical: 20,
-    // paddingHorizontal: 10,
     backgroundColor: 'white',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#FEA58F',
+    backgroundColor: '#08818a',
   },
   section: {
     marginBottom: 20,

@@ -112,9 +112,9 @@ const CustomDrawerContent = ({ navigation }) => {
   
 
   return (
-    <DrawerContentScrollView>
+    <DrawerContentScrollView style={{ flex: 1 , backgroundColor:'#d1f7fa',}}>
       {/* Wrap drawer content in SafeAreaView to handle notch */}
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 ,}}>
         {/* User Profile Section */}
         <TouchableOpacity
           onPress={() => navigation.navigate("My Profile")}
@@ -174,8 +174,8 @@ const CustomDrawerContent = ({ navigation }) => {
           label={() => (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Text style={{color:'#595959'}}>Maturity          </Text>
-              <View style={{ backgroundColor: "#FF5733", borderRadius: 20, marginLeft: 5, paddingHorizontal: 10, paddingVertical: 5 }}>
-                <Text style={{ color: "#fff" }}>3</Text>
+              <View style={{ backgroundColor: "#fecece", borderRadius: 20, marginLeft: 5, paddingHorizontal: 10, paddingVertical: 5 }}>
+                <Text style={{ color: "#fe0000" }}>3</Text>
               </View>
             </View>
           )}
@@ -302,7 +302,7 @@ export default function Home() {
         <Drawer.Screen name="Maturity" component={Maturity} />
         <Drawer.Screen name="Lapsed" component={Lapsed} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
-        <Drawer.Screen name="Change Password" component={ChangePassword}  />
+        <Drawer.Screen name="Change Password" component={ChangePassword} />
         <Drawer.Screen name="Login" component={LoginScreen} />
       </Drawer.Navigator>
     </NavigationContainer>

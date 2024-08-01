@@ -231,7 +231,6 @@ const WinnersScreen = () => {
 
   const renderDropdown = () => {
     return (
-
       <View style={styles.headercontainer}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.openDrawer()}>
@@ -435,7 +434,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#FEA58F',
+    backgroundColor: '#08818a',
   },
   flatListContainer: {
     paddingBottom: 100,

@@ -16,12 +16,13 @@ import { useRouter } from "expo-router";
 import { useFonts } from "expo-font";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CheckConnection from "../../../components/checkConnection";
+import axios from 'axios';
 import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 import AwesomeAlert from 'react-native-awesome-alerts';
 import Constants from 'expo-constants';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { MaterialIcons, SimpleLineIcons } from "@expo/vector-icons";
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { checkAppVersion, checkMaintenance } from "../../services/adminAPIs";
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -46,6 +47,25 @@ const LoginScreen = () => {
 
   // Check if credentials are saved
   useEffect(() => {
+    const appVersion = '1.0.1';
+
+    checkAppVersion(appVersion).then(data => {
+      if (data.isinforce === 'Y') {
+        router.push("/Screens/LoginScreen/UpdateApp");
+      }
+    }).catch(error => {
+      console.error("Error:", error);
+    });
+
+    checkMaintenance().then(data => {
+      if (data.isinforce === 'Y') {
+        router.push("/Screens/LoginScreen/MaintenanceScreen");
+        //alert('The system is currently under maintenance. Please try again later.');
+      }
+    }).catch(error => {
+      console.error("Error:", error);
+    });
+
     const checkStoredCredentials = async () => {
       const storedUsername = await AsyncStorage.getItem("username");
       const storedPassword = await AsyncStorage.getItem("password");
@@ -72,47 +92,45 @@ const LoginScreen = () => {
     console.log(password)
 
     try {
-      const response = await fetch(BASE_URL+ENDPOINTS.AUTHENTICATE, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const response = await axios.post(
+        `${BASE_URL}${ENDPOINTS.AUTHENTICATE}`,
+        {
           userName: username,
           password: password,
-          isActive: 'Y', 
-        }),
-      });
+          isActive: 'Y'
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
   
-      const jsonResponse = await response.json();
+      const jsonResponse = response.data;
       
-      console.log('Response:', jsonResponse); 
+      console.log('Response:', jsonResponse);
   
-      if (response.ok && jsonResponse.status === "Y") { 
+      if (response.status === 200 && jsonResponse.status === "Y") {
         await AsyncStorage.setItem("accessToken", jsonResponse.accsesstoken);
         await AsyncStorage.setItem("categoryType", jsonResponse.cattype);
         await AsyncStorage.setItem("email", jsonResponse.email);
-
-
-        if(jsonResponse.firstAttempt === "Y"){
-          router.push("/Screens/LoginScreen/ChangeDefaultPassword")
-        }
-        else{
-          if(hasSavedCredentials) {
+  
+        if (jsonResponse.firstAttempt === "Y") {
+          router.push("/Screens/LoginScreen/ChangeDefaultPassword");
+        } else {
+          if (hasSavedCredentials) {
             const storedUsername = await AsyncStorage.getItem("username");
             const storedPassword = await AsyncStorage.getItem("password");
-
-            if(username === storedUsername && password === storedPassword) {
-                router.push("/Screens/HomePage/Home");
-            }
-            else {
+  
+            if (username === storedUsername && password === storedPassword) {
+              router.push("/Screens/HomePage/Home");
+            } else {
               setShowSavePasswordPopup(true);
-              setNewCredentials ({username, password});
+              setNewCredentials({ username, password });
             }
-          }
-          else {
+          } else {
             setShowSavePasswordPopup(true);
-              setNewCredentials ({username, password});
+            setNewCredentials({ username, password });
           }
         }
       } else {
@@ -252,7 +270,7 @@ const styles = StyleSheet.create({
     left: 50,
     top: 50,
     position: "absolute",
-    color: 'white',
+    color: '#F2B510',
     fontSize: 35,
     fontFamily: 'Poppins',
   },
@@ -335,7 +353,7 @@ const styles = StyleSheet.create({
     height: hp('6%'),
     top: hp('29%'),
     left: wp('30%'),
-    backgroundColor: '#BBFAFF',
+    backgroundColor: '#F2B510',
     borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',

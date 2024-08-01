@@ -13,11 +13,11 @@ import { BASE_URL, ENDPOINTS } from "../../../services/apiConfig";
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export default function Income ({
-  color = "grey",
-  animatedCircleColor = "#05beda",
+  color = "white",
+  animatedCircleColor = "#ffdc1e",
   strokeWidth = wp('6%'),
   radius = wp('22%'),
-  textColor = "black",
+  textColor = "white",
   max = 100,
   currencyType = "Rs",
 }) {
@@ -29,32 +29,46 @@ export default function Income ({
   const [agencyCode2, setAgencyCode2] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  
+  const getAgencyCode = useCallback(async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      const email = await AsyncStorage.getItem('email');
+      const categoryType = await AsyncStorage.getItem('categoryType');
+
+      const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { email: email, catType: categoryType },
+      });
+
+      const fetchedAgencyCode1 = response.data?.personal_agency_code;
+      const fetchedAgencyCode2 = response.data?.newagt;
+
+      setAgencyCode1(fetchedAgencyCode1);
+      setAgencyCode2(fetchedAgencyCode2);
+    } catch (error) {
+      console.error('Error Getting Agency Code:', error);
+    }
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      const fetchData = async () => {
-        await getAgencyCode();
-      };
-      fetchData();
-    }, [])
+      getAgencyCode();
+    }, [getAgencyCode])
   );
 
   useEffect(() => {
     if (isFocused) {
       lockToPortrait();
     }
+  }, [isFocused]);
 
+  useEffect(() => {
     if (agencyCode1) {
-      const fetchAdditionalData = async () => {
-        await fetchActualIncmComValue();
-        await fetchTargetIncmComValue();
-      };
-      fetchAdditionalData();
+      fetchActualIncmComValue();
+      fetchTargetIncmComValue();
     }
-  }, [agencyCode1, agencyCode2], [isFocused]);
+  }, [agencyCode1, agencyCode2]);
 
   useEffect(() => {
     if (actualValue && targetValue) {
@@ -62,49 +76,19 @@ export default function Income ({
     }
   }, [actualValue, targetValue]);
 
-  const getAgencyCode = async () => {
-    try {
-      const token = await AsyncStorage.getItem('accessToken');
-      const email = await AsyncStorage.getItem('email');
-      const categoryType = await AsyncStorage.getItem('categoryType');
-  
-      const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { email: email, catType: categoryType },
-      });
-  
-      const fetchedAgencyCode1 = response.data?.personal_agency_code;
-      const fetchedAgencyCode2 = response.data?.newagt;
-  
-      setAgencyCode1(fetchedAgencyCode1);
-      setAgencyCode2(fetchedAgencyCode2);
-      console.log("called agency");
-    } catch (error) {
-      console.error('Error Getting Agency Code:', error);
-    }
-  };
-
   const fetchActualIncmComValue = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      console.log("Token: ", token);
-      console.log("Fetching actual income commission value with params:", {
-        p_agency1: agencyCode1,
-        p_agency2: !agencyCode2 || agencyCode2 === "0" ? agencyCode1 : agencyCode2,
-      });
-  
       const response = await axios.get(
         BASE_URL + ENDPOINTS.ACTUAL_INCOME_COMMISION_VALUE,
         {
           headers: { Authorization: `Bearer ${token}` },
           params: {
             p_agency1: agencyCode1,
-            p_agency2: agencyCode2 == null || agencyCode2 == 0 ? agencyCode1 : agencyCode2,
+            p_agency2: !agencyCode2 || agencyCode2 === 0 ? agencyCode1 : agencyCode2,
           },
         }
       );
-  
-      console.log("Response data:", response.data);
       setActualValue(response.data[0].commissionValue);
     } catch (error) {
       if (error.response) {
@@ -114,25 +98,22 @@ export default function Income ({
       }
     }
   };
-  
 
   const fetchTargetIncmComValue = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      console.log(agencyCode1);
       const response = await axios.get(
         `${BASE_URL + ENDPOINTS.GET_TARGET}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           params: {
-            p_catId: '1', 
-            p_agency: agencyCode1, 
+            p_catId: '1',
+            p_agency: agencyCode1,
           },
         }
       );
-  
+
       setTargetValue(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error('Error Fetching Target Value:', error);
     }
@@ -148,7 +129,6 @@ export default function Income ({
 
   const handleSubmit = async () => {
     try {
-      setLoading(true);
       const token = await AsyncStorage.getItem('accessToken');
       await axios.post(
         BASE_URL + ENDPOINTS.SET_TARGET,
@@ -160,20 +140,11 @@ export default function Income ({
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTargetValue(Number(inputValue));
-      setLoading(false);
       setModalVisible(false);
     } catch (error) {
       console.error('Error Setting Target:', error);
     }
   };
-
-  if (loading) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#FEA58F" />
-      </View>
-    );
-  }
 
   const CircleRef = useRef();
   const halfCircle = radius + strokeWidth;
@@ -208,11 +179,11 @@ export default function Income ({
             <View style={styles.buttonRow}>
               <TouchableOpacity
                 onPress={handleSubmit}
-                style={[styles.blueButton, { height: hp("5.5%"), width: wp("30%") }]}
+                style={[styles.targetSetButton, { height: hp("5.5%"), width: wp("30%") }]}
               >
                 <Text style={styles.buttonText}>Set Target</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={handleCancel} style={[styles.redButton, { height: hp("5.5%"), width: wp("30%") }]} >
+              <TouchableOpacity onPress={handleCancel} style={[styles.cancelButton, { height: hp("5.5%"), width: wp("30%") }]} >
                 <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
@@ -225,7 +196,7 @@ export default function Income ({
         <View style={styles.mainMeterContainer}>
           <View style={styles.textContainer}>
             <Text style={styles.infoText}>Total Income</Text>
-            <Text style={styles.valueText}>{ "Rs. " + new Intl.NumberFormat().format(actualValue)}</Text>
+            <Text style={[styles.valueText, {fontWeight:'bold'}]}>{ "Rs. " + new Intl.NumberFormat().format(actualValue)}</Text>
             <Text style={[styles.targetText, { color: (targetValue && targetValue !== 0) ? 'white' : 'red' }]}>
     {targetValue && targetValue !== 0 ? `Target : ${"Rs. " + new Intl.NumberFormat().format(targetValue)}` : "Click here to set a target"}
   </Text>
@@ -239,22 +210,34 @@ export default function Income ({
                   r={radius}
                   stroke={color}
                   strokeWidth={strokeWidth}
-                  strokeOpacity={0.5}
+                  strokeOpacity={1}
                   fill="transparent"
                 />
-                <AnimatedCircle
-                  ref={CircleRef}
-                  cx="50%"
-                  cy="50%"
-                  r={radius}
-                  stroke={animatedCircleColor}
-                  strokeWidth={strokeWidth}
-                  strokeDasharray={circleCircumference}
-                  strokeDashoffset={strokeDashoffset}
-                  strokeOpacity={1.0}
-                  fill="transparent"
-                  strokeLinecap="round"
-                />
+                {percentage < 100 ? (
+                  <AnimatedCircle
+                    ref={CircleRef}
+                    cx="50%"
+                    cy="50%"
+                    r={radius}
+                    stroke={animatedCircleColor}
+                    strokeWidth={strokeWidth}
+                    strokeDasharray={circleCircumference}
+                    strokeDashoffset={strokeDashoffset}
+                    strokeOpacity={1.0}
+                    fill="transparent"
+                    strokeLinecap="round"
+                  />
+                ) : (
+                  <Circle
+                    cx="50%"
+                    cy="50%"
+                    r={radius}
+                    stroke={animatedCircleColor}
+                    strokeWidth={strokeWidth}
+                    strokeOpacity={1.0}
+                    fill="transparent"
+                  />
+                )}
               </G>
             </Svg>
             <View style={styles.absoluteCenter}>
@@ -285,7 +268,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: wp("2.5%"),
     borderRadius: 10,
-    backgroundColor: "#8cd9da",
+    backgroundColor: "#12a4b1",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -294,6 +277,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  valueText:{
+    backgroundColor:'black',
+    fontWeight:"bold",
   },
   centeredView: {
     flex: 1,
@@ -335,8 +322,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: wp('60%'),
   },
-  blueButton: {
-    backgroundColor: 'blue',
+  targetSetButton: {
+    backgroundColor: "#085258",
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
@@ -344,8 +331,8 @@ const styles = StyleSheet.create({
     height: hp("5.5%"),
     width: wp("30%"),
   },
-  redButton: {
-    backgroundColor: 'red',
+  cancelButton: {
+    backgroundColor: "#12a4b1",
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
@@ -373,7 +360,7 @@ const styles = StyleSheet.create({
   },
   valueText: {
     fontSize: wp('6%'),
-    color: 'black',
+    color: 'white',
   },
   circleView: {
     alignItems: 'center',
@@ -390,6 +377,7 @@ const styles = StyleSheet.create({
     color: color,
     fontSize: wp('5%'),
     textAlign: 'center',
+    fontWeight:'bold'
   }),
 });
 

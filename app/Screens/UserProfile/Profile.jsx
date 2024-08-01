@@ -75,10 +75,10 @@ const Profile = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-            <Ionicons name="menu" size={26} color="white" />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+          <Ionicons name="menu" size={26} color="white" />
+        </TouchableOpacity>
+      </View>
       {/* Top section border */}
       <View style={[styles.section, styles.topSection]}></View>
 
@@ -176,14 +176,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#FEA58F',
+    backgroundColor: '#08818a',
   },
   section: {
     width: "100%",
   },
   topSection: {
     flex: 1,
-    backgroundColor: "#FEA58F",
+    backgroundColor: "#08818a",
   },
   bottomSection: {
     flex: 5,

@@ -160,7 +160,7 @@ const data = [
       flexDirection: 'row',
       alignItems: 'center',
       padding: 10,
-      backgroundColor: '#FEA58F',
+      backgroundColor: '#08818a',
     },
     item: {
       backgroundColor: '#F8F8F8',

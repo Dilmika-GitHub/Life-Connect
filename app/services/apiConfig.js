@@ -3,6 +3,9 @@ const BASE_URL = "http://203.115.11.236:10155/SalesTrackAppAPI/api/v1";
 
 const ENDPOINTS = {
   AUTHENTICATE: "/Account/Authanticate",
+  GET_APP_VERSION: "/Admin/GetAppVersion",
+  GET_APP_MAINTENANCE: "/Admin/GetAppMaintenance",
+  CHECK_MAINTENANCE: "/Admin/GetAppMaintenance",
   PROFILE_DETAILS: "/Account/GetAgentProfile",
   MDRT_PROFILE: "/Mdrt/GetPersonalMDRT",
   ISLANDRANK: "/Mdrt/GetIslandRankMDRT",

@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#FEA58F',
+    backgroundColor: '#08818a',
     justifyContent: 'space-between',
   },
   section: {
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
   },
   topSection: {
     flex: 0.25,
-    backgroundColor: '#FEA58F',
+    backgroundColor: '#08818a',
   },
   topSection2: {
     flex: 0.3,
