@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'; 
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { useFocusEffect } from '@react-navigation/native';
+import { getAgencyCode } from '../services/getDetailsAPIs';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from 'axios';
+import { BASE_URL, ENDPOINTS } from '../services/apiConfig';
 
-const ChangePassword = ({navigation}) => {
+const ChangePassword = ({ navigation }) => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -12,6 +16,21 @@ const ChangePassword = ({navigation}) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [agencyCode, setAgencyCode] = useState(null);
+
+  useEffect(() => {
+    const fetchAgencyCode = async () => {
+      try {
+        const data = await getAgencyCode();
+        setAgencyCode(data);
+      } catch (error) {
+        console.error("Error getting agency code:", error);
+      }
+    };
+
+    fetchAgencyCode();
+  }, []);
 
   const toggleCurrentPasswordVisibility = () => {
     setCurrentPasswordVisible(!currentPasswordVisible);
@@ -25,11 +44,40 @@ const ChangePassword = ({navigation}) => {
     setConfirmPasswordVisible(!confirmPasswordVisible);
   };
 
-  const handleUpdatePassword = () => {
-    // Add your password update logic here
+  const handleUpdatePassword = async () => {
+    if (password !== confirmPassword) {
+      setAlertMessage('New password and confirm password do not match.');
+      setShowAlert(true);
+      return;
+    }
 
-    // Show success alert
-    setShowAlert(true);
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      const email = await AsyncStorage.getItem('email');
+      const response = await axios.post(
+        BASE_URL + ENDPOINTS.CHANGE_PASSWORD,
+        {
+          p_pre_pw: currentPassword,
+          p_new_pw: password,
+          p_agency_code: agencyCode,
+          p_agent_email: email,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log(response.data);
+      if (response.data === 1) {
+        setAlertMessage('Password updated successfully!');
+      } else if (response.data === 0) {
+        setAlertMessage('Your current password is incorrect, Please Check!');
+      } else {
+        setAlertMessage('Something went wrong please try again!')
+      }
+      setShowAlert(true);
+    } catch (error) {
+      console.error('Failed to update password:', error);
+      setAlertMessage('Failed to update password.');
+      setShowAlert(true);
+    }
   };
 
   const hideAlert = () => {
@@ -56,9 +104,7 @@ const ChangePassword = ({navigation}) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={navigateToProfilePage}>
-        {/* <Link style={styles.loginText} href={'../UserProfile/Profile'} asChild> */}
-          <Icon name="arrow-back" size={24} color="#000" />
-        {/* </Link> */}
+        <Icon name="arrow-back" size={24} color="#000" />
       </TouchableOpacity>
       <Text style={styles.title}>Set a new password</Text>
       <Text style={styles.subtitle}>Please Enter Current Password</Text>
@@ -105,14 +151,17 @@ const ChangePassword = ({navigation}) => {
       <AwesomeAlert
         show={showAlert}
         showProgress={false}
-        title="Success"
-        message="Password updated successfully!"
+        title="Alert"
+        message={alertMessage}
         closeOnTouchOutside={false}
         closeOnHardwareBackPress={false}
         showConfirmButton={true}
         confirmText="OK"
-        confirmButtonColor="#FF7758"
+        confirmButtonColor="#08818a"
         onConfirmPressed={hideAlert}
+        messageStyle={styles.messageStyle}
+        confirmButtonStyle={styles.confirmButtonStyle}
+        confirmButtonTextStyle={styles.confirmButtonTextStyle}
       />
     </View>
   );
@@ -153,7 +202,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   updateButton: {
-    backgroundColor: '#FF7758',
+    backgroundColor: '#08818a',
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: 'center',
@@ -162,6 +211,17 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  messageStyle: {
+    textAlign: 'center',
+    fontSize: 16, 
+  },
+  confirmButtonStyle: {
+    paddingVertical: 10, 
+    paddingHorizontal: 18, 
+  },
+  confirmButtonTextStyle: {
+    fontSize: 16, 
   },
 });
 

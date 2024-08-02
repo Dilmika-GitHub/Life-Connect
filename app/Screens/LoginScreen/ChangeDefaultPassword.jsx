@@ -116,7 +116,7 @@ const ChangeDefaultPassword = ({navigation}) => {
         closeOnHardwareBackPress={false}
         showConfirmButton={true}
         confirmText="OK"
-        confirmButtonColor="#FF7758"
+        confirmButtonColor="#08818a"
         onConfirmPressed={handleAlert}
       />
     </View>
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   welcomeNote: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: '#FF7758',
+    color: '#08818a',
     textAlign: 'center',
   },
   image:{
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   updateButton: {
-    backgroundColor: '#FF7758',
+    backgroundColor: '#08818a',
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: 'center',

@@ -7,6 +7,7 @@ const ENDPOINTS = {
   GET_APP_MAINTENANCE: "/Admin/GetAppMaintenance",
   CHECK_MAINTENANCE: "/Admin/GetAppMaintenance",
   PROFILE_DETAILS: "/Account/GetAgentProfile",
+  CHANGE_PASSWORD: "/Account/ChangePassword",
   MDRT_PROFILE: "/Mdrt/GetPersonalMDRT",
   ISLANDRANK: "/Mdrt/GetIslandRankMDRT",
   BRANCHRANK: "/Mdrt/GetBranchRankMDRT",

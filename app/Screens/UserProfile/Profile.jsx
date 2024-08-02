@@ -160,7 +160,7 @@ const Profile = ({ navigation }) => {
         closeOnHardwareBackPress={false}
         showConfirmButton={true}
         confirmText="OK"
-        confirmButtonColor="#FF7758"
+        confirmButtonColor="#08818a"
         onConfirmPressed={handleConfirm}
       />
     </View>
