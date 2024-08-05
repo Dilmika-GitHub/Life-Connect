@@ -429,6 +429,11 @@ const WinnersScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    // padding: 10,
+    backgroundColor: '#f5f5f5',
+  },
   body: {
     flex: 1,
     flexDirection: 'column',
