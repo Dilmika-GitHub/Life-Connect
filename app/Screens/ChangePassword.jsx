@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler,Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'; 
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { useFocusEffect } from '@react-navigation/native';
@@ -45,6 +45,12 @@ const ChangePassword = ({ navigation }) => {
   };
 
   const handleUpdatePassword = async () => {
+    if (currentPassword === '' || password === '' || confirmPassword === '') {
+      setAlertMessage('Please fill all the fields!');
+      setShowAlert(true);
+      return;
+    }
+
     if (password !== confirmPassword) {
       setAlertMessage('New password and confirm password do not match.');
       setShowAlert(true);
@@ -106,6 +112,10 @@ const ChangePassword = ({ navigation }) => {
       <TouchableOpacity style={styles.backButton} onPress={navigateToProfilePage}>
         <Icon name="arrow-back" size={24} color="#000" />
       </TouchableOpacity>
+      <Image
+        source={require('../../assets/changePassword.png')} 
+        style={styles.image}
+      />
       <Text style={styles.title}>Set a new password</Text>
       <Text style={styles.subtitle}>Please Enter Current Password</Text>
       <View style={styles.inputContainer}>
@@ -222,6 +232,12 @@ const styles = StyleSheet.create({
   },
   confirmButtonTextStyle: {
     fontSize: 16, 
+  },
+  image:{
+    width: 100,
+    height: 100,
+    alignSelf: 'center',
+    marginVertical: 20,
   },
 });
 

@@ -139,7 +139,7 @@ const LoginScreen = () => {
         setLoading(false);
       }
     } catch (error) {
-      setAlertMessage(`Error: ${error.message}`);
+      setAlertMessage(`${error.response?.data?.error || error.message || 'Unknown error occurred'}`);
       setShowAlert(true);
       setLoading(false);
     }
@@ -252,6 +252,9 @@ const LoginScreen = () => {
         confirmText="OK"
         confirmButtonColor="#08818B"
         onConfirmPressed={() => setShowAlert(false)}
+        messageStyle={styles.messageStyle}
+        confirmButtonStyle={styles.confirmButtonStyle}
+        confirmButtonTextStyle={styles.confirmButtonTextStyle}
       />
     </View>
   );
@@ -408,6 +411,17 @@ const styles = StyleSheet.create({
     padding: 10,
     position: 'absolute',
     right: 0,
+  },
+  messageStyle: {
+    textAlign: 'center',
+    fontSize: 16, 
+  },
+  confirmButtonStyle: {
+    paddingVertical: 10, 
+    paddingHorizontal: 18, 
+  },
+  confirmButtonTextStyle: {
+    fontSize: 16, 
   },
 });
 
