@@ -169,7 +169,7 @@ const ChangeDefaultPassword = ({ navigation }) => {
         <AwesomeAlert
           show={showAlert}
           showProgress={false}
-          title="Success"
+          title="Alert!"
           message={alertMessage}
           closeOnTouchOutside={false}
           closeOnHardwareBackPress={false}

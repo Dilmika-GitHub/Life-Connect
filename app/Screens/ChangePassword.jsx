@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler,Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler,Image, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'; 
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { useFocusEffect } from '@react-navigation/native';
@@ -108,7 +108,12 @@ const ChangePassword = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      
+    >
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <TouchableOpacity style={styles.backButton} onPress={navigateToProfilePage}>
         <Icon name="arrow-back" size={24} color="#000" />
       </TouchableOpacity>
@@ -161,7 +166,7 @@ const ChangePassword = ({ navigation }) => {
       <AwesomeAlert
         show={showAlert}
         showProgress={false}
-        title="Alert"
+        title="Alert!"
         message={alertMessage}
         closeOnTouchOutside={false}
         closeOnHardwareBackPress={false}
@@ -173,15 +178,19 @@ const ChangePassword = ({ navigation }) => {
         confirmButtonStyle={styles.confirmButtonStyle}
         confirmButtonTextStyle={styles.confirmButtonTextStyle}
       />
-    </View>
+    </ScrollView>
+    </KeyboardAvoidingView>
+    
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#d1f7fa',
+  },
+  scrollViewContent: {
     padding: 20,
-    backgroundColor: '#fff',
   },
   backButton: {
     marginBottom: 20,
