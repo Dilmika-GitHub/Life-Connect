@@ -159,6 +159,21 @@ const MDRTProfile = ({ navigation }) => {
 
   if (error) {
     return (
+      <View style={styles.container}>
+      <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+            <Ionicons name="menu" size={26} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity
+                onPress={() => navigation.navigate("MDRT Ranking")}
+                style={styles.rankingImageContainer}
+              >
+                <Image
+                  source={require("../../../../components/pngtree.png")}
+                  style={styles.rankingimage}
+                />
+              </TouchableOpacity>
+        </View>
       <View style={styles.loader}>
         <Text style={styles.errorText}>Not Applicable{error.message}</Text>
         <AwesomeAlert
@@ -173,6 +188,7 @@ const MDRTProfile = ({ navigation }) => {
         confirmButtonColor="#08818a"
         onConfirmPressed={handleConfirm}
       />
+      </View>
       </View>
     );
   }

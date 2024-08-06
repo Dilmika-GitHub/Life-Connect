@@ -659,7 +659,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   filterText: {
-    fontSize: wp('4%'),
+    fontSize: 15,
     marginBottom: 10,
   },
   radioButtonGroup: {
