@@ -233,7 +233,7 @@ const MDRTProfile = ({ navigation }) => {
         {/* Grey color square text */}
         <View style={styles.greySquare}>
           <View style={styles.row}>
-            <Text style={styles.titleText}>Consider Agency Code</Text>
+            <Text style={styles.titleText}>Agency Code</Text>
             <Text style={styles.normalText}>{formatConsiderAgencyCode(data.consider_agency)}</Text>
           </View>
           <View style={styles.specialRow}>
@@ -247,6 +247,14 @@ const MDRTProfile = ({ navigation }) => {
           <View style={styles.specialRow}>
             <Text style={styles.titleText}>Island Rank</Text>
             <Text style={styles.normalText}>{data.mdrt_rank || "N/A"}</Text>
+          </View>
+          <View style={styles.specialRow}>
+            <Text style={styles.titleText}>Regional Rank</Text>
+            <Text style={styles.normalText}>{data.region_rank || "N/A"}</Text>
+          </View>
+          <View style={styles.specialRow}>
+            <Text style={styles.titleText}>Branch Rank</Text>
+            <Text style={styles.normalText}>{data.branch_rank || "N/A"}</Text>
           </View>
           {data.mdrt_achievment === 'Not_achieved' ? (
             <>

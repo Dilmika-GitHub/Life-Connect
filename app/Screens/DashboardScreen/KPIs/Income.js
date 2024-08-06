@@ -194,7 +194,7 @@ export default function Income ({
       >
         <View style={[styles.centeredView, { padding: hp("5%") }]}>
           <View style={[styles.modalView, { height: hp("22%"), width: wp("70%") }]}>
-            <Text style={styles.modalText}>Set your target for Income</Text>
+            <Text style={styles.modalText}>Set target - Income</Text>
             <TextInput
               style={styles.input}
               onChangeText={text => {

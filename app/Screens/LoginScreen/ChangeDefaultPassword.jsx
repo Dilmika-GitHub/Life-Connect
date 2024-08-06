@@ -93,9 +93,13 @@ const ChangeDefaultPassword = ({ navigation }) => {
 
   const handleAlert = () => {
     if (responseCode === 1) {
-      router.push("/Screens/LoginScreen/LoginScreen")
+      router.push("/Screens/LoginScreen/LoginScreen");
     }
     setShowAlert(false);
+  };
+
+  const navigateToLoginPage = () => {
+    router.push("/Screens/LoginScreen/LoginScreen");
   };
 
   useFocusEffect(
@@ -118,6 +122,9 @@ const ChangeDefaultPassword = ({ navigation }) => {
       
     >
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      <TouchableOpacity style={styles.backButton} onPress={navigateToLoginPage}>
+        <Icon name="arrow-back" size={24} color="#000" />
+      </TouchableOpacity>
         <Text style={styles.welcomeNote}>Welcome to Life Track App</Text>
         <Image
           source={require('../../../assets/changePassword.png')}
