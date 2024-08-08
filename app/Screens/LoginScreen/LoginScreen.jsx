@@ -35,7 +35,8 @@ const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false); 
   const [newCredentials, setNewCredentials] = useState(null);
   const router = useRouter();
-  const appVersion = Constants.expoConfig?.version || Constants.manifest2?.version || 'Version not found';
+  //const appVersion = Constants.expoConfig?.version || Constants.manifest2?.version || 'Version not found';
+  const appVersion = '1.0.1';
 
   const [fontsLoaded] = useFonts({
     "Poppins-Regular": require("../../../assets/font/Poppins-Regular.ttf"),
@@ -90,6 +91,7 @@ const LoginScreen = () => {
     setLoading(true);
     console.log(username)
     console.log(password)
+    console.log(appVersion)
 
     try {
       const response = await axios.post(
@@ -97,7 +99,8 @@ const LoginScreen = () => {
         {
           userName: username,
           password: password,
-          isActive: 'Y'
+          isActive: 'Y',
+          appversionNo: appVersion
         },
         {
           headers: {
