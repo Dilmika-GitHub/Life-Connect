@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Linking, Alert, Dimensions, ActivityIndicator, BackHandler } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Linking, Alert, Dimensions, ActivityIndicator, BackHandler, TouchableWithoutFeedback ,Keyboard} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL, ENDPOINTS } from '../services/apiConfig';
 import { SearchBar, Button, Input } from 'react-native-elements';
@@ -12,6 +12,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { getAgencyCode } from '../services/getDetailsAPIs';
+import { ScrollView } from 'react-native-gesture-handler';
 
 //////////////////////////////////
 
@@ -34,44 +36,35 @@ const Lapsed = ({navigation}) => {
   const [dateRangeText, setDateRangeText] = useState('');
   const [isClearButtonVisible, setClearButtonVisible] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState(0);
 
   const { width, height } = Dimensions.get("window"); 
 
   const handleErrorResponse = (error) => {
-    if (error.response.status === 401) {
-      console.log(error.response.status);
+    if(error.response.status === 400){
+      console.log('status code: ',error.response.status);
+      setAlertType(400);
+      setAlertMessage('No Policies for your search!');
+      setShowAlert(true);
+    }
+
+    else if(error.response.status === 401) {
+      console.log('status code: ',error.response.status);
+      setAlertType(401);
+      setAlertMessage('Session Expired, Please Log again!');
       setShowAlert(true);
     }
   };
 
   const handleConfirm = () => {
-    setShowAlert(false);
-    navigation.navigate('Login');
-  };
-
-  const getAgencyCode = async () => {
-    try {
-      const token = await AsyncStorage.getItem('accessToken');
-      const email = await AsyncStorage.getItem('email');
-      const categoryType = await AsyncStorage.getItem('categoryType');
-
-      const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { email: email, catType: categoryType },
-      });
-
-      const fetchedAgencyCode1 = response.data?.personal_agency_code;
-      const fetchedAgencyCode2 = response.data?.newagt;
-
-      setAgencyCode1(fetchedAgencyCode1);
-      setAgencyCode2(fetchedAgencyCode2);
-
-
-    } catch (error) {
-      console.error('Error Getting Agency Code:', error);
-      handleErrorResponse(error);
+    if(alertType===401){
+      setShowAlert(false);
+      navigation.navigate('Login');
     }
+    setShowAlert(false);
   };
+
 
   const getPolicyDetails = async () => {
     try {
@@ -97,7 +90,7 @@ const Lapsed = ({navigation}) => {
 
       return response.data;
     } catch (error) {
-      console.error('Error Getting Policy Details:', error.response ? error.response.data : error.message);
+      console.error("Error getting Policy Details:", error);
       handleErrorResponse(error);
       return [];
     }
@@ -128,7 +121,6 @@ const Lapsed = ({navigation}) => {
 
   const fetchData = async () => {
     setLoading(true);
-    await getAgencyCode();
     const policyDetails = await getPolicyDetails();
     setPolicies(policyDetails);
     const currentDate = new Date();
@@ -155,6 +147,18 @@ const Lapsed = ({navigation}) => {
   );
 
   useEffect(() => {
+    const fetchAgencyCode = async () => {
+      try {
+        const data = await getAgencyCode();
+        setAgencyCode1(data?.personal_agency_code);
+      setAgencyCode2(data?.newagt);
+      } catch (error) {
+        console.error("Error getting agency code:", error);
+        handleErrorResponse(error);
+      }
+    };
+
+    fetchAgencyCode();
     if (agencyCode1) {
       setSelectedOption(agencyCode1); // Set default option if agencyCode1 is available
     }
@@ -284,7 +288,6 @@ const Lapsed = ({navigation}) => {
     setToDate('');
     const fetchData = async () => {
       setLoading(true);
-      await getAgencyCode();
       const policyDetails = await getPolicyDetails();
       setPolicies(policyDetails);
       setLoading(false);
@@ -313,6 +316,9 @@ const Lapsed = ({navigation}) => {
     }
     setFilterModalVisible(false); // Close the filter modal
   };
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
 
 
   const radioButtonsData = [
@@ -332,6 +338,7 @@ const Lapsed = ({navigation}) => {
 
   const renderFilterModal = () => (
     <Modal isVisible={isFilterModalVisible} animationIn="slideInUp" animationOut="slideOutDown" onBackdropPress={null}>
+      <TouchableWithoutFeedback  onPress={dismissKeyboard}>
       <View style={styles.filterModal}>
         <Text style={styles.modalTitle}>Filter Options</Text>
         <View style={styles.searchbar}>
@@ -343,6 +350,7 @@ const Lapsed = ({navigation}) => {
             inputContainerStyle={styles.inputContainer}
             inputStyle={styles.input}
             lightTheme
+            keyboardType='numeric'
           />
         </View>
         <Text style={styles.filterText}>Agent Code:</Text>
@@ -389,6 +397,9 @@ const Lapsed = ({navigation}) => {
 
         <Button title="Cancel" onPress={toggleCancelModal} buttonStyle={styles.cancelButton} />
       </View>
+      </TouchableWithoutFeedback>
+      
+      
     </Modal>
   );
 
@@ -435,8 +446,8 @@ const Lapsed = ({navigation}) => {
       <AwesomeAlert
         show={showAlert}
         showProgress={false}
-        title="Session Expired"
-        message="Please Log Again!"
+        title="Alert"
+        message={alertMessage}
         closeOnTouchOutside={false}
         closeOnHardwareBackPress={false}
         showConfirmButton={true}

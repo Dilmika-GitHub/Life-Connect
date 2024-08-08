@@ -17,7 +17,7 @@ export async function getAgencyCode() {
             catType: categoryType
           }
       });
-      return response.data.personal_agency_code;
+      return response.data;
     } catch (error) {
       console.error("Error getting agency code:", error);
       throw error;

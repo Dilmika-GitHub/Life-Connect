@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, ScrollView, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, ScrollView, Text, StyleSheet, TouchableOpacity, ActivityIndicator, } from 'react-native';
 import { lockToAllOrientations } from './OrientationLock';
 import { useIsFocused } from '@react-navigation/native';
 import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { Ionicons } from "@expo/vector-icons";
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const PolicyDetails = ({ navigation }) => {
   const isFocused = useIsFocused();
@@ -125,6 +126,7 @@ const PolicyDetails = ({ navigation }) => {
           <View style={styles.tableRow}>
             <Text style={styles.sectionHeading3}>Lapsed Policies</Text>
             <Text style={styles.tableCell3}>{policyCount?.lapscount}</Text>
+            <Icon name="arrow-forward-outline" size={24} color="#fff" />
           </View>
         </View>
       </TouchableOpacity>
