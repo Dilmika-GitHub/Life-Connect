@@ -24,7 +24,7 @@ import Competitions from "../MDRTRanking";
 import Profile from "../UserProfile/Profile";
 import PolicyDetails from "../PolicyDetails";
 import Maturity from "../Maturity";
-import Lapsed from "../Lapsed"
+import Lapsed from "../LapsedPolicies/Lapsed"
 import MDRTProfile from "../UserProfile/MDRTProfile/MDRTProfile";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
