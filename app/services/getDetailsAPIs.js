@@ -88,34 +88,42 @@ export const getPolicyDetails = async () => {
 };
 
 export const getFilteredPolicyDetails = async (agencyCode, policyNo, fromDate, toDate) => {
-  try {
-    const headers = await getCommonHeaders();
-
-    const response = await axios.post(
-      `${BASE_URL}${ENDPOINTS.POLICY_DETAILS}`,
-      {
-        p_agency: agencyCode,
-        p_polno: policyNo || '',
-        p_fromdate: fromDate || '',
-        p_todate: toDate || '',
-      },
-      { headers, timeout: 10000 }
-    );
-
-    return response.data;
-  } catch (error) {
-    console.log('Error in getFilteredPolicyDetails:', error); // Debugging statement
-    if (error.response) {
-      const { status, data } = error.response;
-      if (status === 401) {
-        throw new Error("Session expired, please log in again.");
-      } else if (status === 400) {
-        throw new Error("No policies found for the given search criteria.");
+    try {
+      const headers = await getCommonHeaders();
+  
+      const response = await axios.post(
+        `${BASE_URL}${ENDPOINTS.POLICY_DETAILS}`,
+        {
+          p_agency: agencyCode,
+          p_polno: policyNo || '',
+          p_fromdate: fromDate || '',
+          p_todate: toDate || '',
+        },
+        { headers, timeout: 10000 } // 10-second timeout
+      );
+  
+      return response.data;
+    } catch (error) {
+      console.log('Error in getFilteredPolicyDetails:', error); // Debugging statement
+  
+      // Check for specific error types
+      if (error.code === 'ECONNABORTED') {
+        // Handle timeout error
+        throw new Error("The request took too long to complete. Please try again later.");
+      } else if (error.response) {
+        // Handle errors with response status codes
+        const { status, data } = error.response;
+        if (status === 401) {
+          throw new Error("Session expired, please log in again.");
+        } else if (status === 400) {
+          throw new Error("No policies found for the given search criteria.");
+        } else {
+          throw new Error(data.message || "An unexpected error occurred while fetching filtered policy details.");
+        }
       } else {
-        throw new Error(data.message || "An unexpected error occurred while fetching filtered policy details.");
+        // Handle other errors (e.g., network errors)
+        throw new Error(error.message || "An unexpected error occurred.");
       }
-    } else {
-      throw new Error(error.message || "An unexpected error occurred.");
     }
-  }
-};
+  };
+  
