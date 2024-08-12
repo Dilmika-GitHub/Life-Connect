@@ -51,25 +51,38 @@ const Lapsed = ({ navigation }) => {
   const [alertMessage, setAlertMessage] = useState('');
 
   const handleShowAlert = (message) => {
-    console.log('Displaying alert with message:', message); // Debugging statement
+    console.log('Setting alert message:', message);
     setAlertMessage(message);
     setShowAlert(true);
+    console.log('Alert State after setting:', showAlert);
+    console.log('Alert Message after setting:', alertMessage);
   };
+  
+  
 
   const fetchData = async () => {
     dispatch({ type: 'SET_LOADING', payload: true });
-    try {
-      const policyDetails = await getPolicyDetails();
-      dispatch({ type: 'SET_POLICIES', payload: policyDetails });
-      const currentDate = new Date();
-      const defaultToDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
-      const defaultFromDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear() - 1}`;
-      dispatch({ type: 'SET_DATE_RANGE_TEXT', payload: `${defaultFromDate} - ${defaultToDate}` });
-    } catch (error) {
-      handleShowAlert(error.message);
-    } finally {
-      dispatch({ type: 'SET_LOADING', payload: false });
-    }
+  try {
+    const policyDetails = await getPolicyDetails();
+    dispatch({ type: "SET_POLICIES", payload: policyDetails });
+    const currentDate = new Date();
+    const defaultToDate = `${currentDate.getDate()}/${
+      currentDate.getMonth() + 1
+    }/${currentDate.getFullYear()}`;
+    const defaultFromDate = `${currentDate.getDate()}/${
+      currentDate.getMonth() + 1
+    }/${currentDate.getFullYear() - 1}`;
+    dispatch({
+      type: "SET_DATE_RANGE_TEXT",
+      payload: `${defaultFromDate} - ${defaultToDate}`,
+    });
+  } catch (error) {
+    console.log("Error in getFilteredPolicyDetails:", error);
+    handleShowAlert(error.message); // Make sure this is executed
+    console.log("Alert should be triggered with message:", error.message); // Ensure this function is called with the error message
+  } finally {
+    dispatch({ type: "SET_LOADING", payload: false });
+  }
   };
 
   useFocusEffect(
@@ -131,9 +144,7 @@ const Lapsed = ({ navigation }) => {
         confirmButtonColor="#08818a"
         onConfirmPressed={() => {
           setShowAlert(false);
-          if (alertMessage.includes('Session expired')) {
-            navigation.replace('Login'); // Redirect to login page
-          }
+          console.log('Alert dismissed');
         }}
       />
 

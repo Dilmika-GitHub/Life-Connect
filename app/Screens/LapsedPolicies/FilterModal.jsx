@@ -5,6 +5,7 @@ import { SearchBar, Button } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getFilteredPolicyDetails } from '../../services/getDetailsAPIs';
 import { getAgencyCode } from '../../services/getDetailsAPIs';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const FilterModal = ({ isVisible, onClose, onFilter }) => {
   const [filterSearchValue, setFilterSearchValue] = useState('');
@@ -16,6 +17,18 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
   const [agencyCode1, setAgencyCode1] = useState('');
   const [agencyCode2, setAgencyCode2] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
+
+  const handleShowAlert = (message) => {
+    console.log('Setting alert message:', message);
+    setAlertMessage(message);
+    setShowAlert(true);
+    console.log('Alert State after setting:', showAlert);
+    console.log('Alert Message after setting:', alertMessage);
+  };
 
 
   useEffect(() => {
@@ -43,6 +56,7 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
       onClose();
     } catch (error) {
       console.error('Failed to fetch filtered policies:', error);
+      handleShowAlert(error.message);
     } finally {
     setIsLoading(false); 
   }
@@ -81,6 +95,23 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
   return (
     <Modal isVisible={isVisible} onBackdropPress={onClose} backdropOpacity={0.2}>
       <View style={styles.filterModal}>
+      <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Alert"
+        message={alertMessage}
+        closeOnTouchOutside={false}
+        closeOnHardwareBackPress={false}
+        showConfirmButton={true}
+        confirmText="OK"
+        confirmButtonColor="#08818a"
+        onConfirmPressed={() => {
+          setShowAlert(false);
+          if (alertMessage.includes('Session expired')) {
+            navigation.replace('Login'); // Redirect to login page
+          }
+        }}
+      />
         <Text style={styles.modalTitle}>Filter Options</Text>
         <SearchBar
           placeholder="Search Policy No"
