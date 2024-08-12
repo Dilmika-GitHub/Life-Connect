@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, TouchableOpacity, Alert, Linking, Platform, Dimensions } from 'react-native';
 import Modal from 'react-native-modal';
-import { lockToPortrait, lockToAllOrientations } from "./OrientationLock";
+import { lockToPortrait, lockToAllOrientations } from "../OrientationLock";
 import { useIsFocused } from '@react-navigation/native'; 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
