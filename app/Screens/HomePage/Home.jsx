@@ -23,7 +23,7 @@ import SettingsScreen from "../SettingsScreen";
 import Competitions from "../MDRTRanking";
 import Profile from "../UserProfile/Profile";
 import PolicyDetails from "../PolicyDetails";
-import Maturity from "../Maturity";
+import Maturity from "../MaturityPolicies/Maturity";
 import Lapsed from "../LapsedPolicies/Lapsed"
 import MDRTProfile from "../UserProfile/MDRTProfile/MDRTProfile";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
