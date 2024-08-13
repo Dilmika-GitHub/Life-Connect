@@ -279,6 +279,28 @@ const MDRTProfile = ({ navigation }) => {
           resizeMode="cover"
         />
         <Text style={styles.imageText}>{data.agent_name?.replace(/\s+/g, '')}</Text>
+        <View style={styles.batchContainer}>
+      {data.mdrt_achievment === "Not_achieved" && (
+        <Image
+          source={require('../../../../assets/MDRT_Logo.png')}
+          style={styles.batch}
+        />
+      )}
+
+      {data.cot_rank === null && (
+        <Image
+          source={require('../../../../assets/COT_Logo.png')}
+          style={styles.batch}
+        />
+      )}
+
+      {data.tot_rank === null && (
+        <Image
+          source={require('../../../../assets/TOT_Logo.png')}
+          style={styles.batch}
+        />
+      )}
+    </View>
       </View>
     </View>
   );
@@ -449,7 +471,19 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     // margin: 10,
-  }
+  },
+  batchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center', 
+    justifyContent: 'center',
+
+  },
+  batch: {
+    width: 50,
+    height: 50,
+    marginRight: 10, 
+    alignItems:'center',
+  },
 });
 
 export default MDRTProfile;

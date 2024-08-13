@@ -3,10 +3,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, BackHandler, Dimensions } from 'react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { getPolicyDetails } from '../../services/getDetailsAPIs';
-import FilterModal from './FilterModal';
-import PolicyDetailsModal from './PolicyDetailsModal';
-import PolicyListItem from './PolicyListItem';
+import { getLapsedPolicyDetails } from '../../services/getDetailsAPIs';
+import FilterModal from './LapsedFilterModal';
+import PolicyDetailsModal from './LapsedPolicyDetailsModal';
+import PolicyListItem from './LapsedPolicyListItem';
 
 const initialState = {
   policies: [],
@@ -63,7 +63,7 @@ const Lapsed = ({ navigation }) => {
   const fetchData = async () => {
     dispatch({ type: 'SET_LOADING', payload: true });
   try {
-    const policyDetails = await getPolicyDetails();
+    const policyDetails = await getLapsedPolicyDetails();
     dispatch({ type: "SET_POLICIES", payload: policyDetails });
     const currentDate = new Date();
     const defaultToDate = `${currentDate.getDate()}/${

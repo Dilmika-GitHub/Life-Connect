@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } fr
 import Modal from 'react-native-modal';
 import { SearchBar, Button } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { getFilteredPolicyDetails } from '../../services/getDetailsAPIs';
+import { getFilteredLapsedPolicyDetails } from '../../services/getDetailsAPIs';
 import { getAgencyCode } from '../../services/getDetailsAPIs';
 import AwesomeAlert from 'react-native-awesome-alerts';
 
@@ -51,7 +51,7 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
     setIsLoading(true);
 
     try {
-      const filteredPolicies = await getFilteredPolicyDetails(selectedOption, filterSearchValue, fromDate, toDate);
+      const filteredPolicies = await getFilteredLapsedPolicyDetails(selectedOption, filterSearchValue, fromDate, toDate);
       onFilter(filteredPolicies);
       onClose();
     } catch (error) {
@@ -116,7 +116,7 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
   }}
 />
 
-        <Text style={styles.modalTitle}>Filter Options</Text>
+        <Text style={styles.modalTitle}>Lapsed Filter Options</Text>
         <View style={styles.searchContainer}>
   <SearchBar
     placeholder="Search Policy No"
