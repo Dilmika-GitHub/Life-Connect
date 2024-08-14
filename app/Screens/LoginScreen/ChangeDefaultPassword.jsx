@@ -106,7 +106,7 @@ const ChangeDefaultPassword = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
-        navigation.navigate('Login');
+        router.push("/Screens/LoginScreen/LoginScreen");
         return true;
       };
 
