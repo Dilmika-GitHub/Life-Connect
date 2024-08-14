@@ -133,13 +133,12 @@ const Profile = ({ navigation }) => {
       );
 
       const blob = response.data;
-      const base64Image = await blobToBase64(blob);
-
+      const imageUrl = await blobToBase64(blob);
       // const imageUrl = URL.createObjectURL(blob);
 
       setUserData((prevData) => ({
         ...prevData,
-        profileImage: base64Image,
+        profileImage: imageUrl,
       }));
     } catch (error) {
       console.error('Error fetching profile image:', error);
