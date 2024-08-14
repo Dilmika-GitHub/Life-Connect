@@ -105,6 +105,17 @@ const Profile = ({ navigation }) => {
     }
   };
 
+  const blobToBase64 = (blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
+
   const fetchProfileImage = async () => {
     try {
       const token = await AsyncStorage.getItem("accessToken");
@@ -122,11 +133,13 @@ const Profile = ({ navigation }) => {
       );
 
       const blob = response.data;
-      const imageUrl = URL.createObjectURL(blob);
+      const base64Image = await blobToBase64(blob);
+
+      // const imageUrl = URL.createObjectURL(blob);
 
       setUserData((prevData) => ({
         ...prevData,
-        profileImage: imageUrl,
+        profileImage: base64Image,
       }));
     } catch (error) {
       console.error('Error fetching profile image:', error);
