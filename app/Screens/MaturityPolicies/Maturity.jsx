@@ -3,10 +3,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, BackHandler, Dimensions } from 'react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { getLapsedPolicyDetails } from '../../services/getDetailsAPIs';
-import FilterModal from './LapsedFilterModal';
-import PolicyDetailsModal from './LapsedPolicyDetailsModal';
-import PolicyListItem from './LapsedPolicyListItem';
+import { getMaturePolicyDetails } from '../../services/getDetailsAPIs';
+import FilterModal from './MaturityFilterModal';
+import PolicyDetailsModal from './MaturityPolicyDetailsModal';
+import PolicyListItem from './MaturityPolicyListItem';
 
 const initialState = {
   policies: [],
@@ -43,7 +43,7 @@ const reducer = (state, action) => {
   }
 };
 
-const Lapsed = ({ navigation }) => {
+const Maturity = ({ navigation }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { width, height } = Dimensions.get('window');
   
@@ -58,12 +58,10 @@ const Lapsed = ({ navigation }) => {
     console.log('Alert Message after setting:', alertMessage);
   };
   
-  
-
   const fetchData = async () => {
     dispatch({ type: 'SET_LOADING', payload: true });
   try {
-    const policyDetails = await getLapsedPolicyDetails();
+    const policyDetails = await getMaturePolicyDetails();
     dispatch({ type: "SET_POLICIES", payload: policyDetails });
     const currentDate = new Date();
     const defaultToDate = `${currentDate.getDate()}/${
@@ -195,7 +193,7 @@ const Lapsed = ({ navigation }) => {
   );
 };
 
-export default Lapsed;
+export default Maturity;
 
 const styles = StyleSheet.create({
   container: {

@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } fr
 import Modal from 'react-native-modal';
 import { SearchBar, Button } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { getFilteredPolicyDetails } from '../../services/getDetailsAPIs';
+import { getFilteredLapsedPolicyDetails } from '../../services/getDetailsAPIs';
 import { getAgencyCode } from '../../services/getDetailsAPIs';
 import AwesomeAlert from 'react-native-awesome-alerts';
 
@@ -51,7 +51,7 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
     setIsLoading(true);
 
     try {
-      const filteredPolicies = await getFilteredPolicyDetails(selectedOption, filterSearchValue, fromDate, toDate);
+      const filteredPolicies = await getFilteredLapsedPolicyDetails(selectedOption, filterSearchValue, fromDate, toDate);
       onFilter(filteredPolicies);
       onClose();
     } catch (error) {
@@ -96,33 +96,39 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
     <Modal isVisible={isVisible} onBackdropPress={onClose} backdropOpacity={0.2}>
       <View style={styles.filterModal}>
       <AwesomeAlert
-        show={showAlert}
-        showProgress={false}
-        title="Alert"
-        message={alertMessage}
-        closeOnTouchOutside={false}
-        closeOnHardwareBackPress={false}
-        showConfirmButton={true}
-        confirmText="OK"
-        confirmButtonColor="#08818a"
-        onConfirmPressed={() => {
-          setShowAlert(false);
-          if (alertMessage.includes('Session expired')) {
-            navigation.replace('Login'); // Redirect to login page
-          }
-        }}
-      />
-        <Text style={styles.modalTitle}>Filter Options</Text>
-        <SearchBar
-          placeholder="Search Policy No"
-          value={filterSearchValue}
-          onChangeText={setFilterSearchValue}
-          containerStyle={styles.searchBarContainer}
-          inputContainerStyle={styles.inputContainer}
-          inputStyle={styles.input}
-          lightTheme
-          keyboardType="numeric"
-        />
+  show={showAlert}
+  showProgress={false}
+  title="Alert"
+  message={alertMessage}
+  closeOnTouchOutside={false}
+  closeOnHardwareBackPress={false}
+  showConfirmButton={true}
+  confirmText="OK"
+  confirmButtonColor="#08818a"
+  onConfirmPressed={() => {
+    setShowAlert(false);
+    
+    if (alertMessage.includes('Session expired')) {
+      navigation.replace('Login');
+    } if (alertMessage.includes('The request took too long')) {
+      navigation.navigate('PolicyDetails', { errorMessage: alertMessage });
+    }
+  }}
+/>
+
+        <Text style={styles.modalTitle}>Lapsed Filter Options</Text>
+        <View style={styles.searchContainer}>
+  <SearchBar
+    placeholder="Search Policy No"
+    value={filterSearchValue}
+    onChangeText={setFilterSearchValue}
+    containerStyle={styles.searchBarContainer}
+    inputContainerStyle={styles.inputContainer}
+    inputStyle={styles.input}
+    lightTheme
+    keyboardType="numeric"
+  />
+</View>
         <Text style={styles.filterText}>Agent Code:</Text>
         <View style={styles.radioButtonGroup}>
           {[agencyCode1, agencyCode2].filter(Boolean).map((code, index) => (
@@ -207,6 +213,9 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 16,
+  },
+  searchContainer: {
+    marginBottom: 50, // Add some space between the SearchBar and the next elements
   },
   filterText: {
     fontSize: 16,
