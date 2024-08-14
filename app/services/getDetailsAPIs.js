@@ -146,10 +146,6 @@ toDate.setMonth(currentDate.getMonth() + 1); // One month after today
 
 const formattedFromDate = formatDate(fromDate);
 const formattedToDate = formatDate(toDate);
-console.log('agency: ',agencyCode);
-console.log('polno: ');
-console.log('from: ',formattedFromDate);
-console.log('to: ',formattedToDate);
 
 console.log(`From Date: ${formattedFromDate}, To Date: ${formattedToDate}`);
   
