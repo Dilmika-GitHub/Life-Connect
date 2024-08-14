@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#08818a',
   },
   topSection2: {
-    flex: 0.3,
+    flex: 0.4,
     backgroundColor: 'white',
     shadowColor:'black',
   },
