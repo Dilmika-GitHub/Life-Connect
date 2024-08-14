@@ -13,17 +13,16 @@ const PolicyListItem = ({ item, onPress }) => {
     }
   };
 
-  const formattedLapsedDate = formatDate(item.next_due_date.split(' ')[0]);
 
   return (
     <TouchableOpacity
       style={styles.itemContainer}
       onPress={() => onPress(item)}
       accessible
-      accessibilityLabel={`Policy ${item.policy_no}, customer name ${item.customer_name}, amount ${item.sa ? `Rs. ${new Intl.NumberFormat().format(item.sa)}` : 'N/A'}`}
+      accessibilityLabel={`Policy ${item.policy_no}, customer name ${item.customer_name}, amount ${item.gross_amount ? `Rs. ${new Intl.NumberFormat().format(item.gross_amount)}` : 'N/A'}`}
     >
       <Text style={styles.policyNo}>{item.policy_no}</Text>
-      <Text style={styles.amount}>{item.sa ? `Rs. ${new Intl.NumberFormat().format(item.sa)}` : 'N/A'}</Text>
+      <Text style={styles.amount}>{item.gross_amount ? `Rs. ${new Intl.NumberFormat().format(item.gross_amount)}` : 'N/A'}</Text>
       <Text style={styles.name}>{item.customer_name}</Text>
     </TouchableOpacity>
   );
