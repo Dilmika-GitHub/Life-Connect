@@ -58,7 +58,7 @@ const MDRTProfile = ({ navigation }) => {
         }
       });
 
-      setAgencyCode(response.data);
+      setAgencyCode(response.data?.personal_agency_code);
 
       await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
 
@@ -75,6 +75,8 @@ const MDRTProfile = ({ navigation }) => {
       throw error;
     }
   };
+
+
 
   const fetchMdrtPersonalData = async () => {
     try {
@@ -110,6 +112,46 @@ const MDRTProfile = ({ navigation }) => {
     }
   };
 
+  const blobToBase64 = (blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
+
+  const fetchProfileImage = async () => {
+    try {
+      const token = await AsyncStorage.getItem("accessToken");
+      console.log(agencyCode);
+
+      const response = await axios.get(
+        `${BASE_URL}/Image/GetProfileImage?fileName=${agencyCode}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'image/png; x-api-version=1',
+          },
+          responseType: 'blob',
+        }
+      );
+
+      const blob = response.data;
+      const imageUrl = await blobToBase64(blob);
+      // const imageUrl = URL.createObjectURL(blob);
+
+      setData((prevData) => ({
+        ...prevData,
+        profileImage: imageUrl,
+      }));
+    } catch (error) {
+      console.error('Error fetching profile image:', error);
+    }
+  };
+
   const calculateTimeRemaining = () => {
     const currentDate = new Date();
     const endOfYear = new Date(currentDate.getFullYear(), 11, 31, 23, 59, 59);
@@ -139,15 +181,20 @@ const MDRTProfile = ({ navigation }) => {
         try {
           await getAgencyCode();
           await fetchMdrtPersonalData();
+          // Assuming that fetchProfileImage relies on data obtained from the above functions
+          if (agencyCode) {
+            await fetchProfileImage();
+          } // Add fetchProfileImage to be called after the other data fetching functions
         } catch (error) {
           setError(true);
           setLoading(false);
         }
       };
-
+  
       fetchData();
-    }, [])
+    }, [agencyCode])
   );
+  
 
   if (loading) {
     return (
@@ -159,6 +206,21 @@ const MDRTProfile = ({ navigation }) => {
 
   if (error) {
     return (
+      <View style={styles.container}>
+      <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+            <Ionicons name="menu" size={26} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity
+                onPress={() => navigation.navigate("MDRT Ranking")}
+                style={styles.rankingImageContainer}
+              >
+                <Image
+                  source={require("../../../../components/pngtree.png")}
+                  style={styles.rankingimage}
+                />
+              </TouchableOpacity>
+        </View>
       <View style={styles.loader}>
         <Text style={styles.errorText}>Not Applicable{error.message}</Text>
         <AwesomeAlert
@@ -173,6 +235,7 @@ const MDRTProfile = ({ navigation }) => {
         confirmButtonColor="#08818a"
         onConfirmPressed={handleConfirm}
       />
+      </View>
       </View>
     );
   }
@@ -274,7 +337,7 @@ const MDRTProfile = ({ navigation }) => {
       {/* Profile Image */}
       <View style={styles.imageContainer}>
         <Image
-          source={require("../../../../components/user.jpg")}
+          source={{ uri: data.profileImage }}
           style={styles.roundImage}
           resizeMode="cover"
         />

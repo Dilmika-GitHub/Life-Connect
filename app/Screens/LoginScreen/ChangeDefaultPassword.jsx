@@ -27,7 +27,7 @@ const ChangeDefaultPassword = ({ navigation }) => {
     const fetchAgencyCode = async () => {
       try {
         const data = await getAgencyCode();
-        setAgencyCode(data);
+        setAgencyCode(data.personal_agency_code);
       } catch (error) {
         console.error("Error getting agency code:", error);
       }
@@ -64,6 +64,7 @@ const ChangeDefaultPassword = ({ navigation }) => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
       const email = await AsyncStorage.getItem('email');
+      console.log(agencyCode);
       const response = await axios.post(
         BASE_URL + ENDPOINTS.CHANGE_PASSWORD,
         {
