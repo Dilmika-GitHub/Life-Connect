@@ -85,6 +85,17 @@ const CustomDrawerContent = ({ navigation }) => {
       }
     };
 
+    const blobToBase64 = (blob) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve(reader.result);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    };
+
     const fetchProfileImage = async () => {
       try {
         const token = await AsyncStorage.getItem("accessToken");
@@ -101,8 +112,9 @@ const CustomDrawerContent = ({ navigation }) => {
         );
 
         const blob = response.data;
-        const imageUrl = URL.createObjectURL(blob);
-
+        // const imageUrl = URL.createObjectURL(blob);
+        const imageUrl = await blobToBase64(blob);
+        
         setUserData((prevData) => ({
           ...prevData,
           profileImage: imageUrl,
