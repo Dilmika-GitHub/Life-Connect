@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Linking, Alert, TouchableOpacity } from 'react-
 import Modal from 'react-native-modal';
 import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const PolicyDetailsModal = ({ isVisible, onClose, policy }) => {
   if (!policy) {
@@ -96,7 +97,7 @@ const PolicyDetailsModal = ({ isVisible, onClose, policy }) => {
           <Text style={styles.modalLabel}>Email</Text>
           <Text style={styles.modalText}>{policy.email || 'N/A'}</Text>
         </View>
-        {policy.email !== 'N/A' && (
+        {policy.email && policy.email !== 'N/A' && (
           <View style={styles.iconRow}>
             <TouchableOpacity onPress={() => handleEmailPress(policy.email)} accessible accessibilityLabel="Email">
               <Ionicons name="mail-outline" size={24} color="blue" style={styles.modalEmailLink} />
@@ -147,5 +148,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingBottom: 10,
+    marginRight: wp('20%'),
+  },
+  whatsappIcon: {
+    marginLeft: wp('5%'),
+  },
+  contactIcon: {
+    marginLeft: wp('5%'),
   },
 });

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Linking, Alert, TouchableOpacity } from 'react-
 import Modal from 'react-native-modal';
 import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const PolicyDetailsModal = ({ isVisible, onClose, policy }) => {
     if (!policy) {
@@ -148,5 +149,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingBottom: 10,
+    marginRight: wp('20%'),
+  },
+  whatsappIcon: {
+    marginLeft: wp('5%'),
+  },
+  contactIcon: {
+    marginLeft: wp('5%'),
   },
 });

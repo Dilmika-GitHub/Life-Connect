@@ -523,7 +523,6 @@ const Lapsed = ({navigation}) => {
             <Text style={styles.modalText}>{modalContent.email}</Text>
           </View>
           {modalContent.email !== 'N/A' && (
-
             <View style={styles.iconRow}>
               <Ionicons
                 name="mail-outline"
