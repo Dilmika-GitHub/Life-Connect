@@ -8,6 +8,8 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Ionicons } from "@expo/vector-icons";
+import { lockToPortrait, lockToAllOrientations } from "../../OrientationLock";
+import { useIsFocused } from '@react-navigation/native';
 
 const MDRTProfile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
@@ -17,12 +19,14 @@ const MDRTProfile = ({ navigation }) => {
   const [agencyCode, setAgencyCode] = useState(null);
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
+  const isFocused = useIsFocused();
   const [timeRemaining, setTimeRemaining] = useState({
     days: '',
     hours: '',
     minutes: '',
     seconds: '',
   });
+
 
   const handleErrorResponse = (error) => {
     if (error.response.status === 401) {
@@ -171,9 +175,13 @@ const MDRTProfile = ({ navigation }) => {
   };
 
   useEffect(() => {
+
+    if (isFocused) {
+      lockToPortrait();
+  }
     const interval = setInterval(calculateTimeRemaining, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isFocused]);
 
   useFocusEffect(
     useCallback(() => {

@@ -8,6 +8,8 @@ import { CommonActions } from '@react-navigation/native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from 'expo-image-picker';
+import { lockToPortrait, lockToAllOrientations } from "../OrientationLock";
+import { useIsFocused } from '@react-navigation/native';
 
 const Profile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
@@ -15,6 +17,7 @@ const Profile = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [categoryType, setCategoryType] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
+  const isFocused = useIsFocused();
 
   const handleErrorResponse = (error) => {
     if (error.response?.status === 401) {
@@ -188,6 +191,12 @@ const Profile = ({ navigation }) => {
       console.error('Error fetching profile image:', error);
     }
   };
+
+  useEffect(() => {
+    if (isFocused) {
+        lockToPortrait();
+    }
+}, [isFocused]);
 
   useFocusEffect(
     useCallback(() => {
