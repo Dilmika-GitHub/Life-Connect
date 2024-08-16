@@ -6,6 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { getFilteredLapsedPolicyDetails } from '../../services/getDetailsAPIs';
 import { getAgencyCode } from '../../services/getDetailsAPIs';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const FilterModal = ({ isVisible, onClose, onFilter }) => {
   const [filterSearchValue, setFilterSearchValue] = useState('');
@@ -58,8 +59,8 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
       console.error('Failed to fetch filtered policies:', error);
       handleShowAlert(error.message);
     } finally {
-    setIsLoading(false); 
-  }
+      setIsLoading(false);
+    }
   };
 
   const validateDates = () => {
@@ -95,40 +96,41 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
   return (
     <Modal isVisible={isVisible} onBackdropPress={onClose} backdropOpacity={0.2}>
       <View style={styles.filterModal}>
-      <AwesomeAlert
-  show={showAlert}
-  showProgress={false}
-  title="Alert"
-  message={alertMessage}
-  closeOnTouchOutside={false}
-  closeOnHardwareBackPress={false}
-  showConfirmButton={true}
-  confirmText="OK"
-  confirmButtonColor="#08818a"
-  onConfirmPressed={() => {
-    setShowAlert(false);
-    
-    if (alertMessage.includes('Session expired')) {
-      navigation.replace('Login');
-    } if (alertMessage.includes('The request took too long')) {
-      navigation.navigate('PolicyDetails', { errorMessage: alertMessage });
-    }
-  }}
-/>
+        <AwesomeAlert
+          show={showAlert}
+          showProgress={false}
+          title="Alert"
+          message={alertMessage}
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={false}
+          showConfirmButton={true}
+          confirmText="OK"
+          confirmButtonColor="#08818a"
+          onConfirmPressed={() => {
+            setShowAlert(false);
 
+            if (alertMessage.includes('Session expired')) {
+              navigation.replace('Login');
+            } if (alertMessage.includes('The request took too long')) {
+              navigation.navigate('PolicyDetails', { errorMessage: alertMessage });
+            }
+          }}
+        />
+        
         <Text style={styles.modalTitle}>Lapsed Filter Options</Text>
+        <ScrollView style={[styles.section, styles.bottomSection]}>
         <View style={styles.searchContainer}>
-  <SearchBar
-    placeholder="Search Policy No"
-    value={filterSearchValue}
-    onChangeText={setFilterSearchValue}
-    containerStyle={styles.searchBarContainer}
-    inputContainerStyle={styles.inputContainer}
-    inputStyle={styles.input}
-    lightTheme
-    keyboardType="numeric"
-  />
-</View>
+          <SearchBar
+            placeholder="Search Policy No"
+            value={filterSearchValue}
+            onChangeText={setFilterSearchValue}
+            containerStyle={styles.searchBarContainer}
+            inputContainerStyle={styles.inputContainer}
+            inputStyle={styles.input}
+            lightTheme
+            keyboardType="numeric"
+          />
+        </View>
         <Text style={styles.filterText}>Agent Code:</Text>
         <View style={styles.radioButtonGroup}>
           {[agencyCode1, agencyCode2].filter(Boolean).map((code, index) => (
@@ -175,13 +177,14 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
           />
         )}
         <Button
-  title={isLoading ? <ActivityIndicator color="#fff" /> : "Search"}
-  onPress={handleSearch}
-  buttonStyle={styles.searchButton}
-  disabled={isLoading} // Disable button while loading
-/>
+          title={isLoading ? <ActivityIndicator color="#fff" /> : "Search"}
+          onPress={handleSearch}
+          buttonStyle={styles.searchButton}
+          disabled={isLoading} // Disable button while loading
+        />
 
         <Button title="Cancel" onPress={onClose} buttonStyle={styles.cancelButton} />
+        </ScrollView>
       </View>
     </Modal>
   );
@@ -215,7 +218,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   searchContainer: {
-    marginBottom: 50, // Add some space between the SearchBar and the next elements
+    marginBottom: 10, // Add some space between the SearchBar and the next elements
   },
   filterText: {
     fontSize: 16,

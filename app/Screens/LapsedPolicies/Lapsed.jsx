@@ -7,6 +7,8 @@ import { getLapsedPolicyDetails } from '../../services/getDetailsAPIs';
 import FilterModal from './LapsedFilterModal';
 import PolicyDetailsModal from './LapsedPolicyDetailsModal';
 import PolicyListItem from './LapsedPolicyListItem';
+import { lockToPortrait, lockToAllOrientations } from "../OrientationLock";
+import { useIsFocused } from '@react-navigation/native';
 
 const initialState = {
   policies: [],
@@ -49,6 +51,7 @@ const Lapsed = ({ navigation }) => {
   
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+  const isFocused = useIsFocused();
 
   const handleShowAlert = (message) => {
     console.log('Setting alert message:', message);
@@ -84,6 +87,11 @@ const Lapsed = ({ navigation }) => {
     dispatch({ type: "SET_LOADING", payload: false });
   }
   };
+  useEffect(() => {
+    if (isFocused) {
+        lockToAllOrientations();
+    }
+}, [isFocused]);
 
   useFocusEffect(
     useCallback(() => {

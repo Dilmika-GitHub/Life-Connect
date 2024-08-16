@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, ScrollView, Text, StyleSheet, TouchableOpacity, ActivityIndicator, } from 'react-native';
-import { lockToAllOrientations } from './OrientationLock';
+import { lockToPortrait, lockToAllOrientations } from './OrientationLock';
 import { useIsFocused } from '@react-navigation/native';
 import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
