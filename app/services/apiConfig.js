@@ -23,6 +23,7 @@ const ENDPOINTS = {
   ACTUAL_INCOME_COMMISION_VALUE: "/DashBoard/GetAgentMonthlySalesIncome",
   SET_TARGET: "/DashBoard/SetTargets",
   GET_TARGET: "/DashBoard/GetSettedTarget",
+  GET_IMAGE: "Image/GetProfileImage",
 };
 
 export { BASE_URL, ENDPOINTS };

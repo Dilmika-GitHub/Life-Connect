@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect} from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, Image, ActivityIndicator, BackHandler } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -8,6 +8,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
 import { FirstPlaceSvg, SecondPlaceSvg, ThirdPlaceSvg } from "../../components/Top3";
 import { Ionicons } from "@expo/vector-icons";
+import { encode } from 'base64-arraybuffer';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -86,55 +87,104 @@ const WinnersScreen = () => {
 
   const fetchBranchRegionalRankMdrt = async (rankingType, agency_code1, agency_code2, catType) => {
     try {
+      setLoading(true);
       const token = await AsyncStorage.getItem('accessToken');
       const endpoint = rankingType === 'Branch Ranking' ? 'GetBranchRankMDRT' : 'GetRegionalRankMDRT';
       const response = await axios.get(`${BASE_URL}/Mdrt/${endpoint}`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { p_agency_1: agency_code1, p_agency_2: agency_code2, p_cat: catType, p_year: currentYear }
       });
-
-      const formattedData = response.data.map(item => ({
-        name: item.agent_name.trim(),
-        achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
-        NOP: item.nop.toString(),
-        rank: rankingType === 'Branch Ranking' ? item.branch_rank : item.region_rank,
-        achievement: item.achievment,
-        balanceDue: item.balanceDue
-      }));
-
+  
+      // Fetch profile images for each agent before rendering
+      const formattedData = await Promise.all(
+        response.data.map(async (item) => {
+          const profileImageUrl = await fetchProfileImage(item.agency_code_1); // Fetch profile image using agency_code_1
+  
+          return {
+            name: item.agent_name.trim(),
+            achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
+            NOP: item.nop.toString(),
+            rank: rankingType === 'Branch Ranking' ? item.branch_rank : item.region_rank,
+            achievement: item.achievment,
+            balanceDue: item.balanceDue,
+            profileImageUrl, // Attach the fetched profile image URL
+          };
+        })
+      );
+  
+      // Sort the data by achieved target
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
       setBranchRegionalData(formattedData);
     } catch (error) {
       handleErrorResponse(error);
       console.error(`Error fetching ${rankingType} data:`, error.message);
+    }finally {
+      setLoading(false);
     }
   };
+  
+  
+  // Fetch the profile image using the API
+  const fetchProfileImage = async (agencyCode) => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      const response = await axios.get(`${BASE_URL}/${ENDPOINTS.GET_IMAGE}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { fileName: agencyCode },
+        responseType: 'arraybuffer', // Return binary data
+      });
+  
+      // Convert arraybuffer to base64
+      const base64Image = `data:image/png;base64,${encode(response.data)}`;
+      return base64Image;
+    } catch (error) {
+      console.error(`Error fetching profile image for agencyCode ${agencyCode}:`, error.message);
+      return null;
+    }
+  };
+  
+  
 
   const fetchWinnersData = async (rankingType) => {
     try {
+        setLoading(true);
       const token = await AsyncStorage.getItem('accessToken');
       const endpoint = getEndpoint(rankingType);
+      
+      // First API call to get the winner data
       const response = await axios.get(`${BASE_URL}${endpoint}`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { p_year: currentYear }
       });
-
-      const formattedData = response.data.map(item => ({
-        name: item.agent_name.trim(),
-        achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
-        NOP: item.nop.toString(),
-        rank: item.national_rank,
-        achievement: item.achievment,
-        balanceDue: item.balanceDue
+  
+      // Fetch profile images and format the data
+      const formattedData = await Promise.all(response.data.map(async (item) => {
+        const profileImageUrl = await fetchProfileImage(item.agency_code_1.trim());  // Fetch profile image using agency_code_1
+  
+        return {
+          name: item.agent_name.trim(),
+          achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
+          NOP: item.nop.toString(),
+          rank: item.national_rank,
+          achievement: item.achievment,
+          balanceDue: item.balanceDue,
+          profileImageUrl,  // Attach the profile image URL
+        };
       }));
-
+  
+      // Sort the data by achieved target
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
+  
+      // Set the winners data state with the images included
       setWinnersData(formattedData);
     } catch (error) {
       handleErrorResponse(error);
       console.error('Error fetching data:', error.message);
+    }finally {
+      setLoading(false);
     }
   };
+  
 
   const getEndpoint = (rankingType) => {
     switch (rankingType) {
@@ -204,6 +254,7 @@ const WinnersScreen = () => {
       setLoading(false);
     }
   };
+  
 
   useFocusEffect(
     useCallback(() => {
@@ -228,13 +279,7 @@ const WinnersScreen = () => {
     }, [navigation])
   );
 
-  if (loading) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#08818a" />
-      </View>
-    );
-  }
+  
 
   const renderDropdown = () => {
     return (
@@ -285,7 +330,11 @@ const WinnersScreen = () => {
         selectedValue !== 'Life Members' && item.achievement === 'Achieved' && index >= 3 && styles.achievedBeyondTopThree
       ]}>
         <View style={styles.iconContainer}>
-          <Icon name="user-circle" size={50} color={index < 3 ? '#A29D9C' : '#C0C0C0'} />
+          {item.profileImageUrl ? (
+            <Image source={{ uri: item.profileImageUrl }} style={styles.profilePic} />
+          ) : (
+            <Icon name="user-circle" size={50} color="#C0C0C0" />
+          )}
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.name}>{item.name}</Text>
@@ -324,6 +373,8 @@ const WinnersScreen = () => {
       </View>
     );
   };
+  
+  
 
   const renderUser = () => {
     if (!personalMdrt) {
@@ -411,7 +462,13 @@ const WinnersScreen = () => {
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>No data available</Text>
         </View>
-      ) : (
+      ) : 
+      loading?(
+            <View style={styles.loader}>
+              <ActivityIndicator size="large" color="#08818a" />
+            </View>        
+      ):
+      (
         <>
           <FlatList
             data={selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking' ? branchRegionalData : winnersData}
