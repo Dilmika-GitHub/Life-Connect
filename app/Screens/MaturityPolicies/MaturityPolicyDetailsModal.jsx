@@ -4,6 +4,7 @@ import Modal from 'react-native-modal';
 import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const PolicyDetailsModal = ({ isVisible, onClose, policy }) => {
     if (!policy) {
@@ -48,6 +49,7 @@ const PolicyDetailsModal = ({ isVisible, onClose, policy }) => {
 
   return (
     <Modal isVisible={isVisible} onBackdropPress={onClose} backdropOpacity={0.2}>
+      <ScrollView >
       <View style={styles.modalContent}>
         <View style={styles.header}>
           <Text style={styles.modalTitle}>{policy.product_name}</Text>
@@ -106,6 +108,7 @@ const PolicyDetailsModal = ({ isVisible, onClose, policy }) => {
           </View>
         )}
       </View>
+      </ScrollView>
     </Modal>
   );
 };

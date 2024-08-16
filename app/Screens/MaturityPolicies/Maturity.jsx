@@ -7,6 +7,8 @@ import { getMaturePolicyDetails } from '../../services/getDetailsAPIs';
 import FilterModal from './MaturityFilterModal';
 import PolicyDetailsModal from './MaturityPolicyDetailsModal';
 import PolicyListItem from './MaturityPolicyListItem';
+import { lockToPortrait, lockToAllOrientations } from "../OrientationLock";
+import { useIsFocused } from '@react-navigation/native';
 
 const initialState = {
   policies: [],
@@ -49,6 +51,7 @@ const Maturity = ({ navigation }) => {
   
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+  const isFocused = useIsFocused();
 
   const handleShowAlert = (message) => {
     console.log('Setting alert message:', message);
@@ -82,6 +85,12 @@ const Maturity = ({ navigation }) => {
     dispatch({ type: "SET_LOADING", payload: false });
   }
   };
+
+  useEffect(() => {
+    if (isFocused) {
+        lockToAllOrientations();
+    }
+}, [isFocused]);
 
   useFocusEffect(
     useCallback(() => {
