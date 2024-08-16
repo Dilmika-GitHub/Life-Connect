@@ -85,6 +85,7 @@ const Profile = ({ navigation }) => {
   };
 
   const uploadProfileImage = async (image) => {
+    setLoading(true);
     const token = await AsyncStorage.getItem("accessToken");
   
     // Extract file extension from URI
@@ -141,6 +142,9 @@ const Profile = ({ navigation }) => {
     } catch (error) {
       console.error('Error uploading profile image:', error);
       Alert.alert("Error", "Failed to upload profile image");
+    }
+    finally {
+      setLoading(false);
     }
   };
   
@@ -208,7 +212,9 @@ const Profile = ({ navigation }) => {
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#08818a" />;
+    return (<View style={styles.loader}>
+    <ActivityIndicator size="large" color="#08818a" />
+  </View>);
   }
 
   return (
@@ -278,15 +284,11 @@ const Profile = ({ navigation }) => {
       </View>
 
       <View style={styles.imageContainer}>
-  {userData?.profileImage ? (
     <Image
       source={{ uri: userData.profileImage }}
       style={styles.roundImage}
       resizeMode="cover"
     />
-  ) : (
-    <Text style={styles.noImageText}>No Image Available</Text>
-  )}
   <Text style={styles.imageText}>
     {userData?.intial?.trim()} {userData?.name?.trim()}
   </Text>
@@ -380,6 +382,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "grey",
     marginTop: 10,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
