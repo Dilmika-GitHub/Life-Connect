@@ -36,14 +36,24 @@ const Profile = ({ navigation }) => {
   };
 
   const pickImage = async () => {
+    // Request permissions for media library access if not already granted
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'We need access to your media library to upload images.');
+      return;
+    }
+  
+    // Launch image library to pick an image
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaType: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,  // Corrected to mediaTypes
       allowsEditing: true,
-      quality: 1,
+      aspect: [4, 4],
+      quality: 1,  // Max quality for the image
     });
-
+  
+    // If user didn't cancel the picker and assets exist, upload the first selected image
     if (!result.canceled && result.assets?.length > 0) {
-      uploadProfileImage(result.assets[0]);
+      uploadProfileImage(result.assets[0]);  // Use first image from assets array
     }
   };
 
@@ -76,14 +86,42 @@ const Profile = ({ navigation }) => {
 
   const uploadProfileImage = async (image) => {
     const token = await AsyncStorage.getItem("accessToken");
-
+  
+    // Extract file extension from URI
+    const fileExtension = image.uri.split('.').pop().toLowerCase();
+    const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'heic', 'heif'];
+    
+    // Determine MIME type based on the extension
+    const mimeTypeMap = {
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      gif: 'image/gif',
+      heic: 'image/heic',
+      heif: 'image/heif'
+    };
+  
+    const mimeType = mimeTypeMap[fileExtension];
+  
+    if (!validExtensions.includes(fileExtension)) {
+      Alert.alert('Error', 'Invalid file type. Please select a valid image.');
+      return;
+    }
+  
+    // Log file details for debugging
+    console.log('Uploading file:', {
+      uri: image.uri,
+      type: mimeType,
+      name: image.fileName || `profile.${fileExtension}`
+    });
+  
     const formData = new FormData();
     formData.append('file', {
       uri: image.uri,
-      type: image.type,
-      name: image.fileName || 'profile.jpg',
+      type: mimeType, // Correct MIME type based on the file extension
+      name: image.fileName || `profile.${fileExtension}`, // Ensure the correct extension
     });
-
+  
     try {
       const response = await axios.post(
         `${BASE_URL}/Image/UploadProfileImage?agentcode=${agentCode}`,
@@ -97,6 +135,7 @@ const Profile = ({ navigation }) => {
       );
       if (response.status === 200) {
         Alert.alert("Success", "Profile image uploaded successfully");
+        console.log(response._response);
         fetchProfileImage();
       }
     } catch (error) {
@@ -104,6 +143,7 @@ const Profile = ({ navigation }) => {
       Alert.alert("Error", "Failed to upload profile image");
     }
   };
+  
 
   const blobToBase64 = (blob) => {
     return new Promise((resolve, reject) => {
