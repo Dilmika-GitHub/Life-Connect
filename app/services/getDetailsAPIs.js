@@ -10,11 +10,18 @@ const getCommonHeaders = async () => {
   };
 };
 
-const formatDate = (date) => {
+const formatDateforMature = (date) => {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${year}${month}${day}`;
+  };
+
+  const formatDateforLapsed = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
 export const getAgencyCode = async () => {
@@ -55,8 +62,8 @@ export const getLapsedPolicyDetails = async () => {
     const agencyCode = await AsyncStorage.getItem('agencyCode1');
     
     const currentDate = new Date();
-    const toDate = formatDate(currentDate);
-    const fromDate = formatDate(new Date(currentDate.setFullYear(currentDate.getFullYear() - 1)));
+    const toDate = formatDateforLapsed(currentDate);
+    const fromDate = formatDateforLapsed(new Date(currentDate.setFullYear(currentDate.getFullYear() - 1)));
 
     const response = await axios.post(
       `${BASE_URL}${ENDPOINTS.LAPSED_POLICY_DETAILS}`,
@@ -144,8 +151,8 @@ fromDate.setMonth(currentDate.getMonth() - 1); // One month before today
 const toDate = new Date(currentDate);
 toDate.setMonth(currentDate.getMonth() + 1); // One month after today
 
-const formattedFromDate = formatDate(fromDate);
-const formattedToDate = formatDate(toDate);
+const formattedFromDate = formatDateforMature(fromDate);
+const formattedToDate = formatDateforMature(toDate);
 
 console.log(`From Date: ${formattedFromDate}, To Date: ${formattedToDate}`);
   

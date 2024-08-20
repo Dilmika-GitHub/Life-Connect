@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, TouchableWithoutFeedback ,Keyboard } from 'react-native';
 import Modal from 'react-native-modal';
 import { SearchBar, Button } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -22,6 +22,9 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
 
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
 
   const handleShowAlert = (message) => {
     console.log('Setting alert message:', message);
@@ -94,6 +97,7 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
   };
 
   return (
+    <TouchableWithoutFeedback onPress={dismissKeyboard}>
     <Modal isVisible={isVisible} onBackdropPress={onClose} backdropOpacity={0.2}>
       <View style={styles.filterModal}>
         <AwesomeAlert
@@ -187,6 +191,7 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
         </ScrollView>
       </View>
     </Modal>
+    </TouchableWithoutFeedback>
   );
 };
 

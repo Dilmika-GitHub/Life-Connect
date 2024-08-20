@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, TouchableWithoutFeedback ,Keyboard} from 'react-native';
 import Modal from 'react-native-modal';
 import { SearchBar, Button } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -12,6 +12,8 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
+    const [fromDateForAPI, setFromDateForAPI]= useState('');
+    const [toDateForAPI, setToDateForAPI]= useState('');
     const [showFromDatePicker, setShowFromDatePicker] = useState(false);
     const [showToDatePicker, setShowToDatePicker] = useState(false);
     const [agencyCode1, setAgencyCode1] = useState('');
@@ -21,6 +23,9 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
 
+    const dismissKeyboard = () => {
+        Keyboard.dismiss();
+      };
 
     const handleShowAlert = (message) => {
         console.log('Setting alert message:', message);
@@ -51,16 +56,22 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
         setIsLoading(true);
     
         try {
-          const filteredPolicies = await getFilteredMaturePolicyDetails(selectedOption, filterSearchValue, fromDate, toDate);
-          onFilter(filteredPolicies);
-          onClose();
+            const filteredPolicies = await getFilteredMaturePolicyDetails(
+                selectedOption,
+                filterSearchValue,
+                fromDateForAPI, // Use API format here
+                toDateForAPI // Use API format here
+            );
+            onFilter(filteredPolicies);
+            onClose();
         } catch (error) {
-          console.error('Failed to fetch filtered policies:', error);
-          handleShowAlert(error.message);
+            console.error('Failed to fetch filtered policies:', error);
+            handleShowAlert(error.message);
         } finally {
-        setIsLoading(false); 
-      }
-      };
+            setIsLoading(false); 
+        }
+    };
+    
 
       const validateDates = () => {
         if ((fromDate && !toDate) || (!fromDate && toDate)) {
@@ -80,12 +91,35 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
         setSelectedOption(value);
       };
     
-      const formatDate = (date) => {
+      const formatDateForDisplay = (date) => {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
-      };
+    };
+
+    const formatDateForAPI = (date) => {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${year}${month}${day}`;
+    };
+
+      const handleFromDateChange = (event, selectedDate) => {
+        setShowFromDatePicker(false);
+        if (selectedDate) {
+            setFromDate(formatDateForDisplay(selectedDate)); // Display format
+            setFromDateForAPI(formatDateForAPI(selectedDate)); // API format
+        }
+    };
+    
+    const handleToDateChange = (event, selectedDate) => {
+        setShowToDatePicker(false);
+        if (selectedDate) {
+            setToDate(formatDateForDisplay(selectedDate)); // Display format
+            setToDateForAPI(formatDateForAPI(selectedDate)); // API format
+        }
+    };
     
       const parseDate = (dateString) => {
         const [day, month, year] = dateString.split('/');
@@ -93,6 +127,7 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
       };
 
       return (
+        <TouchableWithoutFeedback onPress={dismissKeyboard}>
         <Modal isVisible={isVisible} onBackdropPress={onClose} backdropOpacity={0.2}>
           <View style={styles.filterModal}>
           <AwesomeAlert
@@ -150,14 +185,11 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
             </TouchableOpacity>
             {showFromDatePicker && (
               <DateTimePicker
-                value={fromDate ? parseDate(fromDate) : new Date()}
-                mode="date"
-                display="default"
-                onChange={(event, selectedDate) => {
-                  setShowFromDatePicker(false);
-                  setFromDate(selectedDate ? formatDate(selectedDate) : fromDate);
-                }}
-              />
+              value={fromDate ? parseDate(fromDate) : new Date()}
+              mode="date"
+              display="default"
+              onChange={handleFromDateChange}
+          />
             )}
             <Text style={styles.filterText}>To Date:</Text>
             <TouchableOpacity onPress={() => setShowToDatePicker(true)} style={styles.dateInput}>
@@ -165,14 +197,11 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
             </TouchableOpacity>
             {showToDatePicker && (
               <DateTimePicker
-                value={toDate ? parseDate(toDate) : new Date()}
-                mode="date"
-                display="default"
-                onChange={(event, selectedDate) => {
-                  setShowToDatePicker(false);
-                  setToDate(selectedDate ? formatDate(selectedDate) : toDate);
-                }}
-              />
+              value={toDate ? parseDate(toDate) : new Date()}
+              mode="date"
+              display="default"
+              onChange={handleToDateChange}
+          />
             )}
             <Button
       title={isLoading ? <ActivityIndicator color="#fff" /> : "Search"}
@@ -184,6 +213,7 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
             <Button title="Cancel" onPress={onClose} buttonStyle={styles.cancelButton} />
           </View>
         </Modal>
+        </TouchableWithoutFeedback>
       );
     };
     
