@@ -137,6 +137,7 @@ const Maturity = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
           <Ionicons name="menu" size={26} color="white" />
         </TouchableOpacity>
+        <Text style={styles.menuText}>Maturity</Text>
       </View>
 
       <AwesomeAlert
@@ -221,6 +222,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     backgroundColor: '#08818a',
+  },
+  menuText: {
+    color: 'white',
+    paddingLeft: '8%',
+    fontSize: 18,
   },
   loader: {
     flex: 1,
