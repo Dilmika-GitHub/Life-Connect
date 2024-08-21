@@ -123,13 +123,13 @@ const Maturity = ({ navigation }) => {
 
   const renderItem = ({ item }) => <PolicyListItem item={item} onPress={showDetails} />;
 
-  if (state.loading) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#08818a" />
-      </View>
-    );
-  }
+  // if (state.loading) {
+  //   return (
+  //     <View style={styles.loader}>
+  //       <ActivityIndicator size="large" color="#08818a" />
+  //     </View>
+  //   );
+  // }
 
   return (
     <View style={styles.container}>
@@ -206,6 +206,11 @@ const Maturity = ({ navigation }) => {
         onClose={() => dispatch({ type: 'TOGGLE_MODAL', payload: false })}
         policy={state.modalContent}
       />
+      {state.loading && (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="#08818a" />
+        </View>
+      )}
     </View>
   );
 };
@@ -229,9 +234,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   loader: {
-    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Semi-transparent background
   },
   headerContainer: {
     flexDirection: 'row',

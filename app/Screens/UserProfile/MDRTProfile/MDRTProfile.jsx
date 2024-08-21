@@ -204,13 +204,13 @@ const MDRTProfile = ({ navigation }) => {
   );
   
 
-  if (loading) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#08818a" />
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View style={styles.loader}>
+  //       <ActivityIndicator size="large" color="#08818a" />
+  //     </View>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -272,14 +272,17 @@ const MDRTProfile = ({ navigation }) => {
         {/* New text container */}
         <View style={styles.fypContainer}>
           <Text style={styles.yearText}>{new Date().getFullYear()} FYP</Text>
-          <Text style={styles.fypText}>{data.fyp ? "Rs. " + new Intl.NumberFormat().format(data.fyp) : "N/A"}</Text>
+          <Text style={styles.fypText}>
+  {data?.fyp ? "Rs. " + new Intl.NumberFormat().format(data.fyp) : "N/A"}
+</Text>
+
           <View style={styles.specialRow}>
             <Text style={styles.fypContainerRowsTitleText}>Target</Text>
-            <Text style={styles.fypContainerRowsNormalText}>{data.mdrt_target ? "Rs. " + new Intl.NumberFormat().format(data.mdrt_target) : "N/A"}</Text>
+            <Text style={styles.fypContainerRowsNormalText}>{data?.mdrt_target ? "Rs. " + new Intl.NumberFormat().format(data.mdrt_target) : "N/A"}</Text>
           </View>
           <View style={styles.specialRow}>
             <Text style={styles.fypContainerRowsTitleText}>NOP</Text>
-            <Text style={styles.fypContainerRowsNormalText}>{data.nop || "N/A"}</Text>
+            <Text style={styles.fypContainerRowsNormalText}>{data?.nop || "N/A"}</Text>
           </View>
           <View style={styles.countdownContainer}>
             <View style={styles.countdownBox}>
@@ -305,37 +308,37 @@ const MDRTProfile = ({ navigation }) => {
         <View style={styles.greySquare}>
           <View style={styles.row}>
             <Text style={styles.titleText}>Agency Code</Text>
-            <Text style={styles.normalText}>{formatConsiderAgencyCode(data.consider_agency)}</Text>
+            <Text style={styles.normalText}>{formatConsiderAgencyCode(data?.consider_agency|| '0')}</Text>
           </View>
           <View style={styles.specialRow}>
             <Text style={styles.titleText}>Status</Text>
-            {data.mdrt_achievment === 'Achieved' ? (
+            {data?.mdrt_achievment === 'Achieved' ? (
               <Text style={styles.greenText}>{"Achieved"}</Text>
-            ) : data.mdrt_achievment === 'Not_achieved' ? (
+            ) : data?.mdrt_achievment === 'Not_achieved' ? (
               <Text style={styles.redText}>{"Not Achieved"}</Text>
             ) : null}
           </View>
           <View style={styles.specialRow}>
             <Text style={styles.titleText}>Island Rank</Text>
-            <Text style={styles.normalText}>{data.mdrt_rank || "N/A"}</Text>
+            <Text style={styles.normalText}>{data?.mdrt_rank || "N/A"}</Text>
           </View>
           <View style={styles.specialRow}>
             <Text style={styles.titleText}>Regional Rank</Text>
-            <Text style={styles.normalText}>{data.region_rank || "N/A"}</Text>
+            <Text style={styles.normalText}>{data?.region_rank || "N/A"}</Text>
           </View>
           <View style={styles.specialRow}>
             <Text style={styles.titleText}>Branch Rank</Text>
-            <Text style={styles.normalText}>{data.branch_rank || "N/A"}</Text>
+            <Text style={styles.normalText}>{data?.branch_rank || "N/A"}</Text>
           </View>
-          {data.mdrt_achievment === 'Not_achieved' ? (
+          {data?.mdrt_achievment === 'Not_achieved' ? (
             <>
               <View style={styles.specialRow}>
                 <Text style={styles.titleText}>Need more</Text>
-                <Text style={styles.normalText}>{data.mdrt_balance_due ? "Rs. " + new Intl.NumberFormat().format(data.mdrt_balance_due) : "N/A"}</Text>
+                <Text style={styles.normalText}>{data?.mdrt_balance_due ? "Rs. " + new Intl.NumberFormat().format(data.mdrt_balance_due) : "N/A"}</Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.titleText}>Need more as Percentage</Text>
-                <Text style={styles.normalText}>{data.mdrt_bal_due_prec + '%' || "N/A"}</Text>
+                <Text style={styles.normalText}>{data?.mdrt_bal_due_prec + '%' || "N/A"}</Text>
               </View>
             </>
           ) : null}
@@ -344,34 +347,47 @@ const MDRTProfile = ({ navigation }) => {
 
       {/* Profile Image */}
       <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: data.profileImage }}
-          style={styles.roundImage}
-          resizeMode="cover"
-        />
-        <Text style={styles.imageText}>{data.agent_name?.replace(/\s+/g, '')}</Text>
+  {data?.profileImage ? (
+    <Image
+      source={{ uri: data.profileImage }}
+      style={styles.roundImage}
+      resizeMode="cover"
+    />
+  ) : (
+    <Text style={styles.noImageText}>No profile image available</Text>
+  )}
+  <Text style={styles.imageText}>
+    {userData?.intial?.trim()} {userData?.name?.trim()}
+  </Text>
+
+        <Text style={styles.imageText}>{data?.agent_name?.replace(/\s+/g, '')}</Text>
         <View style={styles.batchContainer}>
-      {data.mdrt_achievment === "Achieved" && (
+      {data?.mdrt_achievment === "Achieved" && (
         <Image
           source={require('../../../../assets/MDRT_Logo.png')}
           style={styles.batch}
         />
       )}
 
-      {data.cot_rank != null && (
+      {data?.cot_rank != null && (
         <Image
           source={require('../../../../assets/COT_Logo.png')}
           style={styles.batch}
         />
       )}
 
-      {data.tot_rank != null && (
+      {data?.tot_rank != null && (
         <Image
           source={require('../../../../assets/TOT_Logo.png')}
           style={styles.batch}
         />
       )}
     </View>
+    {loading && (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="#08818a" />
+        </View>
+      )}
       </View>
     </View>
   );
@@ -518,6 +534,13 @@ const styles = StyleSheet.create({
     color: 'black',
     minWidth: 100,
   },
+  noImageText: {
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "grey",
+    marginTop: 10,
+  },
   normalText: {
     fontSize: 16,
     color: 'grey',
@@ -531,9 +554,14 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   loader: {
-    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Semi-transparent background
   },
   errorText: {
     fontSize: 18,

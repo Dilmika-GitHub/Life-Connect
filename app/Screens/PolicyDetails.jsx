@@ -92,13 +92,7 @@ const PolicyDetails = ({ navigation }) => {
     navigation.navigate('Lapsed');
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#08818a" />
-      </View>
-    );
-  }
+ 
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -130,6 +124,11 @@ const PolicyDetails = ({ navigation }) => {
           </View>
         </View>
       </TouchableOpacity>
+      {loading && (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="#08818a" />
+        </View>
+      )}
       <AwesomeAlert
         show={showAlert}
         showProgress={false}
@@ -218,9 +217,14 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   loader: {
-    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Semi-transparent background
   },
 });
 
