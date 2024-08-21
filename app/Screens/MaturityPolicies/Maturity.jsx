@@ -187,9 +187,16 @@ const Maturity = ({ navigation }) => {
       <FilterModal
         isVisible={state.isFilterModalVisible}
         onClose={() => dispatch({ type: 'SET_FILTER_MODAL_VISIBLE', payload: false })}
-        onFilter={(filteredPolicies) => {
+        onFilter={(filteredPolicies, fromDate, toDate) => {
           dispatch({ type: 'SET_POLICIES', payload: filteredPolicies });
           dispatch({ type: 'SET_CLEAR_BUTTON_VISIBLE', payload: true });
+
+          if (fromDate && toDate) {
+            dispatch({
+              type: 'SET_DATE_RANGE_TEXT',
+              payload: `${fromDate} - ${toDate}`
+            });
+          }
         }}
       />
 

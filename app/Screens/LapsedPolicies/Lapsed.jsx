@@ -40,6 +40,8 @@ const reducer = (state, action) => {
       return { ...state, dateRangeText: action.payload };
     case 'SET_CLEAR_BUTTON_VISIBLE':
       return { ...state, isClearButtonVisible: action.payload };
+    case 'UPDATE_DATE_RANGE_TEXT':
+      return { ...state, dateRangeText: action.payload };
     default:
       return state;
   }
@@ -188,9 +190,16 @@ const Lapsed = ({ navigation }) => {
       <FilterModal
         isVisible={state.isFilterModalVisible}
         onClose={() => dispatch({ type: 'SET_FILTER_MODAL_VISIBLE', payload: false })}
-        onFilter={(filteredPolicies) => {
+        onFilter={(filteredPolicies, fromDate, toDate) => {
           dispatch({ type: 'SET_POLICIES', payload: filteredPolicies });
           dispatch({ type: 'SET_CLEAR_BUTTON_VISIBLE', payload: true });
+
+          if (fromDate && toDate) {
+            dispatch({
+              type: 'UPDATE_DATE_RANGE_TEXT',
+              payload: `${fromDate} - ${toDate}`
+            });
+          }
         }}
       />
 

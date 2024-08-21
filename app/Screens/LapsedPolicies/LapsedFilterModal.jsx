@@ -56,7 +56,7 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
 
     try {
       const filteredPolicies = await getFilteredLapsedPolicyDetails(selectedOption, filterSearchValue, fromDate, toDate);
-      onFilter(filteredPolicies);
+      onFilter(filteredPolicies, fromDate, toDate);
       onClose();
     } catch (error) {
       console.error('Failed to fetch filtered policies:', error);

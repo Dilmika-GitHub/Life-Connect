@@ -49,7 +49,7 @@ const PolicyDetailsModal = ({ isVisible, onClose, policy }) => {
 
   return (
     <Modal isVisible={isVisible} onBackdropPress={onClose} backdropOpacity={0.2}>
-      <ScrollView >
+      <ScrollView>
       <View style={styles.modalContent}>
         <View style={styles.header}>
           <Text style={styles.modalTitle}>{policy.product_name}</Text>
