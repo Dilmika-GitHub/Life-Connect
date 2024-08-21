@@ -99,7 +99,7 @@ const Lapsed = ({ navigation }) => {
     useCallback(() => {
       fetchData();
       const onBackPress = () => {
-        navigation.goBack();
+        navigation.navigate('Policy Details');
         return true;
       };
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
