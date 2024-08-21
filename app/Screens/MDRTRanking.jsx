@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect} from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, Image, ActivityIndicator, BackHandler } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -15,6 +15,7 @@ const screenWidth = Dimensions.get('window').width;
 const WinnersScreen = () => {
   const [winnersData, setWinnersData] = useState([]);
   const [branchRegionalData, setBranchRegionalData] = useState([]);
+  const [lifeMembersData, setLifeMembersData] = useState([]);
   const [isLifeMember, setIsLifeMember] = useState(false);
   const [agentProfile, setAgentProfile] = useState(null);
   const [personalMdrt, setPersonalMdrt] = useState(null);
@@ -26,8 +27,13 @@ const WinnersScreen = () => {
   const [branchName, setBranchName] = useState('');
   const [regionName, setRegionName] = useState('');
   const navigation = useNavigation();
+  const [userProfileImage, setUserProfileImage] = useState(null);
+
 
   const currentYear = new Date().getFullYear();
+
+  // Cache for profile images
+  const profileImageCache = {};
 
   const handleErrorResponse = (error) => {
     if (error.response?.status === 401) {
@@ -118,73 +124,90 @@ const WinnersScreen = () => {
     } catch (error) {
       handleErrorResponse(error);
       console.error(`Error fetching ${rankingType} data:`, error.message);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
+
+  const fetchUserProfileImage = async () => {
+    try {
+      if (agentProfile?.personal_agency_code) {
+        const profileImageUrl = await fetchProfileImage(agentProfile.personal_agency_code);
+        setUserProfileImage(profileImageUrl);
+      }
+    } catch (error) {
+      console.error('Error fetching user profile image:', error.message);
+    }
+  };
   
-  
-  // Fetch the profile image using the API
   const fetchProfileImage = async (agencyCode) => {
     try {
+      // Check if the image is in the cache
+      if (profileImageCache[agencyCode]) {
+        return profileImageCache[agencyCode];
+      }
+
       const token = await AsyncStorage.getItem('accessToken');
       const response = await axios.get(`${BASE_URL}/${ENDPOINTS.GET_IMAGE}`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { fileName: agencyCode },
         responseType: 'arraybuffer', // Return binary data
       });
-  
+
       // Convert arraybuffer to base64
       const base64Image = `data:image/png;base64,${encode(response.data)}`;
+
+      // Store the image in the cache
+      profileImageCache[agencyCode] = base64Image;
+
       return base64Image;
     } catch (error) {
       console.error(`Error fetching profile image for agencyCode ${agencyCode}:`, error.message);
       return null;
     }
   };
-  
-  
 
   const fetchWinnersData = async (rankingType) => {
     try {
-        setLoading(true);
+      setLoading(true);
       const token = await AsyncStorage.getItem('accessToken');
       const endpoint = getEndpoint(rankingType);
-      
-      // First API call to get the winner data
+
       const response = await axios.get(`${BASE_URL}${endpoint}`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { p_year: currentYear }
       });
-  
-      // Fetch profile images and format the data
-      const formattedData = await Promise.all(response.data.map(async (item) => {
-        const profileImageUrl = await fetchProfileImage(item.agency_code_1.trim());  // Fetch profile image using agency_code_1
-  
-        return {
-          name: item.agent_name.trim(),
-          achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
-          NOP: item.nop.toString(),
-          rank: item.national_rank,
-          achievement: item.achievment,
-          balanceDue: item.balanceDue,
-          profileImageUrl,  // Attach the profile image URL
-        };
-      }));
-  
-      // Sort the data by achieved target
+
+      const formattedData = await Promise.all(
+        response.data.map(async (item) => {
+          const profileImageUrl = await fetchProfileImage(item.agency_code_1.trim());
+
+          return {
+            name: item.agent_name.trim(),
+            achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
+            NOP: item.nop.toString(),
+            rank: item.national_rank,
+            achievement: item.achievment,
+            balanceDue: item.balanceDue,
+            profileImageUrl,
+          };
+        })
+      );
+
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
-  
-      // Set the winners data state with the images included
-      setWinnersData(formattedData);
+
+      if (rankingType === 'Life Members') {
+        setLifeMembersData(formattedData);
+      } else {
+        setWinnersData(formattedData);
+      }
     } catch (error) {
       handleErrorResponse(error);
       console.error('Error fetching data:', error.message);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
-  
 
   const getEndpoint = (rankingType) => {
     switch (rankingType) {
@@ -254,7 +277,6 @@ const WinnersScreen = () => {
       setLoading(false);
     }
   };
-  
 
   useFocusEffect(
     useCallback(() => {
@@ -275,49 +297,53 @@ const WinnersScreen = () => {
       };
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
       return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-
     }, [navigation])
   );
 
-  
+  useEffect(() => {
+    // Fetch user profile image when the component mounts or agentProfile changes
+    if (agentProfile) {
+      fetchUserProfileImage();
+    }
+  }, [agentProfile]);
 
   const renderDropdown = () => {
     return (
       <View style={styles.headercontainer}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Ionicons name="menu" size={26} color="white" />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.dcontainer}>
-      <View style={styles.dropdownContainer}>
-        <TouchableOpacity onPress={() => setShowDropdown(!showDropdown)} style={styles.dropdownTouchable}>
-          <Text style={styles.dropdownText}>{selectedValue}</Text>
-          <Icon name={showDropdown ? 'angle-up' : 'angle-down'} size={20} color="#000" style={styles.dropdownIcon} />
-        </TouchableOpacity>
-        {showDropdown && (
-          <View style={styles.dropdownOptions}>
-            {['Island Ranking', 'Branch Ranking', 'Regional Ranking', 'COT Ranking', 'TOT Ranking', 'Life Members'].map(rank => (
-              <TouchableOpacity key={rank} onPress={() => handleSelectionChange(rank)}>
-                <Text style={styles.optionText}>{rank}</Text>
-              </TouchableOpacity>
-            ))}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.openDrawer()}>
+            <Ionicons name="menu" size={26} color="white" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.dcontainer}>
+          <View style={styles.dropdownContainer}>
+            <TouchableOpacity onPress={() => setShowDropdown(!showDropdown)} style={styles.dropdownTouchable}>
+              <Text style={styles.dropdownText}>{selectedValue}</Text>
+              <Icon name={showDropdown ? 'angle-up' : 'angle-down'} size={20} color="#000" style={styles.dropdownIcon} />
+            </TouchableOpacity>
+            {showDropdown && (
+              <View style={styles.dropdownOptions}>
+                {['Island Ranking', 'Branch Ranking', 'Regional Ranking', 'COT Ranking', 'TOT Ranking', 'Life Members'].map(rank => (
+                  <TouchableOpacity key={rank} onPress={() => handleSelectionChange(rank)}>
+                    <Text style={styles.optionText}>{rank}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+            <AwesomeAlert
+              show={showAlert}
+              showProgress={false}
+              title="Session Expired"
+              message="Please Log Again!"
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={false}
+              showConfirmButton={true}
+              confirmText="OK"
+              confirmButtonColor="#08818a"
+              onConfirmPressed={handleConfirm}
+            />
           </View>
-        )}
-        <AwesomeAlert
-          show={showAlert}
-          showProgress={false}
-          title="Session Expired"
-          message="Please Log Again!"
-          closeOnTouchOutside={false}
-          closeOnHardwareBackPress={false}
-          showConfirmButton={true}
-          confirmText="OK"
-          confirmButtonColor="#08818a"
-          onConfirmPressed={handleConfirm}
-        />
-      </View>
-      </View>
+        </View>
       </View>
     );
   };
@@ -373,8 +399,6 @@ const WinnersScreen = () => {
       </View>
     );
   };
-  
-  
 
   const renderUser = () => {
     if (!personalMdrt) {
@@ -411,11 +435,11 @@ const WinnersScreen = () => {
     return (
       <View style={[styles.itemContainer, styles.highlightedItem, { width: screenWidth * 0.97 }]}>
         <View style={styles.iconContainer}>
-          <Image 
-            source={require('../../components/user.jpg')} 
-            style={styles.profilePicLarge}
-            resizeMode="cover" 
-          />
+        <Image
+              source={{ uri: userProfileImage }}
+              style={styles.profilePicLarge}
+              resizeMode="cover"
+            />
         </View>
         <View style={styles.textContainer}>
           {showUserRank ? (
@@ -454,24 +478,23 @@ const WinnersScreen = () => {
     <View style={styles.container}>
       {renderDropdown()}
       <Text style={styles.rightAlignedText}>
-  {selectedValue === 'Branch Ranking' && branchName}
-  {selectedValue === 'Regional Ranking' && regionName}
-</Text>
+        {selectedValue === 'Branch Ranking' && branchName}
+        {selectedValue === 'Regional Ranking' && regionName}
+      </Text>
 
       {error ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>No data available</Text>
         </View>
       ) : 
-      loading?(
-            <View style={styles.loader}>
-              <ActivityIndicator size="large" color="#08818a" />
-            </View>        
-      ):
-      (
+      loading ? (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="#08818a" />
+        </View>        
+      ) : (
         <>
           <FlatList
-            data={selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking' ? branchRegionalData : winnersData}
+            data={selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking' ||selectedValue === 'Life Members' ? branchRegionalData : winnersData}
             renderItem={renderItem}
             keyExtractor={item => item.name}
             contentContainerStyle={styles.flatListContainer}
@@ -488,7 +511,6 @@ const WinnersScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // padding: 10,
     backgroundColor: '#f5f5f5',
   },
   body: {
@@ -515,11 +537,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
     marginHorizontal: 10,
-    // shadowColor: '#000',
-    // shadowOpacity: 0.1,
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowRadius: 10,
-    // elevation: 3,
   },
   highlightedItem: {
     backgroundColor: '#FFD70020',
@@ -645,7 +662,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
-  
 });
 
 export default WinnersScreen;
