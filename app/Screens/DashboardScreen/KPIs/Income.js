@@ -232,40 +232,40 @@ export default function Income ({
           <View style={styles.circleView}>
             <Svg width={radius * 2} height={radius * 2} viewBox={viewBoxValue}>
               <G rotation="-90" origin={`${halfCircle}, ${halfCircle}`}>
-                <Circle
-                  cx="50%"
-                  cy="50%"
-                  r={radius}
-                  stroke={color}
-                  strokeWidth={strokeWidth}
-                  strokeOpacity={1}
-                  fill="transparent"
-                />
-                {percentage < 100 ? (
-                  <AnimatedCircle
-                    ref={CircleRef}
-                    cx="50%"
-                    cy="50%"
-                    r={radius}
-                    stroke={animatedCircleColor}
-                    strokeWidth={strokeWidth}
-                    strokeDasharray={circleCircumference}
-                    strokeDashoffset={strokeDashoffset}
-                    strokeOpacity={1.0}
-                    fill="transparent"
-                    strokeLinecap="round"
-                  />
-                ) : (
-                  <Circle
-                    cx="50%"
-                    cy="50%"
-                    r={radius}
-                    stroke={animatedCircleColor}
-                    strokeWidth={strokeWidth}
-                    strokeOpacity={1.0}
-                    fill="transparent"
-                  />
-                )}
+              <Circle
+        cx="50%"
+        cy="50%"
+        r={radius}
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeOpacity={1}
+        fill="transparent"
+      />
+      {percentage >= 0 && percentage < 100 ? (
+        <AnimatedCircle
+          ref={CircleRef}
+          cx="50%"
+          cy="50%"
+          r={radius}
+          stroke={animatedCircleColor}
+          strokeWidth={strokeWidth}
+          strokeDasharray={circleCircumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeOpacity={1.0}
+          fill="transparent"
+          strokeLinecap="round"
+        />
+      ) : percentage >= 100 ? (
+        <Circle
+          cx="50%"
+          cy="50%"
+          r={radius}
+          stroke={animatedCircleColor}
+          strokeWidth={strokeWidth}
+          strokeOpacity={1.0}
+          fill="transparent"
+        />
+      ) : null}
               </G>
             </Svg>
             <View style={styles.absoluteCenter}>

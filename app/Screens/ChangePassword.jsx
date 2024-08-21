@@ -23,7 +23,7 @@ const ChangePassword = ({ navigation }) => {
     const fetchAgencyCode = async () => {
       try {
         const data = await getAgencyCode();
-        setAgencyCode(data);
+        setAgencyCode(data.personal_agency_code);
       } catch (error) {
         console.error("Error getting agency code:", error);
       }

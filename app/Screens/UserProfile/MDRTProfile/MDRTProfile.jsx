@@ -8,6 +8,8 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Ionicons } from "@expo/vector-icons";
+import { lockToPortrait, lockToAllOrientations } from "../../OrientationLock";
+import { useIsFocused } from '@react-navigation/native';
 
 const MDRTProfile = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
@@ -17,12 +19,14 @@ const MDRTProfile = ({ navigation }) => {
   const [agencyCode, setAgencyCode] = useState(null);
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
+  const isFocused = useIsFocused();
   const [timeRemaining, setTimeRemaining] = useState({
     days: '',
     hours: '',
     minutes: '',
     seconds: '',
   });
+
 
   const handleErrorResponse = (error) => {
     if (error.response.status === 401) {
@@ -58,7 +62,7 @@ const MDRTProfile = ({ navigation }) => {
         }
       });
 
-      setAgencyCode(response.data);
+      setAgencyCode(response.data?.personal_agency_code);
 
       await AsyncStorage.setItem("agencyCode1", response.data?.personal_agency_code);
 
@@ -75,6 +79,8 @@ const MDRTProfile = ({ navigation }) => {
       throw error;
     }
   };
+
+
 
   const fetchMdrtPersonalData = async () => {
     try {
@@ -110,6 +116,46 @@ const MDRTProfile = ({ navigation }) => {
     }
   };
 
+  const blobToBase64 = (blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
+
+  const fetchProfileImage = async () => {
+    try {
+      const token = await AsyncStorage.getItem("accessToken");
+      console.log(agencyCode);
+
+      const response = await axios.get(
+        `${BASE_URL}/Image/GetProfileImage?fileName=${agencyCode}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'image/png; x-api-version=1',
+          },
+          responseType: 'blob',
+        }
+      );
+
+      const blob = response.data;
+      const imageUrl = await blobToBase64(blob);
+      // const imageUrl = URL.createObjectURL(blob);
+
+      setData((prevData) => ({
+        ...prevData,
+        profileImage: imageUrl,
+      }));
+    } catch (error) {
+      console.error('Error fetching profile image:', error);
+    }
+  };
+
   const calculateTimeRemaining = () => {
     const currentDate = new Date();
     const endOfYear = new Date(currentDate.getFullYear(), 11, 31, 23, 59, 59);
@@ -129,9 +175,13 @@ const MDRTProfile = ({ navigation }) => {
   };
 
   useEffect(() => {
+
+    if (isFocused) {
+      lockToPortrait();
+  }
     const interval = setInterval(calculateTimeRemaining, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isFocused]);
 
   useFocusEffect(
     useCallback(() => {
@@ -139,15 +189,20 @@ const MDRTProfile = ({ navigation }) => {
         try {
           await getAgencyCode();
           await fetchMdrtPersonalData();
+          // Assuming that fetchProfileImage relies on data obtained from the above functions
+          if (agencyCode) {
+            await fetchProfileImage();
+          } // Add fetchProfileImage to be called after the other data fetching functions
         } catch (error) {
           setError(true);
           setLoading(false);
         }
       };
-
+  
       fetchData();
-    }, [])
+    }, [agencyCode])
   );
+  
 
   if (loading) {
     return (
@@ -290,11 +345,33 @@ const MDRTProfile = ({ navigation }) => {
       {/* Profile Image */}
       <View style={styles.imageContainer}>
         <Image
-          source={require("../../../../components/user.jpg")}
+          source={{ uri: data.profileImage }}
           style={styles.roundImage}
           resizeMode="cover"
         />
         <Text style={styles.imageText}>{data.agent_name?.replace(/\s+/g, '')}</Text>
+        <View style={styles.batchContainer}>
+      {data.mdrt_achievment === "Not_achieved" && (
+        <Image
+          source={require('../../../../assets/MDRT_Logo.png')}
+          style={styles.batch}
+        />
+      )}
+
+      {data.cot_rank === null && (
+        <Image
+          source={require('../../../../assets/COT_Logo.png')}
+          style={styles.batch}
+        />
+      )}
+
+      {data.tot_rank === null && (
+        <Image
+          source={require('../../../../assets/TOT_Logo.png')}
+          style={styles.batch}
+        />
+      )}
+    </View>
       </View>
     </View>
   );
@@ -320,7 +397,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#08818a',
   },
   topSection2: {
-    flex: 0.3,
+    flex: 0.4,
     backgroundColor: 'white',
     shadowColor:'black',
   },
@@ -465,7 +542,19 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     // margin: 10,
-  }
+  },
+  batchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center', 
+    justifyContent: 'center',
+
+  },
+  batch: {
+    width: 50,
+    height: 50,
+    marginRight: 10, 
+    alignItems:'center',
+  },
 });
 
 export default MDRTProfile;

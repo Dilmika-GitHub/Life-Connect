@@ -23,6 +23,8 @@ import Constants from 'expo-constants';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { MaterialIcons, SimpleLineIcons } from "@expo/vector-icons";
 import { checkAppVersion, checkMaintenance } from "../../services/adminAPIs";
+import { lockToPortrait, lockToAllOrientations } from "../OrientationLock";
+import { useIsFocused } from '@react-navigation/native';
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -35,6 +37,7 @@ const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false); 
   const [newCredentials, setNewCredentials] = useState(null);
   const router = useRouter();
+  const isFocused = useIsFocused();
   //const appVersion = Constants.expoConfig?.version || Constants.manifest2?.version || 'Version not found';
   const appVersion = '1.0.1';
 
@@ -45,6 +48,7 @@ const LoginScreen = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
 
   // Check if credentials are saved
   useEffect(() => {
@@ -57,6 +61,10 @@ const LoginScreen = () => {
     }).catch(error => {
       console.error("Error:", error);
     });
+
+    if (isFocused) {
+      lockToPortrait();
+  }
 
     checkMaintenance().then(data => {
       if (data.isinforce === 'N') {
@@ -84,7 +92,7 @@ const LoginScreen = () => {
     };
 
     checkStoredCredentials();
-  }, []);
+  }, [isFocused]);
 
   // Handle login
   const handleLogin = async () => {

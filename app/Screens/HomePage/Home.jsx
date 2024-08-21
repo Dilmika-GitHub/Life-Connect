@@ -23,8 +23,8 @@ import SettingsScreen from "../SettingsScreen";
 import Competitions from "../MDRTRanking";
 import Profile from "../UserProfile/Profile";
 import PolicyDetails from "../PolicyDetails";
-import Maturity from "../Maturity";
-import Lapsed from "../Lapsed"
+import Maturity from "../MaturityPolicies/Maturity";
+import Lapsed from "../LapsedPolicies/Lapsed"
 import MDRTProfile from "../UserProfile/MDRTProfile/MDRTProfile";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -38,17 +38,18 @@ const Drawer = createDrawerNavigator();
 const CustomDrawerContent = ({ navigation }) => {
   const [logoutConfirmationVisible, setLogoutConfirmationVisible] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [agentCode, setAgentCode] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  useEffect(() =>{
+  useEffect(() => {
     const fetchUserData = async () => {
       try {
         const token = await AsyncStorage.getItem('accessToken');
         const email = await AsyncStorage.getItem('email');
         const categoryType = await AsyncStorage.getItem('categoryType');
 
-        const response = await axios.get(BASE_URL+ENDPOINTS.PROFILE_DETAILS,{
-          headers:{
+        const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
+          headers: {
             Authorization: `Bearer ${token}`
           },
           params: {
@@ -57,8 +58,9 @@ const CustomDrawerContent = ({ navigation }) => {
           }
         });
         setUserData(response.data);
-      } catch(error){
-        if(error.response.status === 401){
+        setAgentCode(response.data.personal_agency_code);
+      } catch (error) {
+        if (error.response?.status === 401) {
           Alert.alert(
             'Session Expired',
             'Your session has expired. Please log in again.',
@@ -77,13 +79,60 @@ const CustomDrawerContent = ({ navigation }) => {
             ],
           );
         }
-        console.error('Error fetching user data:',error);
-      } finally{
+        console.error('Error fetching user data:', error);
+      } finally {
         setLoading(false);
       }
     };
-    fetchUserData();
-  },[]);
+
+    const blobToBase64 = (blob) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve(reader.result);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    };
+
+    const fetchProfileImage = async () => {
+      try {
+        const token = await AsyncStorage.getItem("accessToken");
+
+        const response = await axios.get(
+          `${BASE_URL}/Image/GetProfileImage?fileName=${agentCode}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'image/png; x-api-version=1',
+            },
+            responseType: 'blob',
+          }
+        );
+
+        const blob = response.data;
+        // const imageUrl = URL.createObjectURL(blob);
+        const imageUrl = await blobToBase64(blob);
+        
+        setUserData((prevData) => ({
+          ...prevData,
+          profileImage: imageUrl,
+        }));
+      } catch (error) {
+        console.error('Error fetching profile image:', error);
+      }
+    };
+
+    const fetchData = async () => {
+      await fetchUserData();
+      if (agentCode) {
+        await fetchProfileImage();
+      }
+    };
+
+    fetchData();
+  }, [agentCode]);
 
   const handleLogout = () => {
     setLogoutConfirmationVisible(true);
@@ -110,7 +159,10 @@ const CustomDrawerContent = ({ navigation }) => {
     setLogoutConfirmationVisible(false);
   };
   
-
+  if (loading) {
+    return <ActivityIndicator size="large" color="#08818a" />;
+  }
+  
   return (
     <DrawerContentScrollView style={{ flex: 1 , backgroundColor:'#d1f7fa',}}>
       {/* Wrap drawer content in SafeAreaView to handle notch */}
@@ -126,7 +178,7 @@ const CustomDrawerContent = ({ navigation }) => {
           }}
         >
           <Image
-            source={require("../../../components/user.jpg")}
+            source={{ uri: userData.profileImage }}
             style={{ width: 40, height: 40, borderRadius: 20, marginRight: 10 }}
           />
           <View style={{ flexDirection: "column" }}>
