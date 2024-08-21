@@ -220,12 +220,6 @@ const Profile = ({ navigation }) => {
     navigation.navigate("Change Password");
   };
 
-  if (loading) {
-    return (<View style={styles.loader}>
-    <ActivityIndicator size="large" color="#08818a" />
-  </View>);
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -293,15 +287,24 @@ const Profile = ({ navigation }) => {
       </View>
 
       <View style={styles.imageContainer}>
+  {userData?.profileImage ? (
     <Image
       source={{ uri: userData.profileImage }}
       style={styles.roundImage}
       resizeMode="cover"
     />
+  ) : (
+    <Text style={styles.noImageText}>No profile image available</Text>
+  )}
   <Text style={styles.imageText}>
     {userData?.intial?.trim()} {userData?.name?.trim()}
   </Text>
 </View>
+{loading && (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="#08818a" />
+        </View>
+      )}
 
       <AwesomeAlert
         show={showAlert}
@@ -315,6 +318,7 @@ const Profile = ({ navigation }) => {
         confirmButtonColor="#08818a"
         onConfirmPressed={handleConfirm}
       />
+      
     </View>
   );
 };
@@ -360,7 +364,7 @@ const styles = StyleSheet.create({
     color: "black",
   },
   greySquare: {
-    width: '95%',
+    width: '90%',
     backgroundColor: '#c4f1f5',
     marginTop: 150,
     alignSelf: "center",
@@ -393,9 +397,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   loader: {
-    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Semi-transparent background
   },
 });
 

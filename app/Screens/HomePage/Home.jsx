@@ -225,10 +225,7 @@ const CustomDrawerContent = ({ navigation }) => {
         <DrawerItem
           label={() => (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={{color:'#595959'}}>Maturity          </Text>
-              <View style={{ backgroundColor: "#fecece", borderRadius: 20, marginLeft: 5, paddingHorizontal: 10, paddingVertical: 5 }}>
-                <Text style={{ color: "#fe0000" }}>3</Text>
-              </View>
+              <Text style={{color:'#595959'}}>Maturity</Text>
             </View>
           )}
           onPress={() => navigation.navigate("Maturity")}
