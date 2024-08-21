@@ -66,6 +66,17 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
     }
   };
 
+  const resetFilter = () => {
+    setFilterSearchValue('');
+    setFromDate('');
+    setToDate('');
+  };
+
+  const handleClose = () => {
+    resetFilter();
+    onClose();
+  };
+
   const validateDates = () => {
     if ((fromDate && !toDate) || (!fromDate && toDate)) {
       Alert.alert('Validation Error', 'Both "From Date" and "To Date" must be selected.');
@@ -187,7 +198,7 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
           disabled={isLoading} // Disable button while loading
         />
 
-        <Button title="Cancel" onPress={onClose} buttonStyle={styles.cancelButton} />
+        <Button title="Cancel" onPress={handleClose} buttonStyle={styles.cancelButton} />
         </ScrollView>
       </View>
     </Modal>
