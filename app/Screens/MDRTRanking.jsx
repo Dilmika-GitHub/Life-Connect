@@ -15,7 +15,6 @@ const screenWidth = Dimensions.get('window').width;
 const WinnersScreen = () => {
   const [winnersData, setWinnersData] = useState([]);
   const [branchRegionalData, setBranchRegionalData] = useState([]);
-  const [lifeMembersData, setLifeMembersData] = useState([]);
   const [isLifeMember, setIsLifeMember] = useState(false);
   const [agentProfile, setAgentProfile] = useState(null);
   const [personalMdrt, setPersonalMdrt] = useState(null);
@@ -172,35 +171,33 @@ const WinnersScreen = () => {
       setLoading(true);
       const token = await AsyncStorage.getItem('accessToken');
       const endpoint = getEndpoint(rankingType);
-
+      
+      // First API call to get the winner data
       const response = await axios.get(`${BASE_URL}${endpoint}`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { p_year: currentYear }
       });
-
-      const formattedData = await Promise.all(
-        response.data.map(async (item) => {
-          const profileImageUrl = await fetchProfileImage(item.agency_code_1.trim());
-
-          return {
-            name: item.agent_name.trim(),
-            achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
-            NOP: item.nop.toString(),
-            rank: item.national_rank,
-            achievement: item.achievment,
-            balanceDue: item.balanceDue,
-            profileImageUrl,
-          };
-        })
-      );
-
+  
+      // Fetch profile images and format the data
+      const formattedData = await Promise.all(response.data.map(async (item) => {
+        const profileImageUrl = await fetchProfileImage(item.agency_code_1.trim());  // Fetch profile image using agency_code_1
+  
+        return {
+          name: item.agent_name.trim(),
+          achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
+          NOP: item.nop.toString(),
+          rank: item.national_rank,
+          achievement: item.achievment,
+          balanceDue: item.balanceDue,
+          profileImageUrl,  // Attach the profile image URL
+        };
+      }));
+  
+      // Sort the data by achieved target
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
-
-      if (rankingType === 'Life Members') {
-        setLifeMembersData(formattedData);
-      } else {
-        setWinnersData(formattedData);
-      }
+  
+      // Set the winners data state with the images included
+      setWinnersData(formattedData);
     } catch (error) {
       handleErrorResponse(error);
       console.error('Error fetching data:', error.message);
@@ -259,13 +256,18 @@ const WinnersScreen = () => {
 
       setIsLifeMember(isLifeMember);
 
-      const formattedData = response.data.map(item => ({
-        name: item.agent_name.trim(),
-        achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
-        NOP: item.nop.toString(),
-        rank: item.national_rank,
-        achievement: item.achievment,
-        balanceDue: item.balanceDue
+      const formattedData = await Promise.all(response.data.map(async (item) => {
+        const profileImageUrl = await fetchProfileImage(item.agency_code_1.trim());  // Fetch profile image using agency_code_1
+  
+        return {
+          name: item.agent_name.trim(),
+          achievedTarget: item.fyp.toLocaleString('en-US', { maximumFractionDigits: 2 }),
+          NOP: item.nop.toString(),
+          rank: item.national_rank,
+          achievement: item.achievment,
+          balanceDue: item.balanceDue,
+          profileImageUrl,  // Attach the profile image URL
+        };
       }));
 
       formattedData.sort((a, b) => parseInt(b.achievedTarget.replace(/,/g, '')) - parseInt(a.achievedTarget.replace(/,/g, '')));
@@ -494,7 +496,7 @@ const WinnersScreen = () => {
       ) : (
         <>
           <FlatList
-            data={selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking' ||selectedValue === 'Life Members' ? branchRegionalData : winnersData}
+            data={selectedValue === 'Branch Ranking' || selectedValue === 'Regional Ranking' ? branchRegionalData : winnersData}
             renderItem={renderItem}
             keyExtractor={item => item.name}
             contentContainerStyle={styles.flatListContainer}

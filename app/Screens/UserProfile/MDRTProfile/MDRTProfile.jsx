@@ -351,21 +351,21 @@ const MDRTProfile = ({ navigation }) => {
         />
         <Text style={styles.imageText}>{data.agent_name?.replace(/\s+/g, '')}</Text>
         <View style={styles.batchContainer}>
-      {data.mdrt_achievment === "Not_achieved" && (
+      {data.mdrt_achievment === "Achieved" && (
         <Image
           source={require('../../../../assets/MDRT_Logo.png')}
           style={styles.batch}
         />
       )}
 
-      {data.cot_rank === null && (
+      {data.cot_rank != null && (
         <Image
           source={require('../../../../assets/COT_Logo.png')}
           style={styles.batch}
         />
       )}
 
-      {data.tot_rank === null && (
+      {data.tot_rank != null && (
         <Image
           source={require('../../../../assets/TOT_Logo.png')}
           style={styles.batch}
@@ -441,6 +441,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 10,
     padding: 20,
+    width:'90%',
   },
   yearText: {
     fontSize: 18,
@@ -494,7 +495,7 @@ const styles = StyleSheet.create({
     color: '#08818a',
   },
   greySquare: {
-    width: '95%',
+    width: '90%',
     backgroundColor: '#c4f1f5',
     marginTop: 10,
     alignSelf: 'center',
