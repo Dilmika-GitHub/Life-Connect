@@ -56,7 +56,7 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
 
     try {
       const filteredPolicies = await getFilteredLapsedPolicyDetails(selectedOption, filterSearchValue, fromDate, toDate);
-      onFilter(filteredPolicies);
+      onFilter(filteredPolicies, fromDate, toDate);
       onClose();
     } catch (error) {
       console.error('Failed to fetch filtered policies:', error);
@@ -64,6 +64,17 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const resetFilter = () => {
+    setFilterSearchValue('');
+    setFromDate('');
+    setToDate('');
+  };
+
+  const handleClose = () => {
+    resetFilter();
+    onClose();
   };
 
   const validateDates = () => {
@@ -187,7 +198,7 @@ const FilterModal = ({ isVisible, onClose, onFilter }) => {
           disabled={isLoading} // Disable button while loading
         />
 
-        <Button title="Cancel" onPress={onClose} buttonStyle={styles.cancelButton} />
+        <Button title="Cancel" onPress={handleClose} buttonStyle={styles.cancelButton} />
         </ScrollView>
       </View>
     </Modal>
