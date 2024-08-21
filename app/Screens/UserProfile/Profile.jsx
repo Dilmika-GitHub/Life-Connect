@@ -287,15 +287,24 @@ const Profile = ({ navigation }) => {
       </View>
 
       <View style={styles.imageContainer}>
+  {userData?.profileImage ? (
     <Image
       source={{ uri: userData.profileImage }}
       style={styles.roundImage}
       resizeMode="cover"
     />
+  ) : (
+    <Text style={styles.noImageText}>No profile image available</Text>
+  )}
   <Text style={styles.imageText}>
     {userData?.intial?.trim()} {userData?.name?.trim()}
   </Text>
 </View>
+{loading && (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="#08818a" />
+        </View>
+      )}
 
       <AwesomeAlert
         show={showAlert}
@@ -309,11 +318,7 @@ const Profile = ({ navigation }) => {
         confirmButtonColor="#08818a"
         onConfirmPressed={handleConfirm}
       />
-      {loading && (
-        <View style={styles.loader}>
-          <ActivityIndicator size="large" color="#08818a" />
-        </View>
-      )}
+      
     </View>
   );
 };
