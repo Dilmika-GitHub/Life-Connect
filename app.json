@@ -23,7 +23,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.sanduni99.xProject"
+      "package": ""
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -45,7 +45,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "ef59b0f6-9515-4522-9efb-66baf9a98f5b"
+        "projectId": ""
       }
     }
   }
