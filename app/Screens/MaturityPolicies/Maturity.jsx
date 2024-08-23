@@ -68,11 +68,11 @@ const Maturity = ({ navigation }) => {
     dispatch({ type: "SET_POLICIES", payload: policyDetails });
     const currentDate = new Date();
     const defaultToDate = `${currentDate.getDate()}/${
-      currentDate.getMonth() + 1
+      currentDate.getMonth() + 2
     }/${currentDate.getFullYear()}`;
     const defaultFromDate = `${currentDate.getDate()}/${
-      currentDate.getMonth() + 1
-    }/${currentDate.getFullYear() - 1}`;
+      currentDate.getMonth()
+    }/${currentDate.getFullYear()}`;
     dispatch({
       type: "SET_DATE_RANGE_TEXT",
       payload: `${defaultFromDate} - ${defaultToDate}`,
@@ -123,13 +123,6 @@ const Maturity = ({ navigation }) => {
 
   const renderItem = ({ item }) => <PolicyListItem item={item} onPress={showDetails} />;
 
-  // if (state.loading) {
-  //   return (
-  //     <View style={styles.loader}>
-  //       <ActivityIndicator size="large" color="#08818a" />
-  //     </View>
-  //   );
-  // }
 
   return (
     <View style={styles.container}>

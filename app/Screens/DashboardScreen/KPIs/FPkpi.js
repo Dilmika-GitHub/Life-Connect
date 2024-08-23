@@ -89,8 +89,7 @@ export default function FPkpi({
           p_agency_1: agencyCode1,
           p_agency_2: agencyCode2,
           p_year: new Date().getFullYear().toString(),
-          p_month: '3',
-          //p_month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
+          p_month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );

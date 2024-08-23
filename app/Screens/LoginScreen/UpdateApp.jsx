@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Platform, Alert, StyleSheet,Linking,Image, TouchableOpacity } from 'react-native';
 import { checkAppVersion } from '../../services/adminAPIs';
+import Constants from 'expo-constants';
 
 const UpdateApp = () => {
   const [updateInfo, setUpdateInfo] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const appVersion = '1.0.1';
+    const appVersion = Constants.expoConfig?.version || Constants.manifest2?.version || 'Version not found';
 
     const fetchUpdateInfo = async () => {
       try {

@@ -38,8 +38,7 @@ const LoginScreen = () => {
   const [newCredentials, setNewCredentials] = useState(null);
   const router = useRouter();
   const isFocused = useIsFocused();
-  //const appVersion = Constants.expoConfig?.version || Constants.manifest2?.version || 'Version not found';
-  const appVersion = '1.0.1';
+  const appVersion = Constants.expoConfig?.version || Constants.manifest2?.version || 'Version not found';
 
   const [fontsLoaded] = useFonts({
     "Poppins-Regular": require("../../../assets/font/Poppins-Regular.ttf"),
@@ -52,7 +51,6 @@ const LoginScreen = () => {
 
   // Check if credentials are saved
   useEffect(() => {
-    const appVersion = '1.0.1';
 
     checkAppVersion(appVersion).then(data => {
       if (data.isinforce === 'Y') {
