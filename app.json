@@ -23,7 +23,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": ""
+      "package": "B_connect.UAT2"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -33,19 +33,19 @@
       "expo-router",
       [
         "expo-build-properties",
-    {
-      "android":{
-        "usesCleartextTraffic": true
-      }
-    }
-  ]
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
     ],
     "extra": {
       "router": {
         "origin": false
       },
       "eas": {
-        "projectId": ""
+        "projectId": "bd6776eb-8798-4bfc-bf58-63a3ec02708c"
       }
     }
   }
