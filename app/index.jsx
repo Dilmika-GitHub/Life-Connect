@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, TouchableWithoutFeedback, Keyboard, ActivityIndicator } from 'react-native';
 import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import LoginScreen from './Screens/LoginScreen/LoginScreen';
 
-
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -18,7 +19,9 @@ export default function App() {
   useEffect(() => {
     const loadAllFonts = async () => {
       await loadFonts();
+      await new Promise(resolve => setTimeout(resolve, 3000)); // Wait for 3 seconds
       setFontsLoaded(true);
+      SplashScreen.hideAsync(); // Hide the splash screen after the delay
     };
     loadAllFonts();
   }, []);
@@ -33,11 +36,9 @@ export default function App() {
 
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
-    <View style={styles.container}>
-      <LoginScreen />
-      
-
-    </View>
+      <View style={styles.container}>
+        <LoginScreen />
+      </View>
     </TouchableWithoutFeedback>
   );
 }
@@ -47,5 +48,4 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  
 });
