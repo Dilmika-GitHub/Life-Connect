@@ -9,11 +9,9 @@ import NOPkpi from "./KPIs/NOPkpi";
 import FYPkpi from "./KPIs/FYPkpi";
 import GWPkpi from "./KPIs/GWPkpi";
 import MCFPkpi from "./KPIs/MCFPkpi";
+import PersistencyDashboard from "./KPIs/PersistencyDashboard";
 import CheckConnection from "../../../components/checkConnection";
 import { Ionicons } from "@expo/vector-icons";
-
-
-//const { height, width } = Dimensions.get('window');
 
 export default function DashboardScreen({
   textColor = "black",
@@ -48,9 +46,6 @@ export default function DashboardScreen({
     return () => backHandler.remove();
   }, []);
 
-  
-  React.useEffect(() => {});
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -66,24 +61,30 @@ export default function DashboardScreen({
         </Text>
       </View>
       <View style={styles.kpiContainer}>
-      <View style={styles.kpiWrapper}>
-        <Income/>
-      </View>
-      
         <View style={styles.kpiWrapper}>
-          <FPkpi />
+          <Income />
         </View>
+
+        {/* New Business Container */}
+        <View style={styles.newBusinessContainer}>
+          <Text style={styles.newBusinessTitle}>New Business</Text>
+          <View style={styles.kpiWrapper}>
+            <FPkpi />
+          </View>
+          <View style={styles.kpiWrapper}>
+            <MCFPkpi />
+          </View>
+          <View style={styles.kpiWrapper}>
+            <NOPkpi />
+          </View>
+        </View>
+        <PersistencyDashboard percentage={75} />
         <View style={styles.kpiWrapper}>
           <FYPkpi />
         </View>
+
         <View style={styles.kpiWrapper}>
           <GWPkpi />
-        </View>
-        <View style={styles.kpiWrapper}>
-          <MCFPkpi />
-        </View>
-        <View style={styles.kpiWrapper}>
-          <NOPkpi />
         </View>
       </View>
     </ScrollView>
@@ -97,8 +98,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    // padding: 5,
-    backgroundColor: '#d1f7fa',
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
@@ -113,38 +113,29 @@ const styles = StyleSheet.create({
     color: color,
     fontSize: wp('5%'),
   }),
-  iconView: {
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-    marginHorizontal: wp('5%'), // Add horizontal margin
-    marginVertical: hp('2%'), // Add vertical margin
-  },
-  circleView: (radius, halfCircle, strokeWidth) => ({
-    alignItems: "center",
-    marginTop: -15,
-    justifyContent: 'center',
-  }),
-  absoluteCenter: {
-    position: "absolute",
-    justifyContent: "center",
-    alignItems: "center",
-    Top: hp("22%"),
-    center: wp("50%"),
-  },
-  valueText: (color) => ({
-    color: color,
-    fontSize: wp('5%'),
-  }),
   kpiContainer: {
-    paddingLeft: wp('0.5%'),
-    paddingBottom: hp('2%'),
-    flexDirection: 'column', // Assuming you want them stacked vertically
+    flexDirection: 'column',
     padding: 10,
-    alignItems:'center',
+    alignItems: 'center',
   },
   kpiWrapper: {
-    marginBottom: 10, // Adjust the space as necessary
+    marginBottom: 10,
     width: wp('93%'),
+    alignItems: 'center',
+  },
+  // New Business Container Styles
+  newBusinessContainer: {
+    backgroundColor: '#FFF3DD',
+    padding: 15,
+    borderRadius: 8,
+    width: wp('95%'),
+    marginBottom: 10,
+    alignItems:'center',
+  },
+  newBusinessTitle: {
+    fontSize: wp('5%'),
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
 });
 

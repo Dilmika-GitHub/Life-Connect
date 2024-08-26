@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   StyleSheet,
   Text,
@@ -23,9 +23,8 @@ const { height, width } = Dimensions.get("window");
 export default function FPkpi({
   textColor = "black",
 }) {
-
   const [actualValue, setActualValue] = useState(0);
-  const [targetValue, setTargetValue] = useState(0); // Set initial state to 0 for numerical calculations
+  const [targetValue, setTargetValue] = useState(0); 
   const [percentage, setPercentage] = useState(0);
   const [agencyCode1, setAgencyCode1] = useState("");
   const [agencyCode2, setAgencyCode2] = useState("");
@@ -167,7 +166,7 @@ export default function FPkpi({
           <View style={styles.valuesContainer}>
             <View style={styles.leftValues}>
               <Text style={styles.actualValue}>{ "Rs. " + new Intl.NumberFormat().format(actualValue)}</Text>
-              <Text style={[styles.targetValue, { color: (targetValue && targetValue !== 0) ? '#085258' : 'red' }]}>
+              <Text style={[styles.targetValue, { color: (targetValue && targetValue !== 0) ? '#fff' : 'yellow' }]}>
     {targetValue && targetValue !== 0 ? `Target : ${"Rs. " + new Intl.NumberFormat().format(targetValue)}` : "Click here to set a target"}
   </Text>
             </View>
@@ -230,7 +229,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: hp("15%"),
-    width: wp("95%"),
+    width: wp("90%"), 
   },
   tile: {
     flexDirection: "column",
@@ -240,7 +239,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: wp("2.5%"),
     borderRadius: 10,
-    backgroundColor: "#93e3ea",
+    backgroundColor: "#01204E",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -255,7 +254,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontWeight: "bold",
-    color: "#085258",
+    color: "#fff",
     fontSize: wp("4.5%"),
     textAlign: "center",
     marginBottom:20,
@@ -270,18 +269,18 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   actualValue: {
-    color: "#085258",
+    color: "#fff",
     fontSize: wp("6%"),
     textAlign: "left",
     fontWeight:"bold",
   },
   targetValue: {
-    color: "#085258",
+    color: "#fff",
     fontSize: wp("3.5%"),
     textAlign: "left",
   },
   percentageText: {
-    color: "#085258",
+    color: "#fff",
     fontSize: wp("6%"),
     textAlign: "right",
     fontWeight: "bold",
@@ -347,3 +346,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp("3%"),
   },
 });
+

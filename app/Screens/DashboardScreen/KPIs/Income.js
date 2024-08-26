@@ -10,6 +10,7 @@ import axios from "axios";
 import { useFocusEffect } from '@react-navigation/native';
 import { BASE_URL, ENDPOINTS } from "../../../services/apiConfig";
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -221,60 +222,67 @@ export default function Income ({
 
       {/* Main meter */}
       <TouchableOpacity onPress={handlePress} style={styles.tile}>
-        <View style={styles.mainMeterContainer}>
-          <View style={styles.textContainer}>
-            <Text style={styles.infoText}>Total Income</Text>
-            <Text style={[styles.valueText, {fontWeight:'bold'}]}>{ "Rs. " + new Intl.NumberFormat().format(actualValue)}</Text>
-            <Text style={[styles.targetText, { color: (targetValue && targetValue !== 0) ? 'white' : 'red' }]}>
-    {targetValue && targetValue !== 0 ? `Target : ${"Rs. " + new Intl.NumberFormat().format(targetValue)}` : "Click here to set a target"}
-  </Text>
-          </View>
-          <View style={styles.circleView}>
-            <Svg width={radius * 2} height={radius * 2} viewBox={viewBoxValue}>
-              <G rotation="-90" origin={`${halfCircle}, ${halfCircle}`}>
-              <Circle
-        cx="50%"
-        cy="50%"
-        r={radius}
-        stroke={color}
-        strokeWidth={strokeWidth}
-        strokeOpacity={1}
-        fill="transparent"
-      />
-      {percentage >= 0 && percentage < 100 ? (
-        <AnimatedCircle
-          ref={CircleRef}
-          cx="50%"
-          cy="50%"
-          r={radius}
-          stroke={animatedCircleColor}
-          strokeWidth={strokeWidth}
-          strokeDasharray={circleCircumference}
-          strokeDashoffset={strokeDashoffset}
-          strokeOpacity={1.0}
-          fill="transparent"
-          strokeLinecap="round"
-        />
-      ) : percentage >= 100 ? (
-        <Circle
-          cx="50%"
-          cy="50%"
-          r={radius}
-          stroke={animatedCircleColor}
-          strokeWidth={strokeWidth}
-          strokeOpacity={1.0}
-          fill="transparent"
-        />
-      ) : null}
-              </G>
-            </Svg>
-            <View style={styles.absoluteCenter}>
-              <Text style={styles.percentageText(textColor || color)}>
-                {percentage.toFixed(0)}%
+        <LinearGradient
+          colors={['#12A4B0', '#07454A']}
+          style={styles.tileGradient}
+          start={{ x: 0, y: 0 }} 
+          end={{ x: 1, y: 0 }} 
+        >
+          <View style={styles.mainMeterContainer}>
+            <View style={styles.textContainer}>
+              <Text style={styles.infoText}>Total Income</Text>
+              <Text style={[styles.valueText, {fontWeight:'bold'}]}>{"Rs. " + new Intl.NumberFormat().format(actualValue)}</Text>
+              <Text style={[styles.targetText, { color: (targetValue && targetValue !== 0) ? 'white' : 'red' }]}>
+                {targetValue && targetValue !== 0 ? `Target : ${"Rs. " + new Intl.NumberFormat().format(targetValue)}` : "Click here to set a target"}
               </Text>
             </View>
+            <View style={styles.circleView}>
+              <Svg width={radius * 2} height={radius * 2} viewBox={viewBoxValue}>
+                <G rotation="-90" origin={`${halfCircle}, ${halfCircle}`}>
+                  <Circle
+                    cx="50%"
+                    cy="50%"
+                    r={radius}
+                    stroke={color}
+                    strokeWidth={strokeWidth}
+                    strokeOpacity={1}
+                    fill="transparent"
+                  />
+                  {percentage >= 0 && percentage < 100 ? (
+                    <AnimatedCircle
+                      ref={CircleRef}
+                      cx="50%"
+                      cy="50%"
+                      r={radius}
+                      stroke={animatedCircleColor}
+                      strokeWidth={strokeWidth}
+                      strokeDasharray={circleCircumference}
+                      strokeDashoffset={strokeDashoffset}
+                      strokeOpacity={1.0}
+                      fill="transparent"
+                      strokeLinecap="round"
+                    />
+                  ) : percentage >= 100 ? (
+                    <Circle
+                      cx="50%"
+                      cy="50%"
+                      r={radius}
+                      stroke={animatedCircleColor}
+                      strokeWidth={strokeWidth}
+                      strokeOpacity={1.0}
+                      fill="transparent"
+                    />
+                  ) : null}
+                </G>
+              </Svg>
+              <View style={styles.absoluteCenter}>
+                <Text style={styles.percentageText(textColor || color)}>
+                  {percentage.toFixed(0)}%
+                </Text>
+              </View>
+            </View>
           </View>
-        </View>
+        </LinearGradient>
       </TouchableOpacity>
       {/* Main meter */}
     </View>
@@ -288,15 +296,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: wp("95%"),
   },
-  tile:{
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
+  tile: {
     height: "100%",
     width: "100%",
     paddingHorizontal: wp("2.5%"),
     borderRadius: 10,
-    backgroundColor: "#12a4b1",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -305,6 +309,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  tileGradient: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
   },
   valueText:{
     backgroundColor:'black',
@@ -380,7 +391,6 @@ const styles = StyleSheet.create({
   textContainer: {
     marginRight: wp('5%'),
     marginLeft:5,
-
   },
   infoText: {
     fontSize: wp('5%'),
@@ -405,7 +415,7 @@ const styles = StyleSheet.create({
     color: color,
     fontSize: wp('5%'),
     textAlign: 'center',
-    fontWeight:'bold'
+    fontWeight:'bold',
   }),
 });
 
