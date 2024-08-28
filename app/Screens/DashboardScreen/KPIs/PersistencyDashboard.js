@@ -55,7 +55,6 @@ const PersistencyDashboard = () => {
       const yearMonth = response.data.yearmn;
       const lastTwoDigits = yearMonth.toString().slice(-2);
   
-      // Convert month number to month name
       const monthName = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
         new Date(2000, parseInt(lastTwoDigits) - 1)
       );
@@ -128,9 +127,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   circle: {
-    width: wp("30%"),
-    height: wp("30%"),
-    borderRadius: wp("15%"),
+    width: wp("40%"),
+    height: wp("40%"),
+    borderRadius: wp("20%"),
     backgroundColor: "#03665c",
     justifyContent: "center",
     alignItems: "center",
@@ -152,7 +151,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: wp("4%"),
     color: "#000",
-    marginRight: wp("3%"),
+    marginRight: wp("7%"),
   },
   descriptionValue: {
     fontSize: wp("4%"),
