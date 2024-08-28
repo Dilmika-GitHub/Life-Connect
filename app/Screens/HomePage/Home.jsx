@@ -26,6 +26,7 @@ import PolicyDetails from "../PolicyDetails";
 import Maturity from "../MaturityPolicies/Maturity";
 import Lapsed from "../LapsedPolicies/Lapsed"
 import MDRTProfile from "../UserProfile/MDRTProfile/MDRTProfile";
+import PersistencyScreen from "../Persistency";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginScreen from "../LoginScreen/LoginScreen";
@@ -173,7 +174,7 @@ const CustomDrawerContent = ({ navigation }) => {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            marginVertical: 10,
+            marginVertical: 0,
             marginLeft: 10,
           }}
         >
@@ -231,7 +232,18 @@ const CustomDrawerContent = ({ navigation }) => {
           onPress={() => navigation.navigate("Maturity")}
           icon={({ focused, color, size }) => (
             <Ionicons
-              name={focused ? "refresh" : "refresh-outline"}
+              name={focused ? "refresh" : "checkbox-outline"}
+              size={size}
+              color={color}
+            />
+          )}
+        />
+        <DrawerItem
+          label="Persistency"
+          onPress={() => navigation.navigate("Persistency")}
+          icon={({ focused, color, size }) => (
+            <Ionicons
+              name={focused ? "trending-up" : "trending-up-outline"}
               size={size}
               color={color}
             />
@@ -249,7 +261,7 @@ const CustomDrawerContent = ({ navigation }) => {
                 color={color}
               />
             )}
-            style={{marginTop:hp('50%')}}
+            style={{marginTop:hp('40%')}}
           />
         </View>
       </SafeAreaView>
@@ -334,24 +346,13 @@ export default function Home() {
         <Drawer.Screen
           name="MDRT"
           component={MDRTProfile}
-          // options={({ navigation }) => ({
-          //   headerRight: () => (
-          //     <TouchableOpacity
-          //       onPress={() => navigation.navigate("MDRT Ranking")}
-          //     >
-          //       <Image
-          //         source={require("../../../components/pngtree.png")}
-          //         style={{ width: 30, height: 30, margin: 10 }}
-          //       />
-          //     </TouchableOpacity>
-          //   ),
-          // })}
         />
         <Drawer.Screen name="Policy Details" component={PolicyDetails} />
         <Drawer.Screen name="Maturity" component={Maturity} />
         <Drawer.Screen name="Lapsed" component={Lapsed} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
         <Drawer.Screen name="Change Password" component={ChangePassword} />
+        <Drawer.Screen name="Persistency" component={PersistencyScreen}/>
         <Drawer.Screen name="Login" component={LoginScreen} />
       </Drawer.Navigator>
     </NavigationContainer>

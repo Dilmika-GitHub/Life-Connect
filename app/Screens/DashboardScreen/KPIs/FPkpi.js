@@ -213,7 +213,7 @@ export default function FPkpi({
                   { height: hp("5.5%"), width: wp("30%") },
                 ]}
               >
-                <Text style={styles.buttonText}>Cancel</Text>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: hp("15%"),
-    width: wp("90%"), 
+    width: wp("80%"), 
   },
   tile: {
     flexDirection: "column",
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     paddingHorizontal: wp("2.5%"),
-    borderRadius: 10,
+    borderRadius: 20,
     backgroundColor: "#01204E",
     shadowColor: "#000",
     shadowOffset: {
@@ -326,14 +326,14 @@ const styles = StyleSheet.create({
     width: wp("60%"),
   },
   targetSetButton: {
-    backgroundColor: "#085258",
+    backgroundColor: "#01204E",
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 10,
   },
   cancelButton: {
-    backgroundColor: "#12a4b1",
+    backgroundColor: "#D9D9D9",
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
@@ -345,5 +345,12 @@ const styles = StyleSheet.create({
     paddingVertical: hp("1%"),
     paddingHorizontal: wp("3%"),
   },
+  cancelButtonText:{
+    color: "black",
+    fontSize: wp("4%"),
+    textAlign: "center",
+    paddingVertical: hp("1%"),
+    paddingHorizontal: wp("3%"),
+  }
 });
 

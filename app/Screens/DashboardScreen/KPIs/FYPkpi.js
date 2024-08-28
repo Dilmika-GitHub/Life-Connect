@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: hp("15%"),
-    width: wp("95%"),
+    width: wp("90%"), 
   },
   tile: {
     flexDirection: "column",
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     paddingHorizontal: wp("2.5%"),
-    borderRadius: 10,
+    borderRadius: 20,
     backgroundColor: "#93e3ea",
     shadowColor: "#000",
     shadowOffset: {

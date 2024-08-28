@@ -170,7 +170,7 @@ export default function NOPkpi({
           <View style={styles.valuesContainer}>
             <View style={styles.leftValues}>
               <Text style={styles.actualValue}>{actualValue}</Text>
-              <Text style={[styles.targetValue, { color: (targetValue && targetValue !== 0) ? '#fff' : 'red' }]}>
+              <Text style={[styles.targetValue, { color: (targetValue && targetValue !== 0) ? '#fff' : 'yellow' }]}>
     {targetValue && targetValue !== 0 ? `Target : ${targetValue}` : "Click here to set a target"}
   </Text>
             </View>
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: hp("15%"),
-    width: wp("90%"), 
+    width: wp("80%"), 
   },
   tile: {
     flexDirection: "column",
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     paddingHorizontal: wp("2.5%"),
-    borderRadius: 10,
+    borderRadius: 20,
     backgroundColor: "#01204E",
     shadowColor: "#000",
     shadowOffset: {

@@ -56,10 +56,11 @@ export default function DashboardScreen({
     <ScrollView style={styles.scrollView}>
       <CheckConnection />
       <View style={styles.centeredView}>
-        <Text style={styles.titleText(textColor || color)}>
-          Have a Nice Day!
-        </Text>
-      </View>
+      <View style={styles.titleContainer}>
+            <Text style={[styles.titleText, styles.leftText]}>LIFE IS</Text>
+            <Text style={[styles.titleText, styles.rightText]}>MY LIFE</Text>
+          </View>
+</View>
       <View style={styles.kpiContainer}>
         <View style={styles.kpiWrapper}>
           <Income />
@@ -107,12 +108,31 @@ const styles = StyleSheet.create({
     backgroundColor: '#08818a',
   },
   centeredView: {
-    alignItems: "center",
+    alignItems: 'flex-end',
+    marginVertical: 10,
+    marginHorizontal:20,
   },
-  titleText: (color) => ({
-    color: color,
-    fontSize: wp('5%'),
-  }),
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  titleText: {
+    fontSize: wp('3%'),
+    fontWeight: 'bold',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    textAlign: 'center',
+  },
+  leftText: {
+    backgroundColor: '#0C747C',
+    color: '#FFFFFF', 
+  },
+  rightText: {
+    backgroundColor: '#FFDC1E',
+    color: '#000000', 
+  },
   kpiContainer: {
     flexDirection: 'column',
     padding: 10,
@@ -127,8 +147,8 @@ const styles = StyleSheet.create({
   newBusinessContainer: {
     backgroundColor: '#FFF3DD',
     padding: 15,
-    borderRadius: 8,
-    width: wp('95%'),
+    borderRadius: 20,
+    width: wp('90%'),
     marginBottom: 10,
     alignItems:'center',
   },

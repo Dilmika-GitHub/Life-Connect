@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 10,
+    borderRadius: 20,
   },
   valueText:{
     backgroundColor:'black',
