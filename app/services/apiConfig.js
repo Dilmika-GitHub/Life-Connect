@@ -24,7 +24,9 @@ const ENDPOINTS = {
   SET_TARGET: "/DashBoard/SetTargets",
   GET_TARGET: "/DashBoard/GetSettedTarget",
   GET_IMAGE: "Image/GetProfileImage",
-  GET_MONTHLY_PERSISTENCY: "/Persistancy/GetAgentMonthlyPersistancy"
+  GET_MONTHLY_PERSISTENCY: "/Persistancy/GetAgentMonthlyPersistancy",
+  GET_PERSISTENCY_INFORCED: "/Persistancy/GetAgentPersInfoPol",
+  GET_PERSISTENCY_LAPSED: "/Persistancy/GetAgentPersLapsPol",
 };
 
 export { BASE_URL, ENDPOINTS };

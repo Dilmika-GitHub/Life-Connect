@@ -36,7 +36,7 @@ export default function Persistency() {
     setShowAlert(false);
     navigation.navigate('Login');
   };
-  
+
   useEffect(() => {
     const fetchAgencyCode = async () => {
       try {
@@ -54,11 +54,11 @@ export default function Persistency() {
   useEffect(() => {
     if (agencyCode1) {
       // Initial fetch for the default persistency
-      getDefaultPersistency(new Date().getFullYear().toString(), new Date().getMonth().toString().padStart(2, "0"));
+      getPersistency(new Date().getFullYear().toString(), new Date().getMonth().toString().padStart(2, "0"));
     }
   }, [agencyCode1, agencyCode2]);
 
-  const getDefaultPersistency = async (selectedYear, selectedMonth) => {
+  const getPersistency = async (selectedYear, selectedMonth) => {
     try {
       const token = await AsyncStorage.getItem("accessToken");
       const response = await axios.post(
@@ -112,12 +112,25 @@ export default function Persistency() {
     const selectedYear = date.getFullYear().toString();
     const selectedMonth = String(date.getMonth() + 1).padStart(2, "0");
     // Call the API with the selected month and year
-    getDefaultPersistency(selectedYear, selectedMonth);
+    getPersistency(selectedYear, selectedMonth);
   };
 
-  const navigateToLapsedScreen = () => {
-    navigation.navigate('Lapsed');
+  const monthNumber = (new Date(Date.parse(month + " 1, 2024")).getMonth() + 1).toString().padStart(2, '0');
+  // Function to navigate to the Inforced Policies screen
+const navigateToInforcedPolicies = () => {
+    navigation.navigate('Persistency Inforced Policy List', {
+        agencyCode1: agencyCode1,
+        agencyCode2: agencyCode2,
+        year: year,
+        month: monthNumber,
+      });
   };
+  
+  // Function to navigate to the Lapsed Policies screen
+  const navigateToLapsedPolicies = () => {
+    navigation.navigate('Persistency Lapsed Policy List', { selectedYear: year, selectedMonth: month });
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -176,14 +189,14 @@ export default function Persistency() {
       </Modal>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={navigateToLapsedScreen}>
+        <TouchableOpacity onPress={navigateToInforcedPolicies}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>Inforced Policies</Text>
             <Text style={styles.buttonValue}>{inforced}</Text>
             <Ionicons name="arrow-forward-outline" size={24} color="#fff" />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={navigateToLapsedScreen}>
+        <TouchableOpacity onPress={navigateToLapsedPolicies}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>Lapsed Policies</Text>
             <Text style={styles.buttonValue}>{lapsed}</Text>

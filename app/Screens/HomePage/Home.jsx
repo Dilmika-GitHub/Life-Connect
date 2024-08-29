@@ -31,6 +31,8 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginScreen from "../LoginScreen/LoginScreen";
 import ChangePassword from "../ChangePassword";
+import PersistencyInforcedPolicyList from "../PersistencyInforcedPolicyList";
+import PersistencyLapsedPolicyList from "../PersistencyLapsedPolicyList";
 import axios from 'axios';
 import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 
@@ -354,6 +356,8 @@ export default function Home() {
         <Drawer.Screen name="Change Password" component={ChangePassword} />
         <Drawer.Screen name="Persistency" component={PersistencyScreen}/>
         <Drawer.Screen name="Login" component={LoginScreen} />
+        <Drawer.Screen name="Persistency Inforced Policy List" component={PersistencyInforcedPolicyList} />
+        <Drawer.Screen name="Persistency Lapsed Policy List" component={PersistencyLapsedPolicyList} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
