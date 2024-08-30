@@ -26,7 +26,7 @@ import PolicyDetails from "../PolicyDetails";
 import Maturity from "../MaturityPolicies/Maturity";
 import Lapsed from "../LapsedPolicies/Lapsed"
 import MDRTProfile from "../UserProfile/MDRTProfile/MDRTProfile";
-import PersistencyScreen from "../Persistency";
+import Persistency from "../Persistency";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginScreen from "../LoginScreen/LoginScreen";
@@ -354,7 +354,7 @@ export default function Home() {
         <Drawer.Screen name="Lapsed" component={Lapsed} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
         <Drawer.Screen name="Change Password" component={ChangePassword} />
-        <Drawer.Screen name="Persistency" component={PersistencyScreen}/>
+        <Drawer.Screen name="Persistency" component={Persistency}/>
         <Drawer.Screen name="Login" component={LoginScreen} />
         <Drawer.Screen name="Persistency Inforced Policy List" component={PersistencyInforcedPolicyList} />
         <Drawer.Screen name="Persistency Lapsed Policy List" component={PersistencyLapsedPolicyList} />

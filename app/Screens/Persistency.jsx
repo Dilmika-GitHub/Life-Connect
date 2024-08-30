@@ -114,15 +114,13 @@ export default function Persistency() {
     // Call the API with the selected month and year
     getPersistency(selectedYear, selectedMonth);
   };
-
-  const monthNumber = (new Date(Date.parse(month + " 1, 2024")).getMonth() + 1).toString().padStart(2, '0');
   // Function to navigate to the Inforced Policies screen
 const navigateToInforcedPolicies = () => {
     navigation.navigate('Persistency Inforced Policy List', {
         agencyCode1: agencyCode1,
         agencyCode2: agencyCode2,
         year: year,
-        month: monthNumber,
+        month: month,
       });
   };
   
