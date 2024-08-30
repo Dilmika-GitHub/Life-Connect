@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, ScrollView, Button } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, ScrollView, Button, ActivityIndicator } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -24,11 +24,15 @@ export default function Persistency() {
   const [lapsed, setLapsed] = useState("");
   const navigation = useNavigation();
   const [showAlert, setShowAlert] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleErrorResponse = (error) => {
-    if (error.response.status === 401) {
-      console.log(error.response.status);
+    const errorMessage = error.response?.data?.message || error.message || "An error occurred";
+    
+    if (errorMessage.includes("Session expired")) {
       setShowAlert(true);
+    } else {
+      console.error("Error:", errorMessage);
     }
   };
 
@@ -44,10 +48,10 @@ export default function Persistency() {
         setAgencyCode1(data.personal_agency_code);
         setAgencyCode2(data.newagt);
       } catch (error) {
-        console.error("Error getting agency code:", error);
+        handleErrorResponse(error); // Use the error handler
       }
     };
-
+  
     fetchAgencyCode();
   }, []);
 
@@ -60,6 +64,7 @@ export default function Persistency() {
 
   const getPersistency = async (selectedYear, selectedMonth) => {
     try {
+        setLoading(true);
       const token = await AsyncStorage.getItem("accessToken");
       const response = await axios.post(
         BASE_URL + ENDPOINTS.GET_MONTHLY_PERSISTENCY,
@@ -87,7 +92,9 @@ export default function Persistency() {
     } catch (error) {
         handleErrorResponse(error);
       console.error("Error Fetching Persistency:", error);
-    }
+    }finally {
+        setLoading(false); // End loading
+      }
   };
 
   const getLast12Months = () => {
@@ -126,24 +133,28 @@ const navigateToInforcedPolicies = () => {
   
   // Function to navigate to the Lapsed Policies screen
   const navigateToLapsedPolicies = () => {
-    navigation.navigate('Persistency Lapsed Policy List', { selectedYear: year, selectedMonth: month });
+    navigation.navigate('Persistency Lapsed Policy List', { 
+        agencyCode1: agencyCode1,
+        agencyCode2: agencyCode2,
+        year: year,
+        month: month, });
   };
   
 
   return (
     <View style={styles.container}>
         <AwesomeAlert
-        show={showAlert}
-        showProgress={false}
-        title="Session Expired"
-        message="Please Log Again!"
-        closeOnTouchOutside={false}
-        closeOnHardwareBackPress={false}
-        showConfirmButton={true}
-        confirmText="OK"
-        confirmButtonColor="#08818a"
-        onConfirmPressed={handleConfirm}
-      />
+  show={showAlert}
+  showProgress={false}
+  title="Session Expired"
+  message="Your session has expired. Please log in again."
+  closeOnTouchOutside={false}
+  closeOnHardwareBackPress={false}
+  showConfirmButton={true}
+  confirmText="OK"
+  confirmButtonColor="#08818a"
+  onConfirmPressed={handleConfirm}
+/>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
           <Ionicons name="menu" size={26} color="white" />
@@ -201,6 +212,11 @@ const navigateToInforcedPolicies = () => {
             <Ionicons name="arrow-forward-outline" size={24} color="#fff" />
           </View>
         </TouchableOpacity>
+        {loading && (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="#08818a" />
+        </View>
+      )}
       </View>
     </View>
   );
@@ -315,5 +331,15 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 18,
     textAlign: 'center',
+  },
+  loader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // Semi-transparent background
   },
 });

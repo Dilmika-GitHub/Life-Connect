@@ -4,6 +4,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL, ENDPOINTS } from '../services/apiConfig';
 import Icon from 'react-native-vector-icons/Ionicons'; 
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const monthToNumber = (month) => {
   const months = {
@@ -29,9 +30,22 @@ export default function PersistencyInforcedPolicyList({ route, navigation }) {
     const { agencyCode1, agencyCode2, year, month } = route.params;
     const [policies, setPolicies] = useState([]); // Always initialize as an empty array
     const [loading, setLoading] = useState(true);
+    const [showAlert, setShowAlert] = useState(false);
 
     const navigateToPersistencyPage = () => {
         navigation.navigate('Persistency');
+      };
+
+      const handleErrorResponse = (error) => {
+        if (error.response.status === 401) {
+          console.log(error.response.status);
+          setShowAlert(true);
+        }
+      };
+    
+      const handleConfirm = () => {
+        setShowAlert(false);
+        navigation.navigate('Login');
       };
   
     useEffect(() => {
@@ -53,6 +67,7 @@ export default function PersistencyInforcedPolicyList({ route, navigation }) {
           console.log('API Response:', response.data); // Debugging line to check response
           setPolicies(response.data || []); // Safeguard: Ensure policies is an array
         } catch (error) {
+            handleErrorResponse(error);
           console.error('Error fetching inforced policies:', error);
           setPolicies([]); // Set policies to an empty array if there's an error
         } finally {
@@ -87,6 +102,18 @@ export default function PersistencyInforcedPolicyList({ route, navigation }) {
         ) : (
           <Text>No Policies Found</Text>
         )}
+        <AwesomeAlert
+        show={showAlert}
+        showProgress={false}
+        title="Session Expired"
+        message="Please Log Again!"
+        closeOnTouchOutside={false}
+        closeOnHardwareBackPress={false}
+        showConfirmButton={true}
+        confirmText="OK"
+        confirmButtonColor="#08818a"
+        onConfirmPressed={handleConfirm}
+      />
       </View>
     );
   }
@@ -105,7 +132,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     backgroundColor: '#F8F8F8',
     padding: 10,
-    marginVertical: 8,
+    marginVertical: 5,
     marginHorizontal: 8,
     borderRadius: 10,
     elevation: 3,
