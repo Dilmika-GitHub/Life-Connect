@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, BackHandler } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL, ENDPOINTS } from '../services/apiConfig';
 import Icon from 'react-native-vector-icons/Ionicons'; 
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { useFocusEffect } from '@react-navigation/native';
 
 const monthToNumber = (month) => {
   const months = {
@@ -47,6 +48,19 @@ export default function PersistencyInforcedPolicyList({ route, navigation }) {
         setShowAlert(false);
         navigation.navigate('Login');
       };
+
+      useFocusEffect(
+        useCallback(() => {
+          const onBackPress = () => {
+            navigation.navigate('Persistency');
+            return true;
+          };
+    
+          BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    
+          return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+        }, [navigation])
+      );
   
     useEffect(() => {
       const fetchPolicies = async () => {
