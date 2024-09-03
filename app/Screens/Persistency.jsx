@@ -65,37 +65,44 @@ export default function Persistency() {
   const getPersistency = async (selectedYear, selectedMonth) => {
     try {
         setLoading(true);
-      const token = await AsyncStorage.getItem("accessToken");
-      const response = await axios.post(
-        BASE_URL + ENDPOINTS.GET_MONTHLY_PERSISTENCY,
-        {
-          p_agency_1: agencyCode1,
-          p_agency_2: !agencyCode2 || agencyCode2 === 0 ? agencyCode1 : agencyCode2,
-          p_year: selectedYear,
-          p_month: selectedMonth,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+        const token = await AsyncStorage.getItem("accessToken");
+        const response = await axios.post(
+            BASE_URL + ENDPOINTS.GET_MONTHLY_PERSISTENCY,
+            {
+                p_agency_1: agencyCode1,
+                p_agency_2: !agencyCode2 || agencyCode2 === 0 ? agencyCode1 : agencyCode2,
+                p_year: selectedYear,
+                p_month: selectedMonth,
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-      setYear(response.data.yearmn.substring(0, 4));
-      const yearMonth = response.data.yearmn;
-      const lastTwoDigits = yearMonth.toString().slice(-2);
+        setYear(response.data.yearmn.substring(0, 4));
+        const yearMonth = response.data.yearmn;
+        const lastTwoDigits = yearMonth.toString().slice(-2);
 
-      const monthName = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
-        new Date(2000, parseInt(lastTwoDigits) - 1)
-      );
+        const monthName = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+            new Date(2000, parseInt(lastTwoDigits) - 1)
+        );
 
-      setMonth(monthName);
-      setInforced(response.data.inforce_count1);
-      setLapsed(response.data.lapse_count1);
-      setPercentage(response.data.persistency_year1);
+        setMonth(monthName);
+        setInforced(response.data.inforce_count1);
+        setLapsed(response.data.lapse_count1);
+        setPercentage(response.data.persistency_year1);
     } catch (error) {
-        handleErrorResponse(error);
-      console.error("Error Fetching Persistency:", error);
-    }finally {
+        if (error.response && error.response.status === 400) {
+            setInforced("0");
+            setLapsed("0");
+            setPercentage("0");
+        } else {
+            handleErrorResponse(error); // Improved error handler
+        }
+    } finally {
         setLoading(false); // End loading
-      }
-  };
+    }
+};
+
+
 
   const getLast12Months = () => {
     const months = [];
@@ -212,11 +219,11 @@ const navigateToInforcedPolicies = () => {
             <Ionicons name="arrow-forward-outline" size={24} color="#fff" />
           </View>
         </TouchableOpacity>
-        {loading && (
+        {/* {loading && (
         <View style={styles.loader}>
           <ActivityIndicator size="large" color="#08818a" />
         </View>
-      )}
+      )} */}
       </View>
     </View>
   );

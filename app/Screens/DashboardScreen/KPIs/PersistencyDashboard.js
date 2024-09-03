@@ -44,30 +44,44 @@ const PersistencyDashboard = () => {
         BASE_URL + ENDPOINTS.GET_MONTHLY_PERSISTENCY,
         {
           p_agency_1: agencyCode1,
-          p_agency_2: !agencyCode2 || agencyCode2 === 0 ? agencyCode1 : agencyCode2,
+          p_agency_2:
+            !agencyCode2 || agencyCode2 === 0 ? agencyCode1 : agencyCode2,
           p_year: new Date().getFullYear().toString(),
           p_month: new Date().getMonth().toString().padStart(2, "0"),
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  
+
       setYear(response.data.yearmn.substring(0, 4));
       const yearMonth = response.data.yearmn;
       const lastTwoDigits = yearMonth.toString().slice(-2);
-  
-      const monthName = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
-        new Date(2000, parseInt(lastTwoDigits) - 1)
-      );
-  
+
+      const monthName = new Intl.DateTimeFormat("en-US", {
+        month: "long",
+      }).format(new Date(2000, parseInt(lastTwoDigits) - 1));
+
       setMonth(monthName);
       setInforced(response.data.inforce_count1);
       setLapsed(response.data.lapse_count1);
       setPercentage(response.data.persistency_year1);
     } catch (error) {
-      console.error("Error Fetching Persistency:", error);
+      if (error.response && error.response.status === 400) {
+        setYear(new Date().getFullYear().toString());
+        const date = new Date();
+        date.setMonth(date.getMonth() - 1);
+        const lastMonthName = new Intl.DateTimeFormat("en-US", {
+          month: "long",
+        }).format(date);
+        setMonth(lastMonthName);
+        setInforced("N/A");
+        setLapsed("N/A");
+        setPercentage("0");
+      } else {
+        handleErrorResponse(error);
+        console.error("Error Fetching Persistency:", error);
+      }
     }
   };
-  
 
   return (
     <View style={styles.container}>
