@@ -219,11 +219,11 @@ const navigateToInforcedPolicies = () => {
             <Ionicons name="arrow-forward-outline" size={24} color="#fff" />
           </View>
         </TouchableOpacity>
-        {/* {loading && (
+        {loading && (
         <View style={styles.loader}>
           <ActivityIndicator size="large" color="#08818a" />
         </View>
-      )} */}
+      )}
       </View>
     </View>
   );
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#01204E',
   },
   percentageText: {
-    fontSize: "80%", 
+    fontSize: 80, 
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#FFF3DD',
