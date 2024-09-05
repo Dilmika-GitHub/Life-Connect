@@ -9,9 +9,10 @@ import {
   Modal,
   Alert,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Waves, Waves2, Waves3 } from "../../../components/Waves";
+import { Waves } from "../../../components/Waves";
 import { useRouter } from "expo-router";
 import { useFonts } from "expo-font";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -25,6 +26,7 @@ import { MaterialIcons, SimpleLineIcons } from "@expo/vector-icons";
 import { checkAppVersion, checkMaintenance } from "../../services/adminAPIs";
 import { lockToPortrait, lockToAllOrientations } from "../OrientationLock";
 import { useIsFocused } from '@react-navigation/native';
+import { Ionicons } from "@expo/vector-icons";
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -38,6 +40,7 @@ const LoginScreen = () => {
   const [newCredentials, setNewCredentials] = useState(null);
   const router = useRouter();
   const isFocused = useIsFocused();
+  const [showHelpPopup, setShowHelpPopup] = useState(false);
   const appVersion = Constants.expoConfig?.version || Constants.manifest2?.version || 'Version not found';
 
   const [fontsLoaded] = useFonts({
@@ -184,14 +187,12 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Waves2 style={styles.wavesTopSub} />
+      
       <Waves style={styles.wavesTop} />
-      <Waves3 style={styles.wavesBottom}></Waves3>
-      <Text style={styles.title}>Login</Text>
-
+      
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder="Username"
         onChangeText={(text) => setUsername(text)}
         value={username}
       />
@@ -215,9 +216,49 @@ const LoginScreen = () => {
           <Text style={styles.loginButtonText}>Login</Text>
         )}
       </TouchableOpacity>
-      <Text style={styles.welcomeText}>WELCOME</Text>
+      <Text style={styles.logoText}>Life - Connect</Text>
+      <Image
+        source={require('../../../assets/Logo.png')} // Replace with your image path
+        style={styles.imageStyle}
+      />
+      {/* Need Help Text */}
+      <TouchableOpacity onPress={() => setShowHelpPopup(true)}>
+        <Text style={styles.helpText}>Need help logging in? <Text style={styles.helpLink}>Help</Text></Text>
+      </TouchableOpacity>
+
+      {/* Version and Powered By Text */}
       <Text style={styles.versionText}>V: {appVersion}</Text>
+      <Text style={styles.poweredByText}>Powered by SLIC LIFE IT</Text>
       <CheckConnection />
+      <Modal
+  visible={showHelpPopup}
+  transparent
+  animationType="fade"
+  onRequestClose={() => setShowHelpPopup(false)} // Optional for Android back button handling
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+    <TouchableOpacity style={styles.closeButton} onPress={() => setShowHelpPopup(false)}>
+              <Ionicons name="close-circle" size={30} color="red" />
+            </TouchableOpacity>
+    <MaterialIcons name="support-agent" size={80} color="#08818B" />
+
+{/* Modal Text */}
+<Text style={styles.modalTitle}>Get access to Life-Connect</Text>
+<Text style={styles.modalSubtitle}>Please contact:</Text>
+
+{/* Contact Information */}
+<Text style={styles.contactName}>Mr. Buddika Weerakoon</Text>
+<Text style={styles.contactPhone}>0112357814</Text>
+<Text style={styles.contactEmail}>budikawe@srilankainsurance.com</Text>
+
+{/* Additional Instructions */}
+<Text style={styles.additionalText}>
+  Send the request with your agency code
+</Text>
+    </View>
+  </View>
+</Modal>
 
       <Modal
         visible={showSavePasswordPopup}
@@ -276,15 +317,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#BBFAFF",
-  },
-  welcomeText: {
-    left: 50,
-    top: 50,
-    position: "absolute",
-    color: '#F2B510',
-    fontSize: 35,
-    fontFamily: 'Poppins',
   },
   title: {
     fontSize: 30,
@@ -294,19 +326,34 @@ const styles = StyleSheet.create({
     color: "black",
     fontFamily: "poppins",
   },
+  logoText:{
+    top: 50,
+    position: "absolute",
+    color: '#F2B510',
+    fontSize: 35,
+    fontFamily: 'Poppins',
+  },
+  imageStyle: {
+    width: 125, // Set the desired width
+    height: 125, // Set the desired height
+    marginTop: 20, // Adjust the space between text and image
+    position: "absolute",
+    top: 90,
+  },
   versionText:{
-    bottom: -280,
-    right:160,
-    color:'white',
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    color: 'black',
   },
   input: {
     height: hp('5%'),
-    borderColor: "#8b8b8b99",
-    borderRadius: 60,
+    borderColor: "#000",
     marginBottom: 10,
     paddingHorizontal: 10,
     width: wp("80%"),
-    borderWidth: 2,
+    borderBottomWidth: 1,   
+    borderBottomColor: 'black',
     fontSize: wp("4.5%"),
   },
   inputContainer: {
@@ -335,37 +382,21 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
-  wavesTopSub: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-  },
-  wavesBottom: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-  },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderColor: "#8b8b8b99",
-    borderRadius: 60,
+    borderColor: "#000",
     paddingHorizontal: 10,
     width: wp("80%"),
-    borderWidth: 2,
+    borderBottomWidth: 1,   
+    borderBottomColor: 'black',
     marginBottom: 10,
   },
-  passwordInput: {
-    flex: 1,
-    height: hp('5%'),
-    fontSize: wp("4.5%"),
-  },
   loginButton: {
-    width: wp('30%'),
+    width: wp('80%'),
     height: hp('6%'),
     top: hp('29%'),
-    left: wp('30%'),
-    backgroundColor: '#F2B510',
+    backgroundColor: '#08818B',
     borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',
@@ -380,10 +411,82 @@ const styles = StyleSheet.create({
     zIndex: 1, // Ensure the button text appears above the background
   },
   loginButtonText: {
-    color: 'black',
-    fontSize: hp('3%'),
+    color: 'white',
+    fontSize: hp('2%'),
     fontFamily: 'Poppins-Regular', // Make sure 'Poppins' is correctly loaded in your project
     fontWeight: '400',
+    fontWeight:'bold',
+  },
+  helpText: {
+    marginTop: 20,
+    color: 'black',
+    fontSize: 14,
+  },
+  helpLink: {
+    color: '#08818B',
+    textDecorationLine: 'underline',
+  },
+  closeButton: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Transparent background
+  },
+  modalContent: {
+    width: width * 0.8,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+    elevation: 5, // Shadow for Android
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2, // Shadow for iOS
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
+    marginVertical: 10,
+  },
+  modalSubtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 15,
+  },
+  contactName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 5,
+  },
+  contactPhone: {
+    fontSize: 16,
+    color: '#08818B',
+    marginBottom: 5,
+  },
+  contactEmail: {
+    fontSize: 16,
+    color: '#08818B',
+    marginBottom: 20,
+  },
+  additionalText: {
+    fontSize: 14,
+    color: 'red',
+    textAlign: 'center',
+  },
+  poweredByText: {
+    position: 'absolute',
+    bottom: 20,
+    color: '#08818B',
+    fontSize: 14,
+    textAlign: 'center',
   },
   modalContainer: {
     flex: 1,

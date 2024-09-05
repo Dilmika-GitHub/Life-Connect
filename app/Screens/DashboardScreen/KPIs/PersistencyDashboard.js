@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet,TouchableOpacity } from "react-native";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { getAgencyCode } from "../../../services/getDetailsAPIs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -7,6 +7,7 @@ import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
 import { BASE_URL, ENDPOINTS } from "../../../services/apiConfig";
 import AwesomeAlert from "react-native-awesome-alerts";
+import { useNavigation } from "@react-navigation/native";
 
 const PersistencyDashboard = () => {
   const [percentage, setPercentage] = useState("");
@@ -16,6 +17,7 @@ const PersistencyDashboard = () => {
   const [month, setMonth] = useState("");
   const [inforced, setInforced] = useState("");
   const [lapsed, setLapsed] = useState("");
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchAgencyCode = async () => {
@@ -120,6 +122,11 @@ const PersistencyDashboard = () => {
             </Text>
             <Text style={styles.descriptionValue}>{lapsed}</Text>
           </View>
+          <View style={styles.descriptionRow}>
+          <TouchableOpacity onPress={() => navigation.navigate("Persistency")}>
+<Text style={styles.seeMoreText}>    see more...</Text>
+</TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
@@ -171,6 +178,11 @@ const styles = StyleSheet.create({
     fontSize: wp("4%"),
     textAlign: "right",
     color: "#6d6d6d",
+  },
+  seeMoreText: {
+    fontSize: wp("3.5%"),
+    textAlign: "left",
+    color: "#f70505",
   },
   bullet: {
     marginRight: 5,

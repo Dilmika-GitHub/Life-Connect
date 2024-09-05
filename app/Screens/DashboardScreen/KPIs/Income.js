@@ -299,7 +299,6 @@ const styles = StyleSheet.create({
   tile: {
     height: "100%",
     width: "100%",
-    paddingHorizontal: wp("2.5%"),
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: {

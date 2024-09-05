@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
@@ -223,84 +223,69 @@ const Profile = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-          <Ionicons name="menu" size={26} color="white" />
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
       </View>
+<ScrollView>
+<View style={styles.profileContainer}>
+        {userData?.profileImage ? (
+          <Image
+            source={{ uri: userData.profileImage }}
+            style={styles.profileImage}
+            resizeMode="cover"
+          />
+        ) : (
+          <Text style={styles.noImageText}>No profile image available</Text>
+        )}
+        <Text style={styles.nameText}>
+          {userData?.intial?.trim()} {userData?.name?.trim()}
+        </Text>
+        <Text style={styles.emailText}>{userData?.email?.trim()}</Text>
 
-      <View style={[styles.section, styles.topSection]}></View>
-
-      <View style={[styles.section, styles.bottomSection]}>
-        <View style={styles.greySquare}>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>Personal Agency Code:</Text>
-            <Text style={styles.normalText}>
-              {formatAgencyCode(userData?.personal_agency_code) || "N/A"}
-            </Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>NIC No:</Text>
-            <Text style={styles.normalText}>{userData?.idnum || "N/A"}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>E-mail:</Text>
-            <Text style={styles.normalText}>{userData?.email?.trim() || "N/A"}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>Mobile No:</Text>
-            <Text style={styles.normalText}>
-              {userData?.phmob?.trim() || "N/A"}
-            </Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>Home Phone No:</Text>
-            <Text style={styles.normalText}>
-              {userData?.phres?.trim() || "N/A"}
-            </Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.titleText}>Date of Birth:</Text>
-            <Text style={styles.normalText}>{userData?.dob || "N/A"}</Text>
-          </View>
-
-          {categoryType === "Or" ? (
-            <View style={styles.row}>
-              <Text style={styles.titleText}>Organizer Team Leader Code:</Text>
-              <Text style={styles.normalText}>
-                {userData?.or_team_code || "N/A"}
-              </Text>
-            </View>
-          ) : null}
-
-          <View style={styles.row}>
-            <Text
-              style={styles.changePasswordText}
-              onPress={navigateToPasswordChange}
-            >
-              Change Password
-            </Text>
-          </View>
-          <TouchableOpacity onPress={pickImage}>
-            <Text style={styles.changePasswordText}>Change Profile Picture</Text>
+        <View style={styles.actionButtons}>
+          <TouchableOpacity style={styles.actionButton} onPress={pickImage}>
+            <Text style={styles.actionButtonText}>Change Profile Picture</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={navigateToPasswordChange}
+          >
+            <Text style={styles.actionButtonText}>Change Password</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      <View style={styles.imageContainer}>
-  {userData?.profileImage ? (
-    <Image
-      source={{ uri: userData.profileImage }}
-      style={styles.roundImage}
-      resizeMode="cover"
-    />
-  ) : (
-    <Text style={styles.noImageText}>No profile image available</Text>
-  )}
-  <Text style={styles.imageText}>
-    {userData?.intial?.trim()} {userData?.name?.trim()}
-  </Text>
-</View>
-{loading && (
+      <View style={styles.detailsContainer}>
+      <View style={styles.detailBox1}>
+          <Text style={styles.detailLabel}>Agency Code</Text>
+          <Text style={styles.detailValue}>
+            {formatAgencyCode(userData?.personal_agency_code) || "N/A"}
+          </Text>
+          <Text style={styles.detailLabel}>NIC</Text>
+          <Text style={styles.detailValue}>{userData?.idnum || "N/A"}</Text>
+          <Text style={styles.detailLabel}>Team Leader Code</Text>
+          <Text style={styles.detailValue}>
+            {userData?.or_team_code || "N/A"}
+          </Text>
+        </View>
+        <View style={styles.detailBox2}>
+          <Text style={styles.detailLabel}>Mobile</Text>
+          <Text style={styles.detailValue}>
+            {userData?.phmob?.trim() || "N/A"}
+          </Text>
+        </View>
+        <View style={styles.detailBox3}>
+          <Text style={styles.detailLabel}>Phone</Text>
+          <Text style={styles.detailValue}>
+            {userData?.phres?.trim() || "N/A"}
+          </Text>
+        </View>
+      </View>
+</ScrollView>
+      
+
+      {loading && (
         <View style={styles.loader}>
           <ActivityIndicator size="large" color="#08818a" />
         </View>
@@ -316,96 +301,106 @@ const Profile = ({ navigation }) => {
         showConfirmButton={true}
         confirmText="OK"
         confirmButtonColor="#08818a"
-        onConfirmPressed={handleConfirm}
+        onConfirmPressed={() => {
+          setShowAlert(false);
+          navigation.navigate("Login");
+        }}
       />
-      
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-  },
-  header: {
-    flexDirection: 'row',
+container: {
+  flex: 1,
+  backgroundColor: '#f9f9f9',
+},
+header: {
+  flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
     backgroundColor: '#08818a',
-  },
-  section: {
-    width: "100%",
-  },
-  topSection: {
-    flex: 1,
-    backgroundColor: "#08818a",
-  },
-  bottomSection: {
-    flex: 5,
-    backgroundColor: "white",
-  },
-  imageContainer: {
-    position: "absolute",
-    left: "50%",
-    top: "22%",
-    transform: [{ translateX: -100 }, { translateY: -100 }],
-  },
-  roundImage: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-  },
-  imageText: {
-    marginTop: 10,
-    textAlign: "center",
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "black",
-  },
-  greySquare: {
-    width: '90%',
-    backgroundColor: '#c4f1f5',
-    marginTop: 150,
-    alignSelf: "center",
-    borderRadius: 10,
-    padding: 10,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  titleText: {
-    fontSize: 16,
-    color: 'black',
-    minWidth: 100,
-  },
-  normalText: {
-    fontSize: 16,
-    color: "grey",
-  },
-  changePasswordText: {
-    fontSize: 16,
-    color: "blue",
-  },
-  noImageText: {
-    textAlign: "center",
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "grey",
-    marginTop: 10,
-  },
-  loader: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Semi-transparent background
-  },
+},
+profileContainer: {
+  alignItems: 'center',
+  marginVertical: 20,
+  marginHorizontal:20,
+  borderWidth:1,
+  borderRadius:40,
+  borderColor:'#fff',
+  padding:25,
+  backgroundColor:'#fff',
+},
+profileImage: {
+  width: 100,
+  height: 100,
+  borderRadius: 50,
+  backgroundColor: '#ccc',
+},
+nameText: {
+  fontSize: 18,
+  fontWeight: 'bold',
+  marginVertical: 5,
+},
+emailText: {
+  fontSize: 14,
+  color: 'gray',
+},
+actionButtons: {
+  flexDirection: 'row',
+  marginTop: 20,
+},
+actionButton: {
+  backgroundColor: '#f0f0f0',
+  padding: 10,
+  borderRadius: 5,
+  marginHorizontal: 5,
+},
+actionButtonText: {
+  color: '#08818a',
+  fontWeight: 'bold',
+},
+detailsContainer: {
+  padding: 20,
+},
+detailBox1: {
+  backgroundColor: '#e9f1f7',
+  padding: 10,
+  borderRadius: 5,
+  marginVertical: 5,
+},
+detailBox2: {
+  backgroundColor: '#e8f5e9',
+  padding: 10,
+  borderRadius: 5,
+  marginVertical: 5,
+},
+detailBox3: {
+  backgroundColor: '#fcdede',
+  padding: 10,
+  borderRadius: 5,
+  marginVertical: 5,
+},
+detailLabel: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  color: '#212121',
+  marginTop:10,
+},
+detailValue: {
+  fontSize: 16,
+  color: '#7a7c7d',
+},
+loader: {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: 'rgba(255, 255, 255, 0.7)',
+},
 });
 
 export default Profile;
