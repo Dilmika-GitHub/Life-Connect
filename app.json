@@ -23,7 +23,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "Life_Connect"
+      "package": "sliclife.LifeConnect"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -51,7 +51,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "bd6776eb-8798-4bfc-bf58-63a3ec02708c"
+        "projectId": "fa9a1d7c-e355-4bfa-898a-4afeea6c3e3f"
       }
     }
   }

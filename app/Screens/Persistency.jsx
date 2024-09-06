@@ -7,6 +7,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAgencyCode } from '../services/getDetailsAPIs';
 import { BASE_URL, ENDPOINTS } from '../services/apiConfig';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { lockToPortrait } from './OrientationLock';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function Persistency() {
     const [selectedDate, setSelectedDate] = useState(() => {
@@ -25,6 +27,14 @@ export default function Persistency() {
   const navigation = useNavigation();
   const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+      if (isFocused) {
+          lockToPortrait();
+      }
+  }, [isFocused]);
 
   const handleErrorResponse = (error) => {
     const errorMessage = error.response?.data?.message || error.message || "An error occurred";

@@ -10,6 +10,8 @@ import {
   Alert,
   ActivityIndicator,
   Image,
+  Keyboard,
+  Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Waves } from "../../../components/Waves";
@@ -27,6 +29,8 @@ import { checkAppVersion, checkMaintenance } from "../../services/adminAPIs";
 import { lockToPortrait, lockToAllOrientations } from "../OrientationLock";
 import { useIsFocused } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -41,6 +45,7 @@ const LoginScreen = () => {
   const router = useRouter();
   const isFocused = useIsFocused();
   const [showHelpPopup, setShowHelpPopup] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const appVersion = Constants.expoConfig?.version || Constants.manifest2?.version || 'Version not found';
 
   const [fontsLoaded] = useFonts({
@@ -51,7 +56,19 @@ const LoginScreen = () => {
     setShowPassword(!showPassword);
   };
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardVisible(true);
+    });
+    const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardVisible(false);
+    });
 
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
   // Check if credentials are saved
   useEffect(() => {
 
@@ -211,23 +228,29 @@ const LoginScreen = () => {
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
         {loading ? (
-          <ActivityIndicator size="small" color="#08818a" /> 
+          <ActivityIndicator size="small" color="#fff" /> 
         ) : (
           <Text style={styles.loginButtonText}>Login</Text>
         )}
       </TouchableOpacity>
-      <Image
-        source={require('../../../assets/Logo.png')} // Replace with your image path
-        style={styles.imageStyle}
-      />
+      {!(keyboardVisible && Platform.OS === "android") && (
+        <Image
+          source={require("../../../assets/Logo.png")} // Adjust this with your image
+          style={styles.imageStyle}
+        />
+      )}
       {/* Need Help Text */}
       <TouchableOpacity onPress={() => setShowHelpPopup(true)}>
         <Text style={styles.helpText}>Need help logging in? <Text style={styles.helpLink}>Help</Text></Text>
       </TouchableOpacity>
 
       {/* Version and Powered By Text */}
+      {!keyboardVisible && (
       <Text style={styles.versionText}>V: {appVersion}</Text>
-      <Text style={styles.poweredByText}>Powered by SLIC LIFE IT ©</Text>
+      )}
+      {!keyboardVisible && (
+        <Text style={styles.poweredByText}>Powered by SLIC LIFE IT</Text>
+      )}
       <CheckConnection />
       <Modal
   visible={showHelpPopup}
@@ -348,6 +371,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,   
     borderBottomColor: 'black',
     fontSize: wp("4.5%"),
+    backgroundColor:'#fff',
   },
   inputContainer: {
     width: wp("80%"),
@@ -366,7 +390,6 @@ const styles = StyleSheet.create({
     height: hp('5%'),
     width: wp("80%"),
     borderColor: "#8b8b8b99",
-    borderRadius: 60,
     paddingHorizontal: 10,
     paddingLeft: 0,
   },
@@ -384,6 +407,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,   
     borderBottomColor: 'black',
     marginBottom: 10,
+    backgroundColor:'#fff',
   },
   loginButton: {
     width: wp('80%'),
