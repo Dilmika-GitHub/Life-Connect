@@ -216,7 +216,6 @@ const LoginScreen = () => {
           <Text style={styles.loginButtonText}>Login</Text>
         )}
       </TouchableOpacity>
-      <Text style={styles.logoText}>Life - Connect</Text>
       <Image
         source={require('../../../assets/Logo.png')} // Replace with your image path
         style={styles.imageStyle}
@@ -228,7 +227,7 @@ const LoginScreen = () => {
 
       {/* Version and Powered By Text */}
       <Text style={styles.versionText}>V: {appVersion}</Text>
-      <Text style={styles.poweredByText}>Powered by SLIC LIFE IT</Text>
+      <Text style={styles.poweredByText}>Powered by SLIC LIFE IT ©</Text>
       <CheckConnection />
       <Modal
   visible={showHelpPopup}
@@ -250,7 +249,7 @@ const LoginScreen = () => {
 {/* Contact Information */}
 <Text style={styles.contactName}>Mr. Buddika Weerakoon</Text>
 <Text style={styles.contactPhone}>0112357814</Text>
-<Text style={styles.contactEmail}>budikawe@srilankainsurance.com</Text>
+<Text style={styles.contactEmail}>budikawe@sliclife.com</Text>
 
 {/* Additional Instructions */}
 <Text style={styles.additionalText}>
@@ -326,19 +325,13 @@ const styles = StyleSheet.create({
     color: "black",
     fontFamily: "poppins",
   },
-  logoText:{
-    top: 50,
-    position: "absolute",
-    color: '#F2B510',
-    fontSize: 35,
-    fontFamily: 'Poppins',
-  },
   imageStyle: {
-    width: 125, // Set the desired width
-    height: 125, // Set the desired height
+    width: 250, // Set the desired width
+    height: 200, // Set the desired height
     marginTop: 20, // Adjust the space between text and image
     position: "absolute",
-    top: 90,
+    top: 0,
+    resizeMode:'contain',
   },
   versionText:{
     position: 'absolute',
