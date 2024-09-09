@@ -272,7 +272,7 @@ const LoginScreen = () => {
 {/* Contact Information */}
 <Text style={styles.contactName}>Mr. Buddika Weerakoon</Text>
 <Text style={styles.contactPhone}>0112357814</Text>
-<Text style={styles.contactEmail}>budikawe@sliclife.com</Text>
+<Text style={styles.contactEmail}>buddikawe@sliclife.com</Text>
 
 {/* Additional Instructions */}
 <Text style={styles.additionalText}>
