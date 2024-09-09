@@ -328,7 +328,7 @@ const WinnersScreen = () => {
       <View style={styles.headercontainer}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.openDrawer()}>
-            <Ionicons name="menu" size={26} color="white" />
+            <Ionicons name="menu" size={35} color="white" />
           </TouchableOpacity>
         </View>
         <View style={styles.dcontainer}>

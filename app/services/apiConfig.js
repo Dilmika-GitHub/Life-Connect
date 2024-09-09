@@ -1,4 +1,4 @@
-const BASE_URL = "http://203.115.11.236:10155/SalesTrackAppAPI/api/v1";
+const BASE_URL = "https://apisvc.srilankainsurance.com/SalesTrackAppAPI/api/v1";
 
 
 const ENDPOINTS = {

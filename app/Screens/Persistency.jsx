@@ -174,7 +174,7 @@ const navigateToInforcedPolicies = () => {
 />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-          <Ionicons name="menu" size={26} color="white" />
+          <Ionicons name="menu" size={35} color="white" />
         </TouchableOpacity>
       </View>
 
