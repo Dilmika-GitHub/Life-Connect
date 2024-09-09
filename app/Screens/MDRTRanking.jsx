@@ -284,6 +284,7 @@ const WinnersScreen = () => {
     useCallback(() => {
       const fetchData = async () => {
         try {
+          setLoading(true);
           await fetchAgentProfile();
         } catch (error) {
           setError(true);
@@ -305,12 +306,14 @@ const WinnersScreen = () => {
   
   // This useEffect will trigger when agentProfile is updated
   useEffect(() => {
+    setLoading(true);
     if (agentProfile) {
       const agency_code1 = agentProfile?.personal_agency_code;
       const agency_code2 = agentProfile?.newagt || 0;
       const catType = agentProfile?.stid;
   
       fetchBranchRegionalRankMdrt('Branch Ranking', agency_code1, agency_code2, catType);
+      setLoading(false);
     }
   }, [agentProfile]);
   
