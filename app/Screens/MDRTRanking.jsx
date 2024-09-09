@@ -18,7 +18,7 @@ const WinnersScreen = () => {
   const [isLifeMember, setIsLifeMember] = useState(false);
   const [agentProfile, setAgentProfile] = useState(null);
   const [personalMdrt, setPersonalMdrt] = useState(null);
-  const [selectedValue, setSelectedValue] = useState('Island Ranking');
+  const [selectedValue, setSelectedValue] = useState('Branch Ranking');
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -285,22 +285,36 @@ const WinnersScreen = () => {
       const fetchData = async () => {
         try {
           await fetchAgentProfile();
-          await fetchWinnersData('Island Ranking');
         } catch (error) {
           setError(true);
           setLoading(false);
         }
       };
+      
       fetchData();
-
+  
       const onBackPress = () => {
         navigation.navigate('MDRT');
         return true;
       };
+  
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
       return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
     }, [navigation])
   );
+  
+  // This useEffect will trigger when agentProfile is updated
+  useEffect(() => {
+    if (agentProfile) {
+      const agency_code1 = agentProfile?.personal_agency_code;
+      const agency_code2 = agentProfile?.newagt || 0;
+      const catType = agentProfile?.stid;
+  
+      fetchBranchRegionalRankMdrt('Branch Ranking', agency_code1, agency_code2, catType);
+    }
+  }, [agentProfile]);
+  
+  
 
   useEffect(() => {
     // Fetch user profile image when the component mounts or agentProfile changes
@@ -325,7 +339,7 @@ const WinnersScreen = () => {
             </TouchableOpacity>
             {showDropdown && (
               <View style={styles.dropdownOptions}>
-                {['Island Ranking', 'Branch Ranking', 'Regional Ranking', 'COT Ranking', 'TOT Ranking', 'Life Members'].map(rank => (
+                {['Branch Ranking', 'Regional Ranking','Island Ranking', 'COT Ranking', 'TOT Ranking', 'Life Members'].map(rank => (
                   <TouchableOpacity key={rank} onPress={() => handleSelectionChange(rank)}>
                     <Text style={styles.optionText}>{rank}</Text>
                   </TouchableOpacity>
