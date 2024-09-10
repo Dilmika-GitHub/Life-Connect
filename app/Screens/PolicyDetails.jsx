@@ -100,6 +100,7 @@ const PolicyDetails = ({ navigation }) => {
           <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
             <Ionicons name="menu" size={35} color="white" />
           </TouchableOpacity>
+          <Text style={styles.menuText}>Policy Details</Text>
         </View>
       <View style={[styles.section, styles.coloredSection]}>
         <Text style={styles.sectionHeading}>Policy Overview</Text>
@@ -155,6 +156,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     backgroundColor: '#08818a',
+  },
+  menuText: {
+    color: 'white',
+    paddingLeft: '8%',
+    fontSize: 18,
   },
   section: {
     marginBottom: 20,

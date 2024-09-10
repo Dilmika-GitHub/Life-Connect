@@ -35,6 +35,7 @@ import PersistencyInforcedPolicyList from "../PersistencyInforcedPolicyList";
 import PersistencyLapsedPolicyList from "../PersistencyLapsedPolicyList";
 import axios from 'axios';
 import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
+import { color } from "react-native-elements/dist/helpers";
 
 const Drawer = createDrawerNavigator();
 
@@ -176,7 +177,7 @@ const CustomDrawerContent = ({ navigation }) => {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            marginVertical: 0,
+            marginBottom: 10,
             marginLeft: 10,
           }}
         >
@@ -226,11 +227,7 @@ const CustomDrawerContent = ({ navigation }) => {
         />
         {/* Custom DrawerItem for "Maturity" */}
         <DrawerItem
-          label={() => (
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={{color:'#595959'}}>Maturity</Text>
-            </View>
-          )}
+          label="Maturity"
           onPress={() => navigation.navigate("Maturity")}
           icon={({ focused, color, size }) => (
             <Ionicons
@@ -252,7 +249,7 @@ const CustomDrawerContent = ({ navigation }) => {
           )}
         />
         {/* Logout Drawer Item */}
-        <View style={{ flex: 1, justifyContent: "flex-end", bottom:0 }}>
+        <View style={{ flex: 1, justifyContent: "flex-end", bottom:0, }}>
           <DrawerItem
             label="Logout"
             onPress={handleLogout}
@@ -260,10 +257,9 @@ const CustomDrawerContent = ({ navigation }) => {
               <Ionicons
                 name={focused ? "log-out" : "log-out-outline"}
                 size={size}
-                color={color}
+                color={'red'}
               />
-            )}
-            style={{marginTop:hp('40%')}}
+            )} 
           />
         </View>
       </SafeAreaView>

@@ -224,8 +224,9 @@ const Profile = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="white" />
+          <Ionicons name="arrow-back" size={35} color="white" />
         </TouchableOpacity>
+        <Text style={styles.menuText}>Profile Details</Text>
       </View>
 <ScrollView>
 <View style={styles.profileContainer}>
@@ -320,6 +321,11 @@ header: {
     alignItems: 'center',
     padding: 10,
     backgroundColor: '#08818a',
+},
+menuText: {
+  color: 'white',
+  paddingLeft: '8%',
+  fontSize: 18,
 },
 profileContainer: {
   alignItems: 'center',

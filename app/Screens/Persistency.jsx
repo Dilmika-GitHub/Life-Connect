@@ -176,10 +176,8 @@ const navigateToInforcedPolicies = () => {
         <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
           <Ionicons name="menu" size={35} color="white" />
         </TouchableOpacity>
+        <Text style={styles.menuText}>Persistency</Text>
       </View>
-
-      <Text style={styles.titleText}>Persistency</Text>
-
       <View style={styles.percentageContainer}>
         <Text style={styles.percentageText}>{percentage}%</Text>
         <Text style={styles.percentageDescription}>
@@ -193,7 +191,6 @@ const navigateToInforcedPolicies = () => {
         </Text>
         <Ionicons name="chevron-down-outline" size={20} color="#000" />
       </TouchableOpacity>
-
       <Modal visible={showPicker} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.pickerWrapper}>
@@ -253,11 +250,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
   },
-  titleText: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 26,
-    marginVertical: '12%',
+  menuText: {
+    color: 'white',
+    paddingLeft: '8%',
+    fontSize: 18,
   },
   percentageContainer: {
     height: "35%",
@@ -268,6 +264,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 30,
+    marginTop:100,
     backgroundColor: '#01204E',
   },
   percentageText: {

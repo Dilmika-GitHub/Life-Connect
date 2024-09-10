@@ -333,6 +333,7 @@ const WinnersScreen = () => {
           <TouchableOpacity onPress={() => navigation.openDrawer()}>
             <Ionicons name="menu" size={35} color="white" />
           </TouchableOpacity>
+          <Text style={styles.menuText}>MDRT Rankings</Text>
         </View>
         <View style={styles.dcontainer}>
           <View style={styles.dropdownContainer}>
@@ -545,6 +546,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     backgroundColor: '#08818a',
+  },
+  menuText: {
+    color: 'white',
+    paddingLeft: '8%',
+    fontSize: 18,
   },
   flatListContainer: {
     paddingBottom: 100,
