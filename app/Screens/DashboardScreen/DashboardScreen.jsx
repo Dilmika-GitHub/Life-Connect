@@ -52,14 +52,15 @@ export default function DashboardScreen({
           <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
             <Ionicons name="menu" size={35} color="white" />
           </TouchableOpacity>
+          <View style={styles.titleContainer}>
+            <Text style={[styles.titleText, styles.leftText]}>LIFE IS</Text>
+            <Text style={[styles.titleText, styles.rightText]}>MY LIFE</Text>
+          </View>
         </View>
     <ScrollView style={styles.scrollView}>
       <CheckConnection />
       <View style={styles.centeredView}>
-      <View style={styles.titleContainer}>
-            <Text style={[styles.titleText, styles.leftText]}>LIFE IS</Text>
-            <Text style={[styles.titleText, styles.rightText]}>MY LIFE</Text>
-          </View>
+      
 </View>
       <View style={styles.kpiContainer}>
         <View style={styles.kpiWrapper}>
@@ -113,8 +114,8 @@ const styles = StyleSheet.create({
     marginHorizontal:20,
   },
   titleContainer: {
+    marginLeft:'50%',
     flexDirection: 'row',
-    alignItems: 'center',
     borderRadius: 10,
     overflow: 'hidden',
   },

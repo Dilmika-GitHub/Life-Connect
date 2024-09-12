@@ -177,10 +177,10 @@ const styles = StyleSheet.create({
   descriptionValue: {
     fontSize: wp("4%"),
     textAlign: "right",
-    color: "#6d6d6d",
+    color: "#00a339",
   },
   seeMoreText: {
-    fontSize: wp("3.5%"),
+    fontSize: wp("4.5%"),
     textAlign: "left",
     color: "#f70505",
   },

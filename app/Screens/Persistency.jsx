@@ -176,7 +176,7 @@ const navigateToInforcedPolicies = () => {
         <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
           <Ionicons name="menu" size={35} color="white" />
         </TouchableOpacity>
-        <Text style={styles.menuText}>Persistency</Text>
+        <Text style={styles.menuText}>First Year Persistency</Text>
       </View>
       <View style={styles.percentageContainer}>
         <Text style={styles.percentageText}>{percentage}%</Text>
@@ -226,6 +226,7 @@ const navigateToInforcedPolicies = () => {
             <Ionicons name="arrow-forward-outline" size={24} color="#fff" />
           </View>
         </TouchableOpacity>
+        <Text style={styles.noteText}>*Only Persistency applicable policies are shown above.</Text>
         {loading && (
         <View style={styles.loader}>
           <ActivityIndicator size="large" color="#08818a" />
@@ -345,6 +346,12 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 18,
     textAlign: 'center',
+  },
+  noteText: {
+    marginTop:10,
+    fontSize: 15,
+    textAlign: 'center',
+    color:'red',
   },
   loader: {
     position: 'absolute',

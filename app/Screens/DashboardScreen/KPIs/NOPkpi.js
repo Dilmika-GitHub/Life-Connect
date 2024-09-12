@@ -166,7 +166,7 @@ export default function NOPkpi({
     <View style={styles.container}>
       <TouchableOpacity onPress={handlePress} style={styles.tile}>
         <View style={styles.textContainer}>
-          <Text style={styles.titleText}>NOP KPI</Text>
+          <Text style={styles.titleText}>NOP</Text>
           <View style={styles.valuesContainer}>
             <View style={styles.leftValues}>
               <Text style={styles.actualValue}>{actualValue}</Text>

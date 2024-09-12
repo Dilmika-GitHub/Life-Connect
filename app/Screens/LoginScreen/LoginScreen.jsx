@@ -239,6 +239,9 @@ const LoginScreen = () => {
           style={styles.imageStyle}
         />
       )}
+      {!(keyboardVisible && Platform.OS === "android") && (
+        <Text style={styles.sloganText}>Your Path to Higher Earnings Starts Here</Text>
+      )}
       {/* Need Help Text */}
       <TouchableOpacity onPress={() => setShowHelpPopup(true)}>
         <Text style={styles.helpText}>Need help logging in? <Text style={styles.helpLink}>Help</Text></Text>
@@ -356,6 +359,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     resizeMode:'contain',
+  },
+  sloganText: {
+    marginTop: 20, // Adjust the space between text and image
+    position: "absolute",
+    top: 120,
+    color:'#fff',
   },
   versionText:{
     position: 'absolute',
