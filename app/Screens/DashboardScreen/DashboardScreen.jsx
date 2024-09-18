@@ -1,8 +1,6 @@
-import { StyleSheet, Text, View, Animated, ScrollView, Dimensions, BackHandler, Alert } from "react-native";
+import { StyleSheet, Text, View, Animated, ScrollView, Dimensions, BackHandler, Alert, TouchableOpacity } from "react-native";
 import React, { useState, useEffect, useRef } from 'react';
-import Svg, { G, Circle } from "react-native-svg";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { lockToPortrait, lockToAllOrientations } from "../OrientationLock";
 import { useIsFocused } from '@react-navigation/native';
 import Income from "./KPIs/Income";
@@ -11,157 +9,154 @@ import NOPkpi from "./KPIs/NOPkpi";
 import FYPkpi from "./KPIs/FYPkpi";
 import GWPkpi from "./KPIs/GWPkpi";
 import MCFPkpi from "./KPIs/MCFPkpi";
+import PersistencyDashboard from "./KPIs/PersistencyDashboard";
 import CheckConnection from "../../../components/checkConnection";
-
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-const { height, width } = Dimensions.get('window');
+import { Ionicons } from "@expo/vector-icons";
 
 export default function DashboardScreen({
-  percentage = 65,
-  color = "grey",
-  animatedCircleColor = "#05beda",
-  strokeWidth = wp('8%'),
-  radius = wp('30%'),
   textColor = "black",
-  max = 100,
-  totalvalue = "6,60,00,000",
-  currencyType = "Rs",
+  navigation
 }) {
   const isFocused = useIsFocused();
 
-    useEffect(() => {
-        if (isFocused) {
-            lockToPortrait();
-        }
-    }, [isFocused]);
+  useEffect(() => {
+      if (isFocused) {
+          lockToPortrait();
+      }
+  }, [isFocused]);
 
-    useEffect(() => {
-      const backAction = () => {
-        Alert.alert("Hold on!", "Are you sure you want to exit?", [
-          {
-            text: "Cancel",
-            onPress: () => null,
-            style: "cancel",
-          },
-          { text: "YES", onPress: () => BackHandler.exitApp() },
-        ]);
-        return true;
-      };
-  
-      const backHandler = BackHandler.addEventListener(
-        "hardwareBackPress",
-        backAction
-      );
-  
-      return () => backHandler.remove();
-    }, []);
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert("Hold on!", "Are you sure you want to exit?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel",
+        },
+        { text: "YES", onPress: () => BackHandler.exitApp() },
+      ]);
+      return true;
+    };
 
-  const CircleRef = useRef();
-  const halfCircle = radius + strokeWidth;
-  const viewBoxValue = `0 0 ${halfCircle * 2} ${halfCircle * 2}`;
-  const circleCircumference = 2 * Math.PI * radius;
-  const maxPerc = (100 * percentage) / max;
-  const strokeDashoffset =
-    circleCircumference - (circleCircumference * maxPerc) / 100;
-  const totalvalueText = `${currencyType} ${totalvalue}`;
-  React.useEffect(() => {});
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+            <Ionicons name="menu" size={35} color="white" />
+          </TouchableOpacity>
+          <View style={styles.titleContainer}>
+            <Text style={[styles.titleText, styles.leftText]}>LIFE IS</Text>
+            <Text style={[styles.titleText, styles.rightText]}>MY LIFE</Text>
+          </View>
+        </View>
     <ScrollView style={styles.scrollView}>
       <CheckConnection />
       <View style={styles.centeredView}>
-        <Text style={styles.titleText(textColor || color)}>
-          Income Performance
-        </Text>
-      </View>
-      <View style={styles.iconView}>
-        <Income/>
-      </View>
-      <View style={styles.circleView(radius, halfCircle, strokeWidth)}>
-        <Svg width={radius * 2} height={radius * 2} viewBox={viewBoxValue}>
-          <G rotation="-90" origin={`${halfCircle}, ${halfCircle}`}>
-            <Circle
-              cx="50%"
-              cy="50%"
-              r={radius}
-              stroke={color}
-              strokeWidth={strokeWidth}
-              strokeOpacity={0.5}
-              fill="transparent"
-            />
-            <AnimatedCircle
-              ref={CircleRef}
-              cx="50%"
-              cy="50%"
-              r={radius}
-              stroke={animatedCircleColor}
-              strokeWidth={strokeWidth}
-              strokeDasharray={circleCircumference}
-              strokeDashoffset={strokeDashoffset}
-              strokeOpacity={1.0}
-              fill="transparent"
-              strokeLinecap="round"
-            />
-          </G>
-        </Svg>
-        <View style={styles.absoluteCenter}>
-          <Text style={styles.valueText(textColor || color) }>
-          Estimated
-          </Text>
-          <Text style={styles.valueText(textColor || color)}>
-            {totalvalueText}
-          </Text>
+      
+</View>
+      <View style={styles.kpiContainer}>
+        <View style={styles.kpiWrapper}>
+          <Income />
+        </View>
+
+        {/* New Business Container */}
+        <View style={styles.newBusinessContainer}>
+          <Text style={styles.newBusinessTitle}>New Business</Text>
+          <View style={styles.kpiWrapper}>
+            <FPkpi />
+          </View>
+          <View style={styles.kpiWrapper}>
+            <MCFPkpi />
+          </View>
+          <View style={styles.kpiWrapper}>
+            <NOPkpi />
+          </View>
+        </View>
+        <PersistencyDashboard percentage={75} />
+        <View style={styles.kpiWrapper}>
+          <FYPkpi />
+        </View>
+
+        <View style={styles.kpiWrapper}>
+          <GWPkpi />
         </View>
       </View>
-      <View style={styles.kpiContainer}>
-        <FPkpi />
-        <NOPkpi />
-        <FYPkpi />
-        <GWPkpi />
-        <MCFPkpi />
-      </View>
     </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   scrollView: {
     flex: 1,
-    padding: 5,
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#08818a',
   },
   centeredView: {
-    alignItems: "center",
-  },
-  titleText: (color) => ({
-    color: color,
-    fontSize: wp('5%'),
-    textTransform: "uppercase",
-  }),
-  iconView: {
-    justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    marginHorizontal: wp('5%'), // Add horizontal margin
-    marginVertical: hp('2%'), // Add vertical margin
+    marginVertical: 10,
+    marginHorizontal:20,
   },
-  circleView: (radius, halfCircle, strokeWidth) => ({
-    alignItems: "center",
-    marginTop: -15,
-    justifyContent: 'center',
-  }),
-  absoluteCenter: {
-    position: "absolute",
-    justifyContent: "center",
-    alignItems: "center",
-    Top: hp("22%"),
-    center: wp("50%"),
+  titleContainer: {
+    marginLeft:'50%',
+    flexDirection: 'row',
+    borderRadius: 10,
+    overflow: 'hidden',
   },
-  valueText: (color) => ({
-    color: color,
-    fontSize: wp('5%'),
-  }),
+  titleText: {
+    fontSize: wp('3%'),
+    fontWeight: 'bold',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    textAlign: 'center',
+  },
+  leftText: {
+    backgroundColor: '#0C747C',
+    color: '#FFFFFF', 
+  },
+  rightText: {
+    backgroundColor: '#FFDC1E',
+    color: '#000000', 
+  },
   kpiContainer: {
-    paddingLeft: wp('0.5%'),
-    paddingBottom: hp('2%'),
+    flexDirection: 'column',
+    padding: 10,
+    alignItems: 'center',
+  },
+  kpiWrapper: {
+    marginBottom: 10,
+    width: wp('93%'),
+    alignItems: 'center',
+  },
+  // New Business Container Styles
+  newBusinessContainer: {
+    backgroundColor: '#FFF3DD',
+    padding: 15,
+    borderRadius: 20,
+    width: wp('90%'),
+    marginBottom: 10,
+    alignItems:'center',
+  },
+  newBusinessTitle: {
+    fontSize: wp('5%'),
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
 });
+

@@ -1,45 +1,124 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   StyleSheet,
   Text,
   View,
-  Animated,
   TouchableOpacity,
   Modal,
   TextInput,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
-import Svg, { G, Circle } from "react-native-svg";
-import { AntDesign } from "@expo/vector-icons";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { useFocusEffect } from '@react-navigation/native';
+import { BASE_URL, ENDPOINTS } from "../../../services/apiConfig";
 
 const { height, width } = Dimensions.get("window");
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export default function FPkpi({
-  percentage = 68,
-  color = "grey",
-  animatedCircleColor = "#ffdb16",
-  strokeWidth = wp("1%"),
-  smallRadius = wp("9%"),
   textColor = "black",
-  max = 100,
 }) {
-  const CircleRef = useRef();
-  const halfCircle = smallRadius + strokeWidth;
-  const viewBoxValue = `0 0 ${halfCircle * 2} ${halfCircle * 2}`;
-  const circleCircumference = 2 * Math.PI * smallRadius;
-
-  const maxPerc = (100 * percentage) / max;
-  const strokeDashoffset =
-    circleCircumference - (circleCircumference * maxPerc) / 100;
-  const percentageText = `${percentage}%`;
-
+  const [actualValue, setActualValue] = useState(0);
+  const [targetValue, setTargetValue] = useState(0); 
+  const [percentage, setPercentage] = useState(0);
+  const [agencyCode1, setAgencyCode1] = useState("");
+  const [agencyCode2, setAgencyCode2] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        await getAgencyCode();
+      };
+      fetchData();
+    }, [])
+  );
+
+  useEffect(() => {
+    if (agencyCode1) {
+      const fetchAdditionalData = async () => {
+        await fetchActualFPValue();
+        await fetchTargetFPValue();
+      };
+      fetchAdditionalData();
+    }
+  }, [agencyCode1, agencyCode2]);
+
+  useEffect(() => {
+    if (actualValue && targetValue) {
+      setPercentage((actualValue / targetValue) * 100);
+    }
+  }, [actualValue, targetValue]);
+
+  const getAgencyCode = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      const email = await AsyncStorage.getItem('email');
+      const categoryType = await AsyncStorage.getItem('categoryType');
+  
+      const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { email: email, catType: categoryType },
+      });
+  
+      const fetchedAgencyCode1 = response.data?.personal_agency_code;
+      const fetchedAgencyCode2 = response.data?.newagt;
+  
+      setAgencyCode1(fetchedAgencyCode1);
+      setAgencyCode2(fetchedAgencyCode2);
+      console.log("called agency");
+    } catch (error) {
+      console.error('Error Getting Agency Code:', error);
+    }
+  };
+
+  const fetchActualFPValue = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      const response = await axios.post(
+        BASE_URL + ENDPOINTS.ACTUAL_KPI_VALUES,
+        {
+          p_agency_1: agencyCode1,
+          p_agency_2: agencyCode2,
+          p_year: new Date().getFullYear().toString(),
+          p_month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setActualValue(response.data[0].fp);
+    } catch (error) {
+      console.error('Error Fetching Actual FP Value:', error);
+    }
+  };
+
+  const fetchTargetFPValue = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      const response = await axios.get(
+        `${BASE_URL + ENDPOINTS.GET_TARGET}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: {
+            p_catId: '2', 
+            p_agency: agencyCode1, 
+          },
+        }
+      );
+  
+      setTargetValue(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error Fetching Target Value:', error);
+    }
+  };
+  
 
   const handlePress = () => {
     setModalVisible(true);
@@ -49,56 +128,51 @@ export default function FPkpi({
     setModalVisible(false);
   };
 
-  const handleSubmit = () => {
-    console.log("Submitted value:", inputValue);
-    setModalVisible(false);
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem('accessToken');
+      await axios.post(
+        BASE_URL + ENDPOINTS.SET_TARGET,
+        {
+          p_cat_id: '2',
+          p_agency_code: agencyCode1,
+          p_target: inputValue,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setTargetValue(Number(inputValue));
+      setLoading(false);
+      setModalVisible(false);
+    } catch (error) {
+      console.error('Error Setting Target:', error);
+    }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#08818a" />
+      </View>
+    );
+  }
+  const percentageText = `${percentage.toFixed(0)}%`;
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handlePress} style={styles.touchableArea}>
-        <View style={styles.chartContainer}>
-          <Svg
-            width={smallRadius * 2}
-            height={smallRadius * 2}
-            viewBox={viewBoxValue}
-          >
-            <G rotation="-90" origin={`${halfCircle}, ${halfCircle}`}>
-              <Circle
-                cx="50%"
-                cy="50%"
-                r={smallRadius}
-                stroke={color}
-                strokeWidth={strokeWidth}
-                strokeOpacity={0.2}
-                fill="transparent"
-              />
-              <AnimatedCircle
-                ref={CircleRef}
-                cx="50%"
-                cy="50%"
-                r={smallRadius}
-                stroke={animatedCircleColor}
-                strokeWidth={strokeWidth}
-                strokeDasharray={circleCircumference}
-                strokeDashoffset={strokeDashoffset}
-                strokeOpacity={1.0}
-                strokeLinecap="round"
-                fill="transparent"
-              />
-            </G>
-          </Svg>
-          <View style={styles.percentageTextContainer}>
+      <TouchableOpacity onPress={handlePress} style={styles.tile}>
+        <View style={styles.textContainer}>
+          <Text style={styles.titleText}>FP</Text>
+          <View style={styles.valuesContainer}>
+            <View style={styles.leftValues}>
+              <Text style={styles.actualValue}>{ "Rs. " + new Intl.NumberFormat().format(actualValue)}</Text>
+              <Text style={[styles.targetValue, { color: (targetValue && targetValue !== 0) ? '#fff' : 'yellow' }]}>
+    {targetValue && targetValue !== 0 ? `Target : ${"Rs. " + new Intl.NumberFormat().format(targetValue)}` : "Click here to set a target"}
+  </Text>
+            </View>
             <Text style={styles.percentageText}>{percentageText}</Text>
           </View>
         </View>
-        <View style={styles.textContainer}>
-          <Text style={styles.titleText}>FP KPI</Text>
-          <Text style={styles.detailsText}>Details of KPI.</Text>
-        </View>
-        <TouchableOpacity onPress={handlePress}>
-          <AntDesign name="right" size={wp("4.5%")} color="grey" />
-        </TouchableOpacity>
       </TouchableOpacity>
 
       <Modal
@@ -111,7 +185,7 @@ export default function FPkpi({
           <View
             style={[styles.modalView, { height: hp("22%"), width: wp("70%") }]}
           >
-            <Text style={styles.modalText}>Set your target for FP</Text>
+            <Text style={styles.modalText}>Set target - FP</Text>
             <TextInput
               style={styles.input}
               onChangeText={(text) => {
@@ -123,9 +197,10 @@ export default function FPkpi({
             />
             <View style={styles.buttonRow}>
               <TouchableOpacity
+              
                 onPress={handleSubmit}
                 style={[
-                  styles.blueButton,
+                  styles.targetSetButton,
                   { height: hp("5.5%"), width: wp("30%") },
                 ]}
               >
@@ -134,11 +209,11 @@ export default function FPkpi({
               <TouchableOpacity
                 onPress={handleCancel}
                 style={[
-                  styles.redButton,
+                  styles.cancelButton,
                   { height: hp("5.5%"), width: wp("30%") },
                 ]}
               >
-                <Text style={styles.buttonText}>Cancel</Text>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -153,43 +228,62 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    height: wp("20%"),
-  },
-  touchableArea: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
     height: hp("15%"),
+    width: wp("80%"), 
+  },
+  tile: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    width: "100%",
     paddingHorizontal: wp("2.5%"),
-    marginTop: hp("3%"),
-    borderRadius: 10,
-    borderColor: "lightgrey",
-  },
-  chartContainer: {},
-  percentageTextContainer: {
-    position: "absolute",
-    top: wp("5.5%"),
-    left: wp("5.5%"),
-  },
-  percentageText: {
-    color: "black",
-    fontSize: wp("4.5%"),
+    borderRadius: 20,
+    backgroundColor: "#01204E",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   textContainer: {
-    flex: 0.8,
+    alignItems: "center",
   },
   titleText: {
-    textAlign: "left",
     fontWeight: "bold",
-    marginLeft: hp("5%"),
-    color: "black",
+    color: "#fff",
     fontSize: wp("4.5%"),
+    textAlign: "center",
+    marginBottom:20,
   },
-  detailsText: {
+  valuesContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingHorizontal: wp("2.5%"),
+  },
+  leftValues: {
+    alignItems: "flex-start",
+  },
+  actualValue: {
+    color: "#fff",
+    fontSize: wp("6%"),
     textAlign: "left",
-    marginLeft: hp("5%"),
-    color: "black",
-    fontSize: wp("4.5%"),
+    fontWeight:"bold",
+  },
+  targetValue: {
+    color: "#fff",
+    fontSize: wp("3.5%"),
+    textAlign: "left",
+  },
+  percentageText: {
+    color: "#fff",
+    fontSize: wp("6%"),
+    textAlign: "right",
+    fontWeight: "bold",
   },
   centeredView: {
     flex: 1,
@@ -231,15 +325,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: wp("60%"),
   },
-  blueButton: {
-    backgroundColor: "blue",
+  targetSetButton: {
+    backgroundColor: "#01204E",
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 10,
   },
-  redButton: {
-    backgroundColor: "red",
+  cancelButton: {
+    backgroundColor: "#D9D9D9",
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
@@ -251,4 +345,12 @@ const styles = StyleSheet.create({
     paddingVertical: hp("1%"),
     paddingHorizontal: wp("3%"),
   },
+  cancelButtonText:{
+    color: "black",
+    fontSize: wp("4%"),
+    textAlign: "center",
+    paddingVertical: hp("1%"),
+    paddingHorizontal: wp("3%"),
+  }
 });
+

@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "xProject",
-    "slug": "xProject",
+    "name": "Life Connect",
+    "slug": "LifeConnect",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "xproject-scheme",
+    "scheme": "LifeConnect-scheme",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
@@ -23,7 +23,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.dexter_rhys.xProject"
+      "package": "sliclife.LifeConnect"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -33,19 +33,25 @@
       "expo-router",
       [
         "expo-build-properties",
-    {
-      "android":{
-        "usesCleartextTraffic": true
-      }
-    }
-  ]
+        {
+          "android": {
+            "usesCleartextTraffic": true,
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0"
+          },
+          "ios": {
+            "deploymentTarget": "13.4"
+          }
+        }
+      ]
     ],
     "extra": {
       "router": {
         "origin": false
       },
       "eas": {
-        "projectId": "bd6776eb-8798-4bfc-bf58-63a3ec02708c"
+        "projectId": "fa9a1d7c-e355-4bfa-898a-4afeea6c3e3f"
       }
     }
   }

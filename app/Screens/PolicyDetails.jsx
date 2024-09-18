@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, ScrollView, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { lockToAllOrientations } from './OrientationLock';
+import { View, ScrollView, Text, StyleSheet, TouchableOpacity, ActivityIndicator, } from 'react-native';
+import { lockToPortrait, lockToAllOrientations } from './OrientationLock';
 import { useIsFocused } from '@react-navigation/native';
 import { BASE_URL, ENDPOINTS } from "../services/apiConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { Ionicons } from "@expo/vector-icons";
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const PolicyDetails = ({ navigation }) => {
   const isFocused = useIsFocused();
@@ -35,7 +37,7 @@ const PolicyDetails = ({ navigation }) => {
 
       const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
         headers: { Authorization: `Bearer ${token}` },
-        params: { email, catType: categoryType }
+        params: { email: email, catType: categoryType },
       });
 
       setAgencyCode(response.data);
@@ -90,12 +92,16 @@ const PolicyDetails = ({ navigation }) => {
     navigation.navigate('Lapsed');
   };
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#FEA58F" />;
-  }
+ 
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+            <Ionicons name="menu" size={35} color="white" />
+          </TouchableOpacity>
+          <Text style={styles.menuText}>Policy Details</Text>
+        </View>
       <View style={[styles.section, styles.coloredSection]}>
         <Text style={styles.sectionHeading}>Policy Overview</Text>
         <View style={styles.table}>
@@ -115,9 +121,15 @@ const PolicyDetails = ({ navigation }) => {
           <View style={styles.tableRow}>
             <Text style={styles.sectionHeading3}>Lapsed Policies</Text>
             <Text style={styles.tableCell3}>{policyCount?.lapscount}</Text>
+            <Icon name="arrow-forward-outline" size={24} color="#fff" />
           </View>
         </View>
       </TouchableOpacity>
+      {loading && (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="#08818a" />
+        </View>
+      )}
       <AwesomeAlert
         show={showAlert}
         showProgress={false}
@@ -127,7 +139,7 @@ const PolicyDetails = ({ navigation }) => {
         closeOnHardwareBackPress={false}
         showConfirmButton={true}
         confirmText="OK"
-        confirmButtonColor="#FF7758"
+        confirmButtonColor="#08818a"
         onConfirmPressed={handleConfirm}
       />
     </ScrollView>
@@ -137,20 +149,31 @@ const PolicyDetails = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    paddingVertical: 20,
-    paddingHorizontal: 10,
     backgroundColor: 'white',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#08818a',
+  },
+  menuText: {
+    color: 'white',
+    paddingLeft: '8%',
+    fontSize: 18,
   },
   section: {
     marginBottom: 20,
     borderRadius: 12,
     padding: 20,
+    marginTop: 15,
+    marginHorizontal: 10,
   },
   coloredSection: {
     backgroundColor: '#EBEBEB',
   },
   coloredSection2: {
-    backgroundColor: '#FF7758',
+    backgroundColor: '#08818a',
   },
   sectionHeading: {
     fontSize: 20,
@@ -198,6 +221,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     paddingHorizontal: 10,
     textAlign: 'right',
+  },
+  loader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Semi-transparent background
   },
 });
 

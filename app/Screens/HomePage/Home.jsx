@@ -20,35 +20,40 @@ import {
 } from "react-native";
 import DashboardScreen from "../DashboardScreen/DashboardScreen";
 import SettingsScreen from "../SettingsScreen";
-import Competitions from "../Competitions";
+import Competitions from "../MDRTRanking";
 import Profile from "../UserProfile/Profile";
 import PolicyDetails from "../PolicyDetails";
-import Maturity from "../Maturity";
-import Lapsed from "../Lapsed"
+import Maturity from "../MaturityPolicies/Maturity";
+import Lapsed from "../LapsedPolicies/Lapsed"
 import MDRTProfile from "../UserProfile/MDRTProfile/MDRTProfile";
+import Persistency from "../Persistency";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginScreen from "../LoginScreen/LoginScreen";
 import ChangePassword from "../ChangePassword";
+import PersistencyInforcedPolicyList from "../PersistencyInforcedPolicyList";
+import PersistencyLapsedPolicyList from "../PersistencyLapsedPolicyList";
 import axios from 'axios';
 import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
+import { color } from "react-native-elements/dist/helpers";
 
 const Drawer = createDrawerNavigator();
 
 const CustomDrawerContent = ({ navigation }) => {
   const [logoutConfirmationVisible, setLogoutConfirmationVisible] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [agentCode, setAgentCode] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  useEffect(() =>{
+  useEffect(() => {
     const fetchUserData = async () => {
       try {
         const token = await AsyncStorage.getItem('accessToken');
         const email = await AsyncStorage.getItem('email');
         const categoryType = await AsyncStorage.getItem('categoryType');
 
-        const response = await axios.get(BASE_URL+ENDPOINTS.PROFILE_DETAILS,{
-          headers:{
+        const response = await axios.get(BASE_URL + ENDPOINTS.PROFILE_DETAILS, {
+          headers: {
             Authorization: `Bearer ${token}`
           },
           params: {
@@ -57,8 +62,9 @@ const CustomDrawerContent = ({ navigation }) => {
           }
         });
         setUserData(response.data);
-      } catch(error){
-        if(error.response.status === 401){
+        setAgentCode(response.data.personal_agency_code);
+      } catch (error) {
+        if (error.response?.status === 401) {
           Alert.alert(
             'Session Expired',
             'Your session has expired. Please log in again.',
@@ -77,13 +83,60 @@ const CustomDrawerContent = ({ navigation }) => {
             ],
           );
         }
-        console.error('Error fetching user data:',error);
-      } finally{
+        console.error('Error fetching user data:', error);
+      } finally {
         setLoading(false);
       }
     };
-    fetchUserData();
-  },[]);
+
+    const blobToBase64 = (blob) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve(reader.result);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    };
+
+    const fetchProfileImage = async () => {
+      try {
+        const token = await AsyncStorage.getItem("accessToken");
+
+        const response = await axios.get(
+          `${BASE_URL}/Image/GetProfileImage?fileName=${agentCode}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'image/png; x-api-version=1',
+            },
+            responseType: 'blob',
+          }
+        );
+
+        const blob = response.data;
+        // const imageUrl = URL.createObjectURL(blob);
+        const imageUrl = await blobToBase64(blob);
+        
+        setUserData((prevData) => ({
+          ...prevData,
+          profileImage: imageUrl,
+        }));
+      } catch (error) {
+        console.error('Error fetching profile image:', error);
+      }
+    };
+
+    const fetchData = async () => {
+      await fetchUserData();
+      if (agentCode) {
+        await fetchProfileImage();
+      }
+    };
+
+    fetchData();
+  }, [agentCode]);
 
   const handleLogout = () => {
     setLogoutConfirmationVisible(true);
@@ -110,23 +163,26 @@ const CustomDrawerContent = ({ navigation }) => {
     setLogoutConfirmationVisible(false);
   };
   
-
+  if (loading) {
+    return <ActivityIndicator size="large" color="#08818a" />;
+  }
+  
   return (
-    <DrawerContentScrollView>
+    <DrawerContentScrollView style={{ flex: 1 , backgroundColor:'#d1f7fa',}}>
       {/* Wrap drawer content in SafeAreaView to handle notch */}
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 ,}}>
         {/* User Profile Section */}
         <TouchableOpacity
           onPress={() => navigation.navigate("My Profile")}
           style={{
             flexDirection: "row",
             alignItems: "center",
-            marginVertical: 10,
+            marginBottom: 10,
             marginLeft: 10,
           }}
         >
           <Image
-            source={require("../../../components/user.jpg")}
+            source={{ uri: userData.profileImage }}
             style={{ width: 40, height: 40, borderRadius: 20, marginRight: 10 }}
           />
           <View style={{ flexDirection: "column" }}>
@@ -160,7 +216,7 @@ const CustomDrawerContent = ({ navigation }) => {
         />
         <DrawerItem
           label="Policy Details"
-          onPress={() => navigation.navigate("PolicyDetails")}
+          onPress={() => navigation.navigate("Policy Details")}
           icon={({ focused, color, size }) => (
             <Ionicons
               name={focused ? "document-text" : "document-text-outline"}
@@ -171,25 +227,29 @@ const CustomDrawerContent = ({ navigation }) => {
         />
         {/* Custom DrawerItem for "Maturity" */}
         <DrawerItem
-          label={() => (
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={{color:'#595959'}}>Maturity          </Text>
-              <View style={{ backgroundColor: "#FF5733", borderRadius: 20, marginLeft: 5, paddingHorizontal: 10, paddingVertical: 5 }}>
-                <Text style={{ color: "#fff" }}>3</Text>
-              </View>
-            </View>
-          )}
+          label="Maturity"
           onPress={() => navigation.navigate("Maturity")}
           icon={({ focused, color, size }) => (
             <Ionicons
-              name={focused ? "refresh" : "refresh-outline"}
+              name={focused ? "refresh" : "checkbox-outline"}
+              size={size}
+              color={color}
+            />
+          )}
+        />
+        <DrawerItem
+          label="Persistency"
+          onPress={() => navigation.navigate("Persistency")}
+          icon={({ focused, color, size }) => (
+            <Ionicons
+              name={focused ? "trending-up" : "trending-up-outline"}
               size={size}
               color={color}
             />
           )}
         />
         {/* Logout Drawer Item */}
-        <View style={{ flex: 1, justifyContent: "flex-end", bottom:0 }}>
+        <View style={{ flex: 1, justifyContent: "flex-end", bottom:0, }}>
           <DrawerItem
             label="Logout"
             onPress={handleLogout}
@@ -197,10 +257,9 @@ const CustomDrawerContent = ({ navigation }) => {
               <Ionicons
                 name={focused ? "log-out" : "log-out-outline"}
                 size={size}
-                color={color}
+                color={'red'}
               />
-            )}
-            style={{marginTop:hp('50%')}}
+            )} 
           />
         </View>
       </SafeAreaView>
@@ -276,6 +335,7 @@ export default function Home() {
             backgroundColor: "#FEA58F",
           },
           headerTintColor: "#fff",
+          headerShown: false
         }}
       >
         <Drawer.Screen name="Home" component={DashboardScreen} />
@@ -284,25 +344,16 @@ export default function Home() {
         <Drawer.Screen
           name="MDRT"
           component={MDRTProfile}
-          options={({ navigation }) => ({
-            headerRight: () => (
-              <TouchableOpacity
-                onPress={() => navigation.navigate("MDRT Ranking")}
-              >
-                <Image
-                  source={require("../../../components/pngtree.png")}
-                  style={{ width: 30, height: 30, margin: 10 }}
-                />
-              </TouchableOpacity>
-            ),
-          })}
         />
-        <Drawer.Screen name="PolicyDetails" component={PolicyDetails} />
+        <Drawer.Screen name="Policy Details" component={PolicyDetails} />
         <Drawer.Screen name="Maturity" component={Maturity} />
         <Drawer.Screen name="Lapsed" component={Lapsed} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
-        <Drawer.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false }} />
-        <Drawer.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <Drawer.Screen name="Change Password" component={ChangePassword} />
+        <Drawer.Screen name="Persistency" component={Persistency}/>
+        <Drawer.Screen name="Login" component={LoginScreen} />
+        <Drawer.Screen name="Persistency Inforced Policy List" component={PersistencyInforcedPolicyList} />
+        <Drawer.Screen name="Persistency Lapsed Policy List" component={PersistencyLapsedPolicyList} />
       </Drawer.Navigator>
     </NavigationContainer>
   );

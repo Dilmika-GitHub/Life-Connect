@@ -9,17 +9,28 @@ import {
   Modal,
   Alert,
   ActivityIndicator,
+  Image,
+  Keyboard,
+  Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Waves, Waves2, Waves3 } from "../../../components/Waves";
+import { Waves } from "../../../components/Waves";
 import { useRouter } from "expo-router";
 import { useFonts } from "expo-font";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CheckConnection from "../../../components/checkConnection";
+import axios from 'axios';
 import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 import AwesomeAlert from 'react-native-awesome-alerts';
 import Constants from 'expo-constants';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { MaterialIcons, SimpleLineIcons } from "@expo/vector-icons";
+import { checkAppVersion, checkMaintenance } from "../../services/adminAPIs";
+import { lockToPortrait, lockToAllOrientations } from "../OrientationLock";
+import { useIsFocused } from '@react-navigation/native';
+import { Ionicons } from "@expo/vector-icons";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -32,6 +43,9 @@ const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false); 
   const [newCredentials, setNewCredentials] = useState(null);
   const router = useRouter();
+  const isFocused = useIsFocused();
+  const [showHelpPopup, setShowHelpPopup] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const appVersion = Constants.expoConfig?.version || Constants.manifest2?.version || 'Version not found';
 
   const [fontsLoaded] = useFonts({
@@ -42,8 +56,43 @@ const LoginScreen = () => {
     setShowPassword(!showPassword);
   };
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardVisible(true);
+    });
+    const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardVisible(false);
+    });
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
   // Check if credentials are saved
   useEffect(() => {
+
+    checkAppVersion(appVersion).then(data => {
+      if (data.isinforce === 'Y') {
+        router.push("/Screens/LoginScreen/UpdateApp");
+      }
+    }).catch(error => {
+      console.error("Error:", error);
+    });
+
+    if (isFocused) {
+      lockToPortrait();
+  }
+
+    checkMaintenance().then(data => {
+      if (data.isinforce === 'N') {
+        router.push("/Screens/LoginScreen/MaintenanceScreen");
+        //alert('The system is currently under maintenance. Please try again later.');
+      }
+    }).catch(error => {
+      console.error("Error:", error);
+    });
+
     const checkStoredCredentials = async () => {
       const storedUsername = await AsyncStorage.getItem("username");
       const storedPassword = await AsyncStorage.getItem("password");
@@ -61,56 +110,56 @@ const LoginScreen = () => {
     };
 
     checkStoredCredentials();
-  }, []);
+  }, [isFocused]);
 
   // Handle login
   const handleLogin = async () => {
     setLoading(true);
     console.log(username)
     console.log(password)
+    console.log(appVersion)
 
     try {
-      const response = await fetch(BASE_URL+ENDPOINTS.AUTHENTICATE, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const response = await axios.post(
+        `${BASE_URL}${ENDPOINTS.AUTHENTICATE}`,
+        {
           userName: username,
           password: password,
-          isActive: 'Y', 
-        }),
-      });
+          isActive: 'Y',
+          appversionNo: appVersion
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
   
-      const jsonResponse = await response.json();
+      const jsonResponse = response.data;
       
-      console.log('Response:', jsonResponse); 
+      console.log('Response:', jsonResponse);
   
-      if (response.ok && jsonResponse.status === "Y") { 
+      if (response.status === 200 && jsonResponse.status === "Y") {
         await AsyncStorage.setItem("accessToken", jsonResponse.accsesstoken);
         await AsyncStorage.setItem("categoryType", jsonResponse.cattype);
         await AsyncStorage.setItem("email", jsonResponse.email);
-
-
-        if(jsonResponse.firstAttempt === "Y"){
-          router.push("/Screens/LoginScreen/ChangeDefaultPassword")
-        }
-        else{
-          if(hasSavedCredentials) {
+  
+        if (jsonResponse.firstAttempt === "Y") {
+          router.push("/Screens/LoginScreen/ChangeDefaultPassword");
+        } else {
+          if (hasSavedCredentials) {
             const storedUsername = await AsyncStorage.getItem("username");
             const storedPassword = await AsyncStorage.getItem("password");
-
-            if(username === storedUsername && password === storedPassword) {
-                router.push("/Screens/HomePage/Home");
-            }
-            else {
+  
+            if (username === storedUsername && password === storedPassword) {
+              router.push("/Screens/HomePage/Home");
+            } else {
               setShowSavePasswordPopup(true);
-              setNewCredentials ({username, password});
+              setNewCredentials({ username, password });
             }
-          }
-          else {
+          } else {
             setShowSavePasswordPopup(true);
-              setNewCredentials ({username, password});
+            setNewCredentials({ username, password });
           }
         }
       } else {
@@ -119,7 +168,7 @@ const LoginScreen = () => {
         setLoading(false);
       }
     } catch (error) {
-      setAlertMessage(`Error: ${error.message}`);
+      setAlertMessage(`${error.response?.data?.error || error.message || 'Unknown error occurred'}`);
       setShowAlert(true);
       setLoading(false);
     }
@@ -155,14 +204,12 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Waves2 style={styles.wavesTopSub} />
+      
       <Waves style={styles.wavesTop} />
-      <Waves3 style={styles.wavesBottom}></Waves3>
-      <Text style={styles.title}>Login</Text>
-
+      
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder="Username"
         onChangeText={(text) => setUsername(text)}
         value={username}
       />
@@ -181,24 +228,77 @@ const LoginScreen = () => {
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
         {loading ? (
-          <ActivityIndicator size="small" color="#FEA58F" /> // Loading spinner
+          <ActivityIndicator size="small" color="#fff" /> 
         ) : (
           <Text style={styles.loginButtonText}>Login</Text>
         )}
       </TouchableOpacity>
-      <Text style={styles.welcomeText}>WELCOME</Text>
+      {!(keyboardVisible && Platform.OS === "android") && (
+        <Image
+          source={require("../../../assets/Logo.png")} // Adjust this with your image
+          style={styles.imageStyle}
+        />
+      )}
+      {!(keyboardVisible && Platform.OS === "android") && (
+        <Text style={styles.sloganText}>Your Path to Higher Earnings Starts Here</Text>
+      )}
+      {/* Need Help Text */}
+      <TouchableOpacity onPress={() => setShowHelpPopup(true)}>
+        <Text style={styles.helpText}>Need help logging in? <Text style={styles.helpLink}>Help</Text></Text>
+      </TouchableOpacity>
+
+      {/* Version and Powered By Text */}
+      {!keyboardVisible && (
       <Text style={styles.versionText}>V: {appVersion}</Text>
+      )}
+      {!keyboardVisible && (
+        <Text style={styles.poweredByText}>Powered by SLIC LIFE IT</Text>
+      )}
       <CheckConnection />
+      <Modal
+  visible={showHelpPopup}
+  transparent
+  animationType="fade"
+  onRequestClose={() => setShowHelpPopup(false)} // Optional for Android back button handling
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+    <TouchableOpacity style={styles.closeButton} onPress={() => setShowHelpPopup(false)}>
+              <Ionicons name="close-circle" size={30} color="red" />
+            </TouchableOpacity>
+    <MaterialIcons name="support-agent" size={80} color="#08818B" />
+
+{/* Modal Text */}
+<Text style={styles.modalTitle}>Get access to Life-Connect</Text>
+<Text style={styles.modalSubtitle}>Please contact:</Text>
+
+{/* Contact Information */}
+<Text style={styles.contactName}>Mr. Buddika Weerakoon</Text>
+<Text style={styles.contactPhone}>0112357814</Text>
+<Text style={styles.contactEmail}>buddikawe@sliclife.com</Text>
+
+{/* Additional Instructions */}
+<Text style={styles.additionalText}>
+  Send the request with your agency code
+</Text>
+    </View>
+  </View>
+</Modal>
 
       <Modal
         visible={showSavePasswordPopup}
         transparent
-        animationType="slide"
-        onRequestClose={() => setShowSavePasswordPopup(false)}
+        animationType="fade"
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalText}>Do you want to save your password?</Text>
+          <MaterialIcons
+              name="save-alt"
+              size={45}//24
+              color="black"
+              style={{ marginBottom: 10}}
+            />
+            <Text style={{ fontSize: 18, marginBottom: 15 }}>Do you want to save your password?</Text>
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={styles.modalButton}
@@ -207,7 +307,7 @@ const LoginScreen = () => {
                 <Text style={styles.modalButtonText}>Yes</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.modalButton}
+                style={styles.modalButton2}
                 onPress={() => handleSavePassword(false)}
               >
                 <Text style={styles.modalButtonText}>No</Text>
@@ -225,8 +325,11 @@ const LoginScreen = () => {
         closeOnHardwareBackPress={false}
         showConfirmButton={true}
         confirmText="OK"
-        confirmButtonColor="#FF7758"
+        confirmButtonColor="#08818B"
         onConfirmPressed={() => setShowAlert(false)}
+        messageStyle={styles.messageStyle}
+        confirmButtonStyle={styles.confirmButtonStyle}
+        confirmButtonTextStyle={styles.confirmButtonTextStyle}
       />
     </View>
   );
@@ -241,14 +344,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
-  welcomeText: {
-    left: 50,
-    top: 50,
-    position: "absolute",
-    color: 'white',
-    fontSize: 35,
-    fontFamily: 'Poppins',
-  },
   title: {
     fontSize: 30,
     position: 'static',
@@ -257,25 +352,42 @@ const styles = StyleSheet.create({
     color: "black",
     fontFamily: "poppins",
   },
+  imageStyle: {
+    width: 250, // Set the desired width
+    height: 200, // Set the desired height
+    marginTop: 20, // Adjust the space between text and image
+    position: "absolute",
+    top: 0,
+    resizeMode:'contain',
+  },
+  sloganText: {
+    marginTop: 20, // Adjust the space between text and image
+    position: "absolute",
+    top: 120,
+    color:'#fff',
+  },
   versionText:{
-    bottom: -280,
-    right:160,
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    color: 'black',
   },
   input: {
     height: hp('5%'),
-    borderColor: "#8b8b8b99",
-    borderRadius: 10,
+    borderColor: "#000",
     marginBottom: 10,
     paddingHorizontal: 10,
     width: wp("80%"),
-    borderWidth: 2,
+    borderBottomWidth: 1,   
+    borderBottomColor: 'black',
     fontSize: wp("4.5%"),
+    backgroundColor:'#fff',
   },
   inputContainer: {
     width: wp("80%"),
     height: hp('5%'),
     borderColor: "#ccc",
-    borderRadius: 10,
+    borderRadius: 60,
     marginBottom: 20,
     paddingHorizontal: 10,
     borderWidth: 2,
@@ -288,7 +400,6 @@ const styles = StyleSheet.create({
     height: hp('5%'),
     width: wp("80%"),
     borderColor: "#8b8b8b99",
-    borderRadius: 10,
     paddingHorizontal: 10,
     paddingLeft: 0,
   },
@@ -297,38 +408,23 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
-  wavesTopSub: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-  },
-  wavesBottom: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-  },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderColor: "#8b8b8b99",
-    borderRadius: 10,
+    borderColor: "#000",
     paddingHorizontal: 10,
     width: wp("80%"),
-    borderWidth: 2,
+    borderBottomWidth: 1,   
+    borderBottomColor: 'black',
     marginBottom: 10,
-  },
-  passwordInput: {
-    flex: 1,
-    height: hp('5%'),
-    fontSize: wp("4.5%"),
+    backgroundColor:'#fff',
   },
   loginButton: {
-    width: wp('33%'),
+    width: wp('80%'),
     height: hp('6%'),
     top: hp('29%'),
-    left: wp('30%'),
-    backgroundColor: 'white',
-    borderRadius: 20,
+    backgroundColor: '#08818B',
+    borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: 'rgba(0, 0, 0, 0.25)',
@@ -342,10 +438,82 @@ const styles = StyleSheet.create({
     zIndex: 1, // Ensure the button text appears above the background
   },
   loginButtonText: {
-    color: 'black',
-    fontSize: hp('3%'),
+    color: 'white',
+    fontSize: hp('2%'),
     fontFamily: 'Poppins-Regular', // Make sure 'Poppins' is correctly loaded in your project
     fontWeight: '400',
+    fontWeight:'bold',
+  },
+  helpText: {
+    marginTop: 20,
+    color: 'black',
+    fontSize: 14,
+  },
+  helpLink: {
+    color: '#08818B',
+    textDecorationLine: 'underline',
+  },
+  closeButton: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Transparent background
+  },
+  modalContent: {
+    width: width * 0.8,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+    elevation: 5, // Shadow for Android
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2, // Shadow for iOS
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
+    marginVertical: 10,
+  },
+  modalSubtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 15,
+  },
+  contactName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 5,
+  },
+  contactPhone: {
+    fontSize: 16,
+    color: '#08818B',
+    marginBottom: 5,
+  },
+  contactEmail: {
+    fontSize: 16,
+    color: '#08818B',
+    marginBottom: 20,
+  },
+  additionalText: {
+    fontSize: 14,
+    color: 'red',
+    textAlign: 'center',
+  },
+  poweredByText: {
+    position: 'absolute',
+    bottom: 20,
+    color: '#08818B',
+    fontSize: 14,
+    textAlign: 'center',
   },
   modalContainer: {
     flex: 1,
@@ -354,38 +522,45 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
-    width: wp("80%"),
     padding: 20,
     backgroundColor: "white",
     borderRadius: 10,
     alignItems: "center",
-  },
-  modalText: {
-    fontSize: wp('5%'),
-    marginBottom: 20,
-    textAlign: "center",
+    elevation: 5,
   },
   modalButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%",
   },
   modalButton: {
-    flex: 1,
-    marginHorizontal: 10,
-    paddingVertical: 10,
-    backgroundColor: "#007bff",
     borderRadius: 5,
-    alignItems: "center",
+    backgroundColor: "blue",
+    padding: 10,
+    marginRight: 10,
+  },
+  modalButton2: {
+    backgroundColor: "red",
+    padding: 10,
+    borderRadius: 5,
   },
   modalButtonText: {
     color: "white",
-    fontSize: wp('4%'),
   },
   eyeIcon: {
     padding: 10,
     position: 'absolute',
     right: 0,
+  },
+  messageStyle: {
+    textAlign: 'center',
+    fontSize: 16, 
+  },
+  confirmButtonStyle: {
+    paddingVertical: 10, 
+    paddingHorizontal: 18, 
+  },
+  confirmButtonTextStyle: {
+    fontSize: 16, 
   },
 });
 
