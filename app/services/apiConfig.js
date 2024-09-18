@@ -1,5 +1,5 @@
-const BASE_URL = "https://apisvc.srilankainsurance.com/SalesTrackAppAPI/api/v1";
-//const BASE_URL = "http://203.115.11.236:10155/SalesTrackAppAPI/api/v1"; //test
+const BASE_URL = "https://apisvc.srilankainsurance.com/SalesTrackAppAPI/api/v1"; //live
+//const BASE_URL = "http://122.255.4.187:10155/SalesTrackAppAPI/api/v1"; //test
 
 
 const ENDPOINTS = {
@@ -11,6 +11,7 @@ const ENDPOINTS = {
   CHANGE_PASSWORD: "/Account/ChangePassword",
   MDRT_PROFILE: "/Mdrt/GetPersonalMDRT",
   ISLANDRANK: "/Mdrt/GetIslandRankMDRT",
+  MDRT_ACHIEVE_COUNT: "/Mdrt/GetMDRTAch",
   BRANCHRANK: "/Mdrt/GetBranchRankMDRT",
   TEAMRANK: "/Mdrt/GetRegionalRankMDRT",
   TOTRANK: "/Mdrt/GetTOTRankMDRT",

@@ -99,16 +99,16 @@ const PersistencyDashboard = () => {
         {/* Text Information */}
         <View style={styles.textContainer}>
           <View style={styles.descriptionRow}>
-            <Text style={styles.description}>
+            <Text style={styles.descriptionMain}>
               <Text style={styles.bullet}>■</Text> Year
             </Text>
-            <Text style={styles.descriptionValue}>{year}</Text>
+            <Text style={styles.descriptionValueMain}>{year}</Text>
           </View>
           <View style={styles.descriptionRow}>
-            <Text style={styles.description}>
+            <Text style={styles.descriptionMain}>
               <Text style={styles.bullet}>■</Text> Month
             </Text>
-            <Text style={styles.descriptionValue}>{month}</Text>
+            <Text style={styles.descriptionValueMain}>{month}</Text>
           </View>
           <View style={styles.descriptionRow}>
             <Text style={styles.description}>
@@ -174,10 +174,22 @@ const styles = StyleSheet.create({
     color: "#000",
     marginRight: wp("7%"),
   },
+  descriptionMain: {
+    fontSize: wp("4%"),
+    color: "#000",
+    marginRight: wp("7%"),
+    fontWeight: 'bold',
+  },
   descriptionValue: {
     fontSize: wp("4%"),
     textAlign: "right",
+    color: "#090909",
+  },
+  descriptionValueMain: {
+    fontSize: wp("4%"),
+    textAlign: "right",
     color: "#00a339",
+    fontWeight: 'bold',
   },
   seeMoreText: {
     fontSize: wp("4.5%"),

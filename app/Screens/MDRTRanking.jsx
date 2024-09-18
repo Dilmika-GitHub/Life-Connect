@@ -17,6 +17,7 @@ const WinnersScreen = () => {
   const [branchRegionalData, setBranchRegionalData] = useState([]);
   const [isLifeMember, setIsLifeMember] = useState(false);
   const [agentProfile, setAgentProfile] = useState(null);
+  const [achievedCount ,setAchieversCount] = useState(null);
   const [personalMdrt, setPersonalMdrt] = useState(null);
   const [selectedValue, setSelectedValue] = useState('Branch Ranking');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -71,6 +72,21 @@ const WinnersScreen = () => {
       console.error('Error fetching agent profile:', error.message);
     }
   };
+
+  const fetchMdrtAchieveCount = async() =>{
+    try{
+      const token = await AsyncStorage.getItem('accessToken');
+      const response = await axios.get(`${BASE_URL}${ENDPOINTS.MDRT_ACHIEVE_COUNT}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { p_year: currentYear, p_type:'achieved' }
+      });
+      setAchieversCount(response.data[0].rtnCount);
+    }
+    catch (error) {
+      handleErrorResponse(error);
+      console.error('Error fetching agent profile:', error.message);
+    }
+  }
 
   const fetchPersonalMdrt = async (agency_code1, agency_code2, catType) => {
     try {
@@ -286,6 +302,7 @@ const WinnersScreen = () => {
         try {
           setLoading(true);
           await fetchAgentProfile();
+          await fetchMdrtAchieveCount();
         } catch (error) {
           setError(true);
           setLoading(false);
@@ -500,6 +517,7 @@ const WinnersScreen = () => {
       <Text style={styles.rightAlignedText}>
         {selectedValue === 'Branch Ranking' && branchName}
         {selectedValue === 'Regional Ranking' && regionName}
+        {selectedValue === 'Island Ranking' && 'MDRT Achievers: '+achievedCount}
       </Text>
 
       {error ? (
