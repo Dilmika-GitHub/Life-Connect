@@ -62,6 +62,7 @@ export default function Income ({
 
       setAgencyCode1(fetchedAgencyCode1);
       setAgencyCode2(fetchedAgencyCode2);
+      await AsyncStorage.setItem("agencyCode1", fetchedAgencyCode1);
     } catch (error) {
       handleErrorResponse(error);
       console.error('Error Getting Agency Code:', error);
