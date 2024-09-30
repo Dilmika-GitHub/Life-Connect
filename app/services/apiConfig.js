@@ -29,6 +29,7 @@ const ENDPOINTS = {
   GET_MONTHLY_PERSISTENCY: "/Persistancy/GetAgentMonthlyPersistancy",
   GET_PERSISTENCY_INFORCED: "/Persistancy/GetAgentPersInfoPol",
   GET_PERSISTENCY_LAPSED: "/Persistancy/GetAgentPersLapsPol",
+  COMMISSION_STATEMEMNT: "/Commission/GetCommissionStatment",
 };
 
 export { BASE_URL, ENDPOINTS };
