@@ -27,6 +27,7 @@ import Maturity from "../MaturityPolicies/Maturity";
 import Lapsed from "../LapsedPolicies/Lapsed"
 import MDRTProfile from "../UserProfile/MDRTProfile/MDRTProfile";
 import Persistency from "../Persistency";
+import CommissionStatement from "../CommissionStatement";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginScreen from "../LoginScreen/LoginScreen";
@@ -248,6 +249,17 @@ const CustomDrawerContent = ({ navigation }) => {
             />
           )}
         />
+        <DrawerItem
+          label="Commission Statement"
+          onPress={() => navigation.navigate("Commission Statement")}
+          icon={({ focused, color, size }) => (
+            <Ionicons
+              name={focused ? "receipt-outline" : "receipt-outline"}
+              size={size}
+              color={color}
+            />
+          )}
+        />
         {/* Logout Drawer Item */}
         <View style={{ flex: 1, justifyContent: "flex-end", bottom:0, }}>
           <DrawerItem
@@ -354,6 +366,7 @@ export default function Home() {
         <Drawer.Screen name="Login" component={LoginScreen} />
         <Drawer.Screen name="Persistency Inforced Policy List" component={PersistencyInforcedPolicyList} />
         <Drawer.Screen name="Persistency Lapsed Policy List" component={PersistencyLapsedPolicyList} />
+        <Drawer.Screen name="Commission Statement" component={CommissionStatement} />
       </Drawer.Navigator>
     </NavigationContainer>
   );

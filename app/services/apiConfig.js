@@ -1,4 +1,4 @@
-const BASE_URL = "https://apisvc.srilankainsurance.com/SalesTrackAppAPI/api/v1"; //live
+const BASE_URL = "https://apisvc.sliclife.com/SalesTrackAppAPI/api/v1"; //live
 //const BASE_URL = "http://122.255.4.187:10155/SalesTrackAppAPI/api/v1"; //test
 
 
@@ -29,6 +29,7 @@ const ENDPOINTS = {
   GET_MONTHLY_PERSISTENCY: "/Persistancy/GetAgentMonthlyPersistancy",
   GET_PERSISTENCY_INFORCED: "/Persistancy/GetAgentPersInfoPol",
   GET_PERSISTENCY_LAPSED: "/Persistancy/GetAgentPersLapsPol",
+  COMMISSION_STATEMEMNT: "/Commission/GetCommissionStatment",
 };
 
 export { BASE_URL, ENDPOINTS };
