@@ -34,6 +34,7 @@ import LoginScreen from "../LoginScreen/LoginScreen";
 import ChangePassword from "../ChangePassword";
 import PersistencyInforcedPolicyList from "../PersistencyInforcedPolicyList";
 import PersistencyLapsedPolicyList from "../PersistencyLapsedPolicyList";
+import AnnualAwardsProfile from "../AnnualAwards/AnnualAwardsProfile";
 import axios from 'axios';
 import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 import { color } from "react-native-elements/dist/helpers";
@@ -45,6 +46,7 @@ const CustomDrawerContent = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
   const [agentCode, setAgentCode] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [competitionsExpanded, setCompetitionsExpanded] = useState(false);
   
   useEffect(() => {
     const fetchUserData = async () => {
@@ -163,6 +165,9 @@ const CustomDrawerContent = ({ navigation }) => {
   const handleCancelLogout = () => {
     setLogoutConfirmationVisible(false);
   };
+  const toggleCompetitions = () => {
+    setCompetitionsExpanded(!competitionsExpanded);
+  };
   
   if (loading) {
     return <ActivityIndicator size="large" color="#08818a" />;
@@ -204,17 +209,52 @@ const CustomDrawerContent = ({ navigation }) => {
             />
           )}
         />
-        <DrawerItem
-          label="MDRT"
-          onPress={() => navigation.navigate("MDRT")}
-          icon={({ focused, color, size }) => (
-            <Ionicons
-              name={focused ? "trophy" : "trophy-outline"}
-              size={size}
-              color={color}
+          {/* Competition Group */}
+        <TouchableOpacity
+          onPress={toggleCompetitions}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingVertical: 10,
+            paddingHorizontal: 20,
+          }}
+        >
+          <Ionicons
+            name={competitionsExpanded ? "chevron-down" : "chevron-forward"}
+            size={20}
+            color="#000"
+            style={{ marginRight: 30 }}
+          />
+          <Text style={{ fontSize: 15 }}>Competitions</Text>
+        </TouchableOpacity>
+
+        {/* Conditionally render the nested items */}
+        {competitionsExpanded && (
+          <View style={{ marginLeft: 20 }}>
+            <DrawerItem
+              label="MDRT"
+              onPress={() => navigation.navigate("MDRT")}
+              icon={({ focused, color, size }) => (
+                <Ionicons
+                  name={focused ? "trophy" : "trophy-outline"}
+                  size={size}
+                  color={color}
+                />
+              )}
             />
-          )}
-        />
+            <DrawerItem
+              label="Annual Awards"
+              onPress={() => navigation.navigate("Annual Awards Profile")}
+              icon={({ focused, color, size }) => (
+                <Ionicons
+                  name={focused ? "medal" : "medal-outline"}
+                  size={size}
+                  color={color}
+                />
+              )}
+            />
+          </View>
+        )}
         <DrawerItem
           label="Policy Details"
           onPress={() => navigation.navigate("Policy Details")}
@@ -367,6 +407,7 @@ export default function Home() {
         <Drawer.Screen name="Persistency Inforced Policy List" component={PersistencyInforcedPolicyList} />
         <Drawer.Screen name="Persistency Lapsed Policy List" component={PersistencyLapsedPolicyList} />
         <Drawer.Screen name="Commission Statement" component={CommissionStatement} />
+        <Drawer.Screen name="Annual Awards Profile" component={AnnualAwardsProfile} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
