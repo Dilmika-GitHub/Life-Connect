@@ -35,6 +35,8 @@ const ENDPOINTS = {
 
   //Version 2 Endpoints
   ANNUAL_AWARDS_PROFILE: "/AnnualRewd/GetPersonalAnnualAward",
+  ANNUAL_AWARDS_BRANCH_RANK: "/AnnualRewd/GetBranchRankAnnualAward",
+  ANNUAL_AWARDS_ISLAND_RANK: "/AnnualRewd/GetIslandRankAnnualAward",
 };
 
 export { BASE_URL, BASE_URL_V2, ENDPOINTS };

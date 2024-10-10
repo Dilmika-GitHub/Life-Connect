@@ -119,6 +119,7 @@ const AnnualAwardsProfile = ({ navigation }) => {
         });
   
         setData(response.data);
+        await AsyncStorage.setItem("branchName", response.data.branch_name);
         console.log(response.data);
       } catch (error) {
         console.log(error.message);
@@ -234,7 +235,7 @@ const AnnualAwardsProfile = ({ navigation }) => {
             </TouchableOpacity>
             <Text style={styles.menuText}>Annual Awards</Text>
             <TouchableOpacity
-                  onPress={() => navigation.navigate("MDRT Ranking")}
+                  onPress={() => navigation.navigate("Annual Awards Ranking")}
                   style={styles.rankingImageContainer}
                 >
                   <Image
@@ -270,7 +271,7 @@ const AnnualAwardsProfile = ({ navigation }) => {
   </TouchableOpacity>
   <Text style={styles.menuText}>Annual Awards Profile</Text>
   <TouchableOpacity
-    onPress={() => navigation.navigate("MDRT Ranking")}
+    onPress={() => navigation.navigate("Annual Awards Ranking")}
     style={styles.rankingImageContainer}
   >
     <Image
@@ -441,7 +442,7 @@ const AnnualAwardsProfile = ({ navigation }) => {
     },
     topSection: {
       flex: 0.25,
-      backgroundColor: '#08818a',
+      backgroundColor: '#FFF3DD',
     },
     topSection2: {
       flex: 0.4,
@@ -463,7 +464,7 @@ const AnnualAwardsProfile = ({ navigation }) => {
       height: 200,
       borderRadius: 100,
       borderWidth: 3, // Border width for the gold color
-      borderColor: 'red', // Gold color for the border
+      borderColor: 'gold', // Gold color for the border
     },
     imageText: {
       marginTop: 3,
@@ -484,7 +485,7 @@ const AnnualAwardsProfile = ({ navigation }) => {
       marginTop: 0,
       marginBottom: 1,
       alignItems: 'center',
-      backgroundColor: '#08818a',
+      backgroundColor: '#01204E',
       alignSelf: 'center',
       borderRadius: 10,
       padding: 20,
@@ -535,15 +536,15 @@ const AnnualAwardsProfile = ({ navigation }) => {
     countdownValue: {
       fontSize: 20,
       fontWeight: 'bold',
-      color: '#08818a',
+      color: '#01204E',
     },
     countdownLabel: {
       fontSize: 14,
-      color: '#08818a',
+      color: '#01204E',
     },
     greySquare: {
       width: '90%',
-      backgroundColor: '#c4f1f5',
+      backgroundColor: '#E8F0FC',
       marginTop: 10,
       alignSelf: 'center',
       borderRadius: 10,

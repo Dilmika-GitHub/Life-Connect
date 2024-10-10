@@ -35,6 +35,7 @@ import ChangePassword from "../ChangePassword";
 import PersistencyInforcedPolicyList from "../PersistencyInforcedPolicyList";
 import PersistencyLapsedPolicyList from "../PersistencyLapsedPolicyList";
 import AnnualAwardsProfile from "../AnnualAwards/AnnualAwardsProfile";
+import AnnualAwardsRanking from "../AnnualAwards/AnnualAwardsRanking";
 import axios from 'axios';
 import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 import { color } from "react-native-elements/dist/helpers";
@@ -408,6 +409,7 @@ export default function Home() {
         <Drawer.Screen name="Persistency Lapsed Policy List" component={PersistencyLapsedPolicyList} />
         <Drawer.Screen name="Commission Statement" component={CommissionStatement} />
         <Drawer.Screen name="Annual Awards Profile" component={AnnualAwardsProfile} />
+        <Drawer.Screen name="Annual Awards Ranking" component={AnnualAwardsRanking} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
