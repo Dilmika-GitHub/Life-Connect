@@ -367,13 +367,13 @@ const AnnualAwardsProfile = ({ navigation }) => {
               ) : null}
             </View>
             <View style={styles.specialRow}>
-              <Text style={styles.titleText}>Special Award</Text>
-              {data?.specialaward === 'ACHEIVED' ? (
-                <Text style={styles.greenText}>{"Achieved"}</Text>
-              ) : data?.specialaward === 'NOT ACHEIVED' ? (
-                <Text style={styles.redText}>{"Not Achieved"}</Text>
-              ) : null}
-            </View>
+  <Text style={styles.titleText}>Special Award</Text>
+  {data?.specialaward == null || data?.specialaward === 'NOT ACHEIVED' ? (
+    <Text style={styles.redText}>{"Not Achieved"}</Text>
+  ) : (
+    <Text style={styles.greenText}>{data?.specialaward}</Text>
+  )}
+</View>
             <View style={styles.specialRow}>
               <Text style={styles.titleText}>Island Rank</Text>
               <Text style={styles.normalText}>{data?.slic_rank || "N/A"}</Text>
