@@ -254,6 +254,7 @@ const MDRTProfile = ({ navigation }) => {
           <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
             <Ionicons name="menu" size={35} color="white" />
           </TouchableOpacity>
+          <Text style={styles.menuText}>MDRT Profile</Text>
           <TouchableOpacity
                 onPress={() => navigation.navigate("MDRT Ranking")}
                 style={styles.rankingImageContainer}
@@ -404,6 +405,16 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#08818a',
     justifyContent: 'space-between',
+  },
+  menuText: {
+    color: 'white',
+    fontSize: 18,
+    flex: 1, // Allow the text to take up available space
+    textAlign: 'center', // Center the text horizontally
+  },
+  rankingImageContainer: {
+    marginLeft: 'auto', // Push this to the far right
+    paddingHorizontal: 10, // Add padding for spacing
   },
   section: {
     width: '100%',
