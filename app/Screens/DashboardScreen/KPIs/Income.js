@@ -176,16 +176,12 @@ export default function Income ({
   const formattedValueWithCommas = (value) => {
     if (!value) return "0.00";
     
-    // Ensure the number has two decimal places
     const fixedValue = parseFloat(value).toFixed(2); 
   
-    // Split the value into whole and decimal parts
     const [whole, decimal] = fixedValue.split(".");
   
-    // Add commas to the whole part
     const wholeWithCommas = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   
-    // Rejoin the whole part with the decimal part
     return `${wholeWithCommas}.${decimal}`;
   };
   

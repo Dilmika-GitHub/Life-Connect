@@ -151,6 +151,18 @@ export default function GWPkpi({
     }
   };
 
+  const formattedValueWithCommas = (value) => {
+    if (!value) return "0.00";
+    
+    const fixedValue = parseFloat(value).toFixed(2); 
+  
+    const [whole, decimal] = fixedValue.split(".");
+  
+    const wholeWithCommas = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  
+    return `${wholeWithCommas}.${decimal}`;
+  };
+
   if (loading) {
     return (
       <View style={styles.loader}>
@@ -169,7 +181,7 @@ export default function GWPkpi({
           <Text style={styles.titleText}>GWP</Text>
           <View style={styles.valuesContainer}>
             <View style={styles.leftValues}>
-              <Text style={styles.actualValue}>{ "Rs. " + new Intl.NumberFormat().format(actualValue)}</Text>
+              <Text style={styles.actualValue}>{ "Rs. " + formattedValueWithCommas(actualValue)}</Text>
               <Text style={[styles.targetValue, { color: (targetValue && targetValue !== 0) ? '#085258' : 'red' }]}>
     {targetValue && targetValue !== 0 ? `Target : ${"Rs. " + new Intl.NumberFormat().format(targetValue)}` : "Click here to set a target"}
   </Text>
