@@ -1,7 +1,7 @@
 const BASE_URL = "https://apisvc.sliclife.com/SalesTrackAppAPI/api/v1"; //live
 //const BASE_URL = "http://122.255.4.187:10155/SalesTrackAppAPI/api/v1"; //test
-//const BASE_URL_V2 = "https://apisvc.sliclife.com/SalesTrackAppAPI/api/v2"; //live v2
-const BASE_URL_V2 = "http://122.255.4.187:10155/SalesTrackAppAPI/api/v2"; //test v2
+const BASE_URL_V2 = "https://apisvc.sliclife.com/SalesTrackAppAPI/api/v2"; //live v2
+//const BASE_URL_V2 = "http://122.255.4.187:10155/SalesTrackAppAPI/api/v2"; //test v2
 
 
 const ENDPOINTS = {
