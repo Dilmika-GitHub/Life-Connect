@@ -20,7 +20,7 @@ import { useFonts } from "expo-font";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CheckConnection from "../../../components/checkConnection";
 import axios from 'axios';
-import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
+import { BASE_URL, ENDPOINTS, BASE_URL_V2 } from "../../services/apiConfig";
 import AwesomeAlert from 'react-native-awesome-alerts';
 import Constants from 'expo-constants';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -115,11 +115,12 @@ const LoginScreen = () => {
   // Handle login
   const handleLogin = async () => {
     setLoading(true);
-    console.log(username)
-    console.log(password)
-    console.log(appVersion)
-
+    console.log(username);
+    console.log(password);
+    console.log(appVersion);
+  
     try {
+      // Attempt to authenticate with the first endpoint
       const response = await axios.post(
         `${BASE_URL}${ENDPOINTS.AUTHENTICATE}`,
         {
@@ -136,46 +137,125 @@ const LoginScreen = () => {
       );
   
       const jsonResponse = response.data;
-      
       console.log('Response:', jsonResponse);
   
       if (response.status === 200 && jsonResponse.status === "Y") {
-        await AsyncStorage.setItem("accessToken", jsonResponse.accsesstoken);
-        await AsyncStorage.setItem("categoryType", jsonResponse.cattype);
-        await AsyncStorage.setItem("email", jsonResponse.email);
-  
-        if (jsonResponse.firstAttempt === "Y") {
-          router.push("/Screens/LoginScreen/ChangeDefaultPassword");
-        } else {
-          if (hasSavedCredentials) {
-            const storedUsername = await AsyncStorage.getItem("username");
-            const storedPassword = await AsyncStorage.getItem("password");
-  
-            if (username === storedUsername && password === storedPassword) {
-              router.push("/Screens/HomePage/Home");
-            } else {
-              setShowSavePasswordPopup(true);
-              setNewCredentials({ username, password });
+        // Successful login with the first endpoint
+        await handleSuccessfulLogin(jsonResponse);
+      } else {
+        // If the status is not 200 but data returned indicates an issue
+        showErrorAlert(jsonResponse.error || 'Unknown error');
+      }
+    } catch (error) {
+      // If the first endpoint fails with status 400, try the second endpoint
+      if (error.response && error.response.status === 400) {
+        try {
+          // Attempt with the second endpoint
+          const fallbackResponse = await axios.post(
+            `${BASE_URL_V2}${ENDPOINTS.BSO_AUTHENTICATE}`,
+            {
+              userName: username,
+              password: password,
+              isActive: 'Y',
+              appversionNo: appVersion
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              }
             }
+          );
+  
+          const fallbackJsonResponse = fallbackResponse.data;
+          console.log('Fallback Response:', fallbackJsonResponse);
+  
+          if (fallbackResponse.status === 200) {
+            // Successful login with the BSO authenticate endpoint
+            await handleBsoSuccessfulLogin(fallbackJsonResponse);
           } else {
-            setShowSavePasswordPopup(true);
-            setNewCredentials({ username, password });
+            // If the fallback response is not successful
+            showErrorAlert(fallbackJsonResponse.error || 'Unknown error');
+          }
+        } catch (fallbackError) {
+          // If the fallback endpoint also fails with status 400
+          if (fallbackError.response && fallbackError.response.status === 400) {
+            showErrorAlert('Username or Password Mismatched');
+          } else {
+            showErrorAlert(fallbackError.message || 'Unknown error occurred');
           }
         }
       } else {
-        setAlertMessage(`${jsonResponse.error || 'Unknown error'}`);
-        setShowAlert(true);
-        setLoading(false);
+        // If the error from the first endpoint is not 400
+        showErrorAlert(error.message || 'Unknown error occurred');
       }
-    } catch (error) {
-      setAlertMessage(`${error.response?.data?.error || error.message || 'Unknown error occurred'}`);
-      setShowAlert(true);
+    } finally {
       setLoading(false);
     }
   };
   
-
-  // Save password
+  // Helper function for handling successful login for AUTHENTICATE endpoint
+  const handleSuccessfulLogin = async (jsonResponse) => {
+    await AsyncStorage.setItem("accessToken", jsonResponse.accsesstoken);
+    await AsyncStorage.setItem("categoryType", jsonResponse.cattype);
+    await AsyncStorage.setItem("email", jsonResponse.email);
+  
+    if (jsonResponse.firstAttempt === "Y") {
+      router.push("/Screens/LoginScreen/ChangeDefaultPassword");
+    } else {
+      if (hasSavedCredentials) {
+        const storedUsername = await AsyncStorage.getItem("username");
+        const storedPassword = await AsyncStorage.getItem("password");
+  
+        if (username === storedUsername && password === storedPassword) {
+          router.push("/Screens/HomePage/Home");
+        } else {
+          setShowSavePasswordPopup(true);
+          setNewCredentials({ username, password });
+        }
+      } else {
+        setShowSavePasswordPopup(true);
+        setNewCredentials({ username, password });
+      }
+    }
+  };
+  
+  // Helper function for handling successful BSO login
+  const handleBsoSuccessfulLogin = async (fallbackJsonResponse) => {
+    // Store BSO-specific data in AsyncStorage
+    await AsyncStorage.setItem("accessToken", fallbackJsonResponse.accsesstoken);
+    await AsyncStorage.setItem("bso_code", fallbackJsonResponse.bso_code);
+    await AsyncStorage.setItem("email", fallbackJsonResponse.email);
+    await AsyncStorage.setItem("categoryType", fallbackJsonResponse.cattype);
+    await AsyncStorage.setItem("agency_code", fallbackJsonResponse.agency_code);
+  
+    if (fallbackJsonResponse.firstAttempt === "Y") {
+      router.push("/Screens/LoginScreen/ChangeDefaultPassword");
+    } else {
+      if (hasSavedCredentials) {
+        const storedUsername = await AsyncStorage.getItem("username");
+        const storedPassword = await AsyncStorage.getItem("password");
+  
+        if (username === storedUsername && password === storedPassword) {
+          router.push("/Screens/HomePage/HomeBso");
+        } else {
+          setShowSavePasswordPopup(true);
+          setNewCredentials({ username, password });
+        }
+      } else {
+        setShowSavePasswordPopup(true);
+        setNewCredentials({ username, password });
+      }
+    }
+  };
+  
+  // Helper function to show error alert
+  const showErrorAlert = (message) => {
+    setAlertMessage(message);
+    setShowAlert(true);
+  };
+  
+  
+  
   const handleSavePassword = async (save) => {
     const loggedBefore = await AsyncStorage.getItem('loggedBefore');
 
