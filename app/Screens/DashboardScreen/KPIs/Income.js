@@ -173,6 +173,20 @@ export default function Income ({
     circleCircumference - (circleCircumference * maxPerc) / 100;
   const actualValueText = `${currencyType} ${actualValue}`;
 
+  const formattedValueWithCommas = (value) => {
+    if (!value) return "0.00";
+    
+    const fixedValue = parseFloat(value).toFixed(2); 
+  
+    const [whole, decimal] = fixedValue.split(".");
+  
+    const wholeWithCommas = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  
+    return `${wholeWithCommas}.${decimal}`;
+  };
+  
+  
+
 
   return (
     <View style={styles.container}>
@@ -232,9 +246,9 @@ export default function Income ({
           <View style={styles.mainMeterContainer}>
             <View style={styles.textContainer}>
               <Text style={styles.infoText}>Total Income</Text>
-              <Text style={[styles.valueText, {fontWeight:'bold'}]}>{"Rs. " + new Intl.NumberFormat().format(actualValue)}</Text>
+              <Text style={[styles.valueText, {fontWeight:'bold'}]}>{"Rs. " + formattedValueWithCommas(actualValue)}</Text>
               <Text style={[styles.targetText, { color: (targetValue && targetValue !== 0) ? 'white' : 'red' }]}>
-                {targetValue && targetValue !== 0 ? `Target : ${"Rs. " + new Intl.NumberFormat().format(targetValue)}` : "Click here to set a target"}
+                {targetValue && targetValue !== 0 ? `Target : ${"Rs. " + formattedValueWithCommas(targetValue)}` : "Click here to set a target"}
               </Text>
             </View>
             <View style={styles.circleView}>
