@@ -8,7 +8,7 @@ import { useRouter } from "expo-router";
 import { getAgencyCode } from '../../services/getDetailsAPIs';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'axios';
-import { BASE_URL, ENDPOINTS } from '../../services/apiConfig';
+import { BASE_URL, BASE_URL_V2, ENDPOINTS } from '../../services/apiConfig';
 
 const ChangeDefaultPassword = ({ navigation }) => {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -54,35 +54,61 @@ const ChangeDefaultPassword = ({ navigation }) => {
       setShowAlert(true);
       return;
     }
-
+  
     if (password !== confirmPassword) {
       setAlertMessage('New password and confirm password do not match.');
       setShowAlert(true);
       return;
     }
-
+  
     try {
       const token = await AsyncStorage.getItem('accessToken');
       const email = await AsyncStorage.getItem('email');
+      const categoryType = await AsyncStorage.getItem('categoryType');
+      const bsoCode = await AsyncStorage.getItem('bso_code');
       console.log(agencyCode);
-      const response = await axios.post(
-        BASE_URL + ENDPOINTS.CHANGE_PASSWORD,
-        {
+  
+      // Determine the endpoint and request body based on categoryType
+      let endpoint = '';
+      let requestBody = {};
+  
+      if (categoryType === 'Ag' || categoryType === 'Or') {
+        // Use the original endpoint and request body
+        endpoint = BASE_URL + ENDPOINTS.CHANGE_PASSWORD;
+        requestBody = {
           p_pre_pw: currentPassword,
           p_new_pw: password,
           p_agency_code: agencyCode,
           p_agent_email: email,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+        };
+      } else if (categoryType === 'BO') {
+        // Use the BSO-specific endpoint and request body
+        endpoint = BASE_URL_V2 + ENDPOINTS.BSO_CHANGE_PASSWORD;
+        requestBody = {
+          p_pre_pw: currentPassword,
+          p_new_pw: password,
+          p_bso_code: bsoCode, 
+          p_bso_email: email,
+        };
+      } else {
+        setAlertMessage('Invalid category type.');
+        setShowAlert(true);
+        return;
+      }
+  
+      // Make the API request
+      const response = await axios.post(endpoint, requestBody, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
       console.log(response.data);
       if (response.data === 1) {
-        setResponseCode(response.data)
+        setResponseCode(response.data);
         setAlertMessage('Password updated successfully!');
       } else if (response.data === 0) {
         setAlertMessage('Your current password is incorrect, Please Check!');
       } else {
-        setAlertMessage('Something went wrong please try again!')
+        setAlertMessage('Something went wrong, please try again!');
       }
       setShowAlert(true);
     } catch (error) {
@@ -91,6 +117,7 @@ const ChangeDefaultPassword = ({ navigation }) => {
       setShowAlert(true);
     }
   };
+  
 
   const handleAlert = () => {
     if (responseCode === 1) {
