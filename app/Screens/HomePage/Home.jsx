@@ -16,7 +16,7 @@ import {
   SafeAreaView,
   Dimensions,
   ActivityIndicator,
-  Alert
+  Alert 
 } from "react-native";
 import DashboardScreen from "../DashboardScreen/DashboardScreen";
 import SettingsScreen from "../SettingsScreen";
@@ -39,7 +39,6 @@ import AnnualAwardsRanking from "../AnnualAwards/AnnualAwardsRanking";
 import axios from 'axios';
 import { BASE_URL, ENDPOINTS } from "../../services/apiConfig";
 import { color } from "react-native-elements/dist/helpers";
-import DigitalProposalMenu from "../DIgitalProposal/DigitalProposalMenu";
 
 const Drawer = createDrawerNavigator();
 
@@ -49,7 +48,7 @@ const CustomDrawerContent = ({ navigation }) => {
   const [agentCode, setAgentCode] = useState(null);
   const [loading, setLoading] = useState(true);
   const [competitionsExpanded, setCompetitionsExpanded] = useState(false);
-
+  
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -123,7 +122,7 @@ const CustomDrawerContent = ({ navigation }) => {
         const blob = response.data;
         // const imageUrl = URL.createObjectURL(blob);
         const imageUrl = await blobToBase64(blob);
-
+        
         setUserData((prevData) => ({
           ...prevData,
           profileImage: imageUrl,
@@ -159,7 +158,7 @@ const CustomDrawerContent = ({ navigation }) => {
         routes: [{ name: 'Login' }],
       })
     );
-
+    
     // await AsyncStorage.removeItem("username");
     // await AsyncStorage.removeItem("password");
   };
@@ -174,11 +173,11 @@ const CustomDrawerContent = ({ navigation }) => {
   if (loading) {
     return <ActivityIndicator size="large" color="#08818a" />;
   }
-
+  
   return (
-    <DrawerContentScrollView style={{ flex: 1, backgroundColor: '#d1f7fa', }}>
+    <DrawerContentScrollView style={{ flex: 1 , backgroundColor:'#d1f7fa',}}>
       {/* Wrap drawer content in SafeAreaView to handle notch */}
-      <SafeAreaView style={{ flex: 1, }}>
+      <SafeAreaView style={{ flex: 1 ,}}>
         {/* User Profile Section */}
         <TouchableOpacity
           onPress={() => navigation.navigate("My Profile")}
@@ -194,8 +193,8 @@ const CustomDrawerContent = ({ navigation }) => {
             style={{ width: 40, height: 40, borderRadius: 20, marginRight: 10 }}
           />
           <View style={{ flexDirection: "column" }}>
-            <Text style={{ fontSize: 16 }}>{userData?.intial?.trim()} {userData?.name}</Text>
-            <Text style={{ fontSize: 12 }}>{userData?.email}</Text>
+          <Text style={{ fontSize: 16 }}>{userData?.intial?.trim()} {userData?.name}</Text>
+          <Text style={{ fontSize: 12 }}>{userData?.email}</Text>
           </View>
         </TouchableOpacity>
 
@@ -268,8 +267,6 @@ const CustomDrawerContent = ({ navigation }) => {
             />
           )}
         />
-
-
         {/* Custom DrawerItem for "Maturity" */}
         <DrawerItem
           label="Maturity"
@@ -304,22 +301,8 @@ const CustomDrawerContent = ({ navigation }) => {
             />
           )}
         />
-
-        <DrawerItem
-          label="Digital Proposals"
-          onPress={() => navigation.navigate("Digital Proposal Menu")}
-          icon={({ focused, color, size }) => (
-            <Ionicons
-              name={focused ? "file-tray-stacked" : "file-tray-stacked-outline"}
-              size={size}
-              color={color}
-            />
-          )}
-        />
-
-
         {/* Logout Drawer Item */}
-        <View style={{ flex: 1, justifyContent: "flex-end", bottom: 0, }}>
+        <View style={{ flex: 1, justifyContent: "flex-end", bottom:0, }}>
           <DrawerItem
             label="Logout"
             onPress={handleLogout}
@@ -329,7 +312,7 @@ const CustomDrawerContent = ({ navigation }) => {
                 size={size}
                 color={'red'}
               />
-            )}
+            )} 
           />
         </View>
       </SafeAreaView>
@@ -362,7 +345,7 @@ const CustomDrawerContent = ({ navigation }) => {
               name="logout"
               size={40}
               color="black"
-              style={{ marginBottom: 10 }}
+              style={{ marginBottom: 10}}
             />
             <Text style={{ fontSize: 18, marginBottom: 5 }}>
               Do you really want to exit the app?
@@ -420,12 +403,13 @@ export default function Home() {
         <Drawer.Screen name="Lapsed" component={Lapsed} />
         <Drawer.Screen name="Logout" component={SettingsScreen} />
         <Drawer.Screen name="Change Password" component={ChangePassword} />
-        <Drawer.Screen name="Persistency" component={Persistency} />
+        <Drawer.Screen name="Persistency" component={Persistency}/>
         <Drawer.Screen name="Login" component={LoginScreen} />
         <Drawer.Screen name="Persistency Inforced Policy List" component={PersistencyInforcedPolicyList} />
         <Drawer.Screen name="Persistency Lapsed Policy List" component={PersistencyLapsedPolicyList} />
         <Drawer.Screen name="Commission Statement" component={CommissionStatement} />
-        <Drawer.Screen name="Digital Proposal Menu" component={DigitalProposalMenu} />
+        <Drawer.Screen name="Annual Awards Profile" component={AnnualAwardsProfile} />
+        <Drawer.Screen name="Annual Awards Ranking" component={AnnualAwardsRanking} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
