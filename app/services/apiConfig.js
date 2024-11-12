@@ -39,6 +39,7 @@ const ENDPOINTS = {
   ANNUAL_AWARDS_ISLAND_RANK: "/AnnualRewd/GetIslandRankAnnualAward",
   BSO_AUTHENTICATE: "/BsoAccount/BsoAuthanticate",
   BSO_CHANGE_PASSWORD :"/BsoAccount/BsoChangePassword",
+  BSO_PROFILE_DETAILS :"/BsoAccount/GetBsoProfile",
 };
 
 export { BASE_URL, BASE_URL_V2, ENDPOINTS };
